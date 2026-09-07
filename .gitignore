@@ -1,0 +1,25 @@
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor and IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local project archive
+/archive/MONICA/
+
+# Downloaded webpage captures are kept for local study only.
+# Keep the small explanatory README in references/sources/ tracked.
+/references/sources/**/*.html
+/references/sources/**/*_files/
+*.download
+
+# Temporary exports and local analysis files
+*.log
+*.tmp
+*.bak
+.local/
