@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Background · Sphere</title>
+<link rel="stylesheet" href="./bg.css">
+</head>
+<body>
+  <canvas id="bg"></canvas>
+  <script>
+    window.BG_CONFIG = {
+      shape: 'sphere',
+      deformations: ['noise', 'twist', 'pixelate', 'boundary'],
+      hue: 0.70,
+      hold: 3.0,
+      morph: 1.2,
+      spin: 0.20,
+      breathe: 0.15
+    };
+  </script>
+  <script src="../vendor/three.min.js"></script>
+  <script src="./bg.js"></script>
+</body>
+</html>

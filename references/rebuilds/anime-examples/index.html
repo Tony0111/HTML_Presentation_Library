@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anime.js Examples — offline gallery</title>
+<style>
+  :root{--bg:#0a0b11;--panel:#101219;--ink:#eef1f7;--muted:rgba(238,241,247,.52);
+        --line:rgba(255,255,255,.1);--accent:#7cf0c8;color-scheme:dark}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:"Inter","Segoe UI","PingFang SC",system-ui,sans-serif;
+       display:flex;overflow:hidden}
+  .side{width:290px;flex:0 0 290px;border-right:1px solid var(--line);display:flex;flex-direction:column;background:var(--panel)}
+  .side header{padding:20px 18px 14px;border-bottom:1px solid var(--line)}
+  .side h1{font-size:15px;font-weight:650;letter-spacing:-.01em}
+  .side p{margin-top:6px;font-size:11.5px;color:var(--muted);line-height:1.5}
+  .search{margin:12px 14px 6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);
+          background:rgba(255,255,255,.04);color:var(--ink);font:13px inherit;outline:none}
+  .search:focus{border-color:rgba(124,240,200,.5)}
+  .list{flex:1 1 auto;overflow:auto;padding:6px 10px 24px}
+  .grp{margin:14px 8px 6px;font:600 10px/1 ui-monospace,monospace;letter-spacing:.18em;
+       text-transform:uppercase;color:rgba(124,240,200,.7)}
+  .item{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+        text-align:left;padding:9px 10px;border:1px solid transparent;border-radius:9px;
+        background:none;color:var(--ink);cursor:pointer;font:13px inherit;capitalize}
+  .item:hover{background:rgba(255,255,255,.05)}
+  .item[aria-current="true"]{background:rgba(124,240,200,.13);border-color:rgba(124,240,200,.4)}
+  .warn{flex:none;font:500 9px/1 ui-monospace,monospace;letter-spacing:.08em;color:#ffcf7a;
+        border:1px solid rgba(255,207,122,.4);border-radius:999px;padding:4px 6px}
+  .main{flex:1 1 auto;display:flex;flex-direction:column;min-width:0}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+       padding:13px 18px;border-bottom:1px solid var(--line)}
+  .bar h2{font-size:13.5px;font-weight:600;text-transform:capitalize}
+  .bar a{color:var(--ink);font:600 11px inherit;letter-spacing:.08em;text-transform:uppercase;
+         text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px}
+  .bar a:hover{border-color:rgba(124,240,200,.5);background:rgba(124,240,200,.12)}
+  .frame{position:relative;flex:1 1 auto;background:#000}
+  .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+  .notice{position:absolute;inset:0;display:none;place-content:center;text-align:center;padding:32px;
+          background:#0a0b11}
+  .notice.show{display:grid}
+  .notice strong{display:block;font-size:16px;margin-bottom:10px}
+  .notice p{color:var(--muted);font-size:13px;line-height:1.6;max-width:44ch;margin:0 auto}
+</style>
+</head>
+<body>
+  <aside class="side">
+    <header>
+      <h1>Anime.js Examples</h1>
+      <p>35 / 36 个页面已离线化，可直接双击运行。<br>其余页面依赖额外库，需要时再处理。</p>
+    </header>
+    <input class="search" id="q" type="search" placeholder="搜索示例…" autocomplete="off">
+    <nav class="list" id="list">
+<p class="grp">stagger</p>
+<button class="item" data-path="stagger/index.html" data-portable="1" data-title="stagger"><span>stagger</span></button>
+<p class="grp">text</p>
+<button class="item" data-path="text/hover-effects/index.html" data-portable="1" data-title="hover effects"><span>hover effects</span></button>
+<button class="item" data-path="text/scramble/index.html" data-portable="1" data-title="scramble"><span>scramble</span></button>
+<button class="item" data-path="text/scramble-tl/index.html" data-portable="1" data-title="scramble tl"><span>scramble tl</span></button>
+<button class="item" data-path="text/split-effects/index.html" data-portable="1" data-title="split effects"><span>split effects</span></button>
+<button class="item" data-path="text/split-playground/index.html" data-portable="1" data-title="split playground"><span>split playground</span></button>
+<p class="grp">canvas-2d</p>
+<button class="item" data-path="canvas-2d/index.html" data-portable="1" data-title="canvas 2d"><span>canvas 2d</span></button>
+<p class="grp">auto-layout</p>
+<button class="item" data-path="auto-layout/accordion/index.html" data-portable="1" data-title="accordion"><span>accordion</span></button>
+<button class="item" data-path="auto-layout/cards/index.html" data-portable="1" data-title="cards"><span>cards</span></button>
+<button class="item" data-path="auto-layout/code/index.html" data-portable="1" data-title="code"><span>code</span></button>
+<button class="item" data-path="auto-layout/grid-columns/index.html" data-portable="1" data-title="grid columns"><span>grid columns</span></button>
+<button class="item" data-path="auto-layout/nav/index.html" data-portable="1" data-title="nav"><span>nav</span></button>
+<button class="item" data-path="auto-layout/onscroll/index.html" data-portable="1" data-title="onscroll"><span>onscroll</span></button>
+<button class="item" data-path="auto-layout/periodic-table/index.html" data-portable="1" data-title="periodic table"><span>periodic table</span></button>
+<button class="item" data-path="auto-layout/planets/index.html" data-portable="1" data-title="planets"><span>planets</span></button>
+<button class="item" data-path="auto-layout/todo-list/index.html" data-portable="1" data-title="todo list"><span>todo list</span></button>
+<p class="grp">threejs</p>
+<button class="item item--warn" data-path="threejs/transforms/index.html" data-portable="0" data-title="transforms"><span>transforms</span><span class="warn">需额外库</span></button>
+<p class="grp">additive-creature</p>
+<button class="item" data-path="additive-creature/index.html" data-portable="1" data-title="additive creature"><span>additive creature</span></button>
+<p class="grp">additive-fireflies</p>
+<button class="item" data-path="additive-fireflies/index.html" data-portable="1" data-title="additive fireflies"><span>additive fireflies</span></button>
+<p class="grp">advanced-grid-staggering</p>
+<button class="item" data-path="advanced-grid-staggering/index.html" data-portable="1" data-title="advanced grid staggering"><span>advanced grid staggering</span></button>
+<p class="grp">animatable-follow-cursor</p>
+<button class="item" data-path="animatable-follow-cursor/index.html" data-portable="1" data-title="animatable follow cursor"><span>animatable follow cursor</span></button>
+<p class="grp">animejs-v4-logo-animation</p>
+<button class="item" data-path="animejs-v4-logo-animation/index.html" data-portable="1" data-title="animejs v4 logo animation"><span>animejs v4 logo animation</span></button>
+<p class="grp">clock-playback-controls</p>
+<button class="item" data-path="clock-playback-controls/index.html" data-portable="1" data-title="clock playback controls"><span>clock playback controls</span></button>
+<p class="grp">draggable-infinite-auto-carousel</p>
+<button class="item" data-path="draggable-infinite-auto-carousel/index.html" data-portable="1" data-title="draggable infinite auto carousel"><span>draggable infinite auto carousel</span></button>
+<p class="grp">draggable-mouse-scroll-snap-carousel</p>
+<button class="item" data-path="draggable-mouse-scroll-snap-carousel/index.html" data-portable="1" data-title="draggable mouse scroll snap carousel"><span>draggable mouse scroll snap carousel</span></button>
+<p class="grp">draggable-playground</p>
+<button class="item" data-path="draggable-playground/index.html" data-portable="1" data-title="draggable playground"><span>draggable playground</span></button>
+<p class="grp">irregular-playback-typewriter</p>
+<button class="item" data-path="irregular-playback-typewriter/index.html" data-portable="1" data-title="irregular playback typewriter"><span>irregular playback typewriter</span></button>
+<p class="grp">layered-css-transforms</p>
+<button class="item" data-path="layered-css-transforms/index.html" data-portable="1" data-title="layered css transforms"><span>layered css transforms</span></button>
+<p class="grp">onscroll-responsive-scope</p>
+<button class="item" data-path="onscroll-responsive-scope/index.html" data-portable="1" data-title="onscroll responsive scope"><span>onscroll responsive scope</span></button>
+<p class="grp">onscroll-sticky</p>
+<button class="item" data-path="onscroll-sticky/index.html" data-portable="1" data-title="onscroll sticky"><span>onscroll sticky</span></button>
+<p class="grp">svg-graph</p>
+<button class="item" data-path="svg-graph/index.html" data-portable="1" data-title="svg graph"><span>svg graph</span></button>
+<p class="grp">svg-line-drawing</p>
+<button class="item" data-path="svg-line-drawing/index.html" data-portable="1" data-title="svg line drawing"><span>svg line drawing</span></button>
+<p class="grp">timeline-50K-stars</p>
+<button class="item" data-path="timeline-50K-stars/index.html" data-portable="1" data-title="timeline 50K stars"><span>timeline 50K stars</span></button>
+<p class="grp">timeline-refresh-starlings</p>
+<button class="item" data-path="timeline-refresh-starlings/index.html" data-portable="1" data-title="timeline refresh starlings"><span>timeline refresh starlings</span></button>
+<p class="grp">timeline-seamless-loop</p>
+<button class="item" data-path="timeline-seamless-loop/index.html" data-portable="1" data-title="timeline seamless loop"><span>timeline seamless loop</span></button>
+<p class="grp">timeline-stress-test</p>
+<button class="item" data-path="timeline-stress-test/index.html" data-portable="1" data-title="timeline stress test"><span>timeline stress test</span></button>
+    </nav>
+  </aside>
+  <main class="main">
+    <div class="bar">
+      <h2 id="title">选一个示例</h2>
+      <a id="open" href="#" target="_blank" rel="noopener">Open standalone ↗</a>
+    </div>
+    <div class="frame">
+      <iframe id="view" title="Example preview"></iframe>
+      <div class="notice" id="notice">
+        <div>
+          <strong>这个页面需要额外库</strong>
+          <p>它依赖 <code>tweaks</code> / <code>three</code> 等外部包，目前不能在离线状态下运行。如果你喜欢这个效果，我可以把它改造成便携版。</p>
+        </div>
+      </div>
+    </div>
+  </main>
+<script>
+  const items = [...document.querySelectorAll('.item')];
+  const view = document.getElementById('view');
+  const notice = document.getElementById('notice');
+  const titleEl = document.getElementById('title');
+  const openEl = document.getElementById('open');
+  const q = document.getElementById('q');
+
+  function select(el){
+    items.forEach(i => i.setAttribute('aria-current', String(i === el)));
+    const path = el.dataset.path;
+    const ok = el.dataset.portable === '1';
+    titleEl.textContent = el.dataset.title;
+    openEl.href = path;
+    notice.classList.toggle('show', !ok);
+    view.style.visibility = ok ? 'visible' : 'hidden';
+    view.src = ok ? path : 'about:blank';
+  }
+  items.forEach(el => el.addEventListener('click', () => select(el)));
+
+  q.addEventListener('input', () => {
+    const v = q.value.trim().toLowerCase();
+    items.forEach(el => {
+      const hit = !v || el.dataset.title.toLowerCase().includes(v) || el.dataset.path.toLowerCase().includes(v);
+      el.style.display = hit ? '' : 'none';
+    });
+  });
+
+  const first = items.find(i => i.dataset.portable === '1');
+  if (first) select(first);
+</script>
+</body>
+</html>

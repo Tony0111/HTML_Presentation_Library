@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Portfolio V2 · 3D Material Study</title><link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="top"><div class="brand"><span class="dot"></span><span>PORTFOLIO V2 / MATERIAL STUDY</span></div><nav><button data-view="gradient">Gradient field</button><button data-view="computer">Computer model</button><button data-view="planet">Stars + Earth</button></nav></header>
+<main>
+<section class="panel active" data-panel="gradient"><canvas id="gradient-canvas"></canvas><div class="gradient-copy"><p class="eyebrow">01 / HERO ATMOSPHERE</p><h1>Build beyond<br><em>the screen.</em></h1><p class="lede">紫色渐变、细线网格和缓慢漂移的光晕，来自 Portfolio V2 首页的视觉语言。</p><span class="hint">MOVE THROUGH THE FIELD</span></div><div class="corner">PURPLE GRADIENT / LINE FIELD</div></section>
+<section class="panel model-panel" data-panel="computer"><div class="model-copy"><p class="eyebrow">02 / HERO OBJECT</p><h2>Computer<br><em>in space.</em></h2><p class="lede">原仓库首页的桌面电脑 glTF 模型。拖动模型旋转，滚轮缩放。</p></div><canvas id="computer-canvas"></canvas><div id="computer-loading" class="loading">LOADING MODEL…</div><div class="corner">GLTF / LOCAL ASSET / DRAG TO ROTATE</div></section>
+<section class="panel model-panel planet-panel" data-panel="planet"><div class="model-copy"><p class="eyebrow">03 / CONTACT ATMOSPHERE</p><h2>Stay<br><em>connected.</em></h2><p class="lede">Contact 页面里的星星背景和地球模型，组合成一个可独立使用的 3D 场景。</p></div><canvas id="planet-canvas"></canvas><div id="planet-loading" class="loading">LOADING MODEL…</div><div class="corner">STARS / EARTH / LOCAL ASSET / DRAG TO ROTATE</div></section>
+</main>
+<footer><span>Offline rebuild · Portfolio_V2 study</span><span>All models and textures bundled locally</span></footer>
+<script src="./app.bundle.js"></script>
+</body></html>

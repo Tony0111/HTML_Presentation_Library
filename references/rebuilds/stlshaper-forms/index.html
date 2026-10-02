@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STLShaper Forms — 形体变形演示</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <aside class="panel">
+    <header class="brand">
+      <span class="mark"></span>
+      <div>
+        <strong>FORMS</strong>
+        <small>STLShaper / deformation study</small>
+      </div>
+    </header>
+
+    <section class="group">
+      <p class="label">基础形体</p>
+      <div class="row" id="shapeRow"></div>
+    </section>
+
+    <section class="group">
+      <p class="label">变形方式</p>
+      <div class="row grid" id="deformRow"></div>
+    </section>
+
+    <section class="group">
+      <p class="label">强度 <b id="strengthValue">1.00×</b></p>
+      <input type="range" id="strength" min="0.2" max="2.2" step="0.05" value="1">
+    </section>
+
+    <section class="group">
+      <p class="label">显示</p>
+      <div class="row toggles">
+        <button type="button" id="autoBtn" class="toggle on">Auto ●</button>
+        <button type="button" id="spinBtn" class="toggle on">自转</button>
+        <button type="button" id="wireBtn" class="toggle">线框</button>
+        <button type="button" id="pointsBtn" class="toggle">顶点</button>
+      </div>
+    </section>
+
+    <footer class="hint">
+      拖动旋转 · 滚轮缩放 · 空格暂停轮播 · ← → 切换 · H 隐藏界面
+    </footer>
+  </aside>
+
+  <div class="caption">
+    <h1><span id="captionName">Noise</span><em id="captionCn">噪声</em></h1>
+    <p id="captionDesc">Perlin 噪声沿法向推挤表面，形成有机的隆起。</p>
+  </div>
+
+  <button type="button" id="uiToggle" aria-label="切换界面">界面</button>
+
+  <noscript>这个演示需要启用 JavaScript。</noscript>
+
+  <script src="./vendor/three.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

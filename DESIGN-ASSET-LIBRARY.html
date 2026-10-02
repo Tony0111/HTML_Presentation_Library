@@ -270,7 +270,7 @@
 
     .asset-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; }
     .asset-card { min-width: 0; border: 1px solid var(--line); background: var(--surface); overflow: hidden; transition: opacity 180ms ease, transform 180ms ease; }
-    .asset-card.is-hidden { display: none; }
+    .asset-card.is-hidden, .particles-demo.is-hidden { display: none; }
     .asset-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 
     .asset-card.wide { grid-column: span 7; }
@@ -395,6 +395,74 @@
     .triangle-light-toggle:hover, .triangle-light-toggle:focus-visible { border-color: #fff; }
 
     .lens-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); background: #070707; color: #f7f7f5; }
+    .particles-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); background: #050505; color: #f7f7f5; }
+    .particles-demo .triangle-light-head .data-marker { color: #f2b84b; }
+    .particles-stage { position: relative; height: min(680px, 70vh); min-height: 420px; overflow: hidden; background: #242424; }
+    .particles-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #242424; }
+    .particles-demo .triangle-light-controls { flex-wrap: wrap; }
+    .particles-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .particles-demo .triangle-light-controls a:hover, .particles-demo .triangle-light-controls a:focus-visible { border-color: #fff; }
+    .portfolio-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); background: #070511; color: #f7f7f5; }
+    .portfolio-demo .triangle-light-head .data-marker { color: #c09bff; }
+    .portfolio-demo .triangle-light-controls { flex-wrap: wrap; }
+    .portfolio-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .portfolio-demo .triangle-light-controls a:hover, .portfolio-demo .triangle-light-controls a:focus-visible { border-color: #fff; }
+    .portfolio-stage { position: relative; height: min(720px, 76vh); min-height: 460px; overflow: hidden; background: #05030c; }
+    .portfolio-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #05030c; }
+    .sphere-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); background: #000; color: #f7f7f5; }
+    .sphere-demo .triangle-light-head .data-marker { color: #7ddcff; }
+    .sphere-demo .triangle-light-controls { flex-wrap: wrap; }
+    .sphere-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .sphere-demo .triangle-light-controls a:hover, .sphere-demo .triangle-light-controls a:focus-visible { border-color: #fff; }
+    .sphere-stage { position: relative; height: min(680px, 72vh); min-height: 430px; overflow: hidden; background: #000; }
+    .sphere-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #000; }
+    .holo-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(0,213,255,.28); background: #000; color: #f7f7f5; }
+    .holo-demo .triangle-light-head .data-marker { color: #00d5ff; }
+    .holo-demo .triangle-light-controls { flex-wrap: wrap; }
+    .holo-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .holo-demo .triangle-light-controls a:hover, .holo-demo .triangle-light-controls a:focus-visible { border-color: #00d5ff; }
+    .holo-stage { position: relative; height: min(680px, 72vh); min-height: 430px; overflow: hidden; background: #000; }
+    .holo-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #000; }
+    .bg-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); background: #05030d; color: #f7f7f5; }
+    .bg-demo .triangle-light-head .data-marker { color: #8fe6ff; }
+    .bg-demo .triangle-light-controls { flex-wrap: wrap; }
+    .bg-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .bg-demo .triangle-light-controls a:hover, .bg-demo .triangle-light-controls a:focus-visible { border-color: #fff; }
+    .bg-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .bg-tab { appearance: none; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 7px 12px; background: transparent; color: #fff; cursor: pointer; font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+    .bg-tab:hover, .bg-tab:focus-visible { border-color: #fff; }
+    .bg-tab[aria-pressed="true"] { border-color: #fff; background: #fff; color: #0b0714; }
+    .bg-stage { position: relative; height: min(640px, 68vh); min-height: 410px; overflow: hidden; background: #05030d; }
+    .bg-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #05030d; }
+    .holo-widget-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(0,213,255,.28); background: linear-gradient(135deg, #101625, #39205d 52%, #0c2431); color: #f7f7f5; }
+    .holo-widget-demo .triangle-light-head .data-marker { color: #00d5ff; }
+    .holo-widget-demo .triangle-light-controls { flex-wrap: wrap; }
+    .holo-widget-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .holo-widget-demo .triangle-light-controls a:hover, .holo-widget-demo .triangle-light-controls a:focus-visible { border-color: #00d5ff; }
+    .cardrow-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); background: #07070f; color: #f7f7f5; }
+    .cardrow-demo .triangle-light-head .data-marker { color: #7ddcff; }
+    .cardrow-demo .triangle-light-controls { flex-wrap: wrap; }
+    .cardrow-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .cardrow-demo .triangle-light-controls a:hover, .cardrow-demo .triangle-light-controls a:focus-visible { border-color: #7ddcff; }
+    .cardrow-stage { position: relative; height: min(760px, 82vh); min-height: 520px; overflow: hidden; background: #07070f; }
+    .cardrow-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #07070f; }
+    .motion-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(124,240,200,.26); background: #08090f; color: #f2f5fa; }
+    .motion-demo .triangle-light-head .data-marker { color: #7cf0c8; }
+    .motion-demo .triangle-light-controls { flex-wrap: wrap; }
+    .motion-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .motion-demo .triangle-light-controls a:hover, .motion-demo .triangle-light-controls a:focus-visible { border-color: #7cf0c8; }
+    .motion-stage { position: relative; height: min(720px, 80vh); min-height: 480px; overflow: hidden; background: #08090f; }
+    .motion-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #08090f; }
+    .examples-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(124,240,200,.26); background: #0a0b11; color: #eef1f7; }
+    .examples-demo .triangle-light-head .data-marker { color: #7cf0c8; }
+    .examples-demo .triangle-light-controls { flex-wrap: wrap; }
+    .examples-demo .triangle-light-controls a { color: #fff; text-decoration: none; }
+    .examples-demo .triangle-light-controls a:hover, .examples-demo .triangle-light-controls a:focus-visible { border-color: #7cf0c8; }
+    .examples-stage { position: relative; height: min(820px, 86vh); min-height: 540px; overflow: hidden; background: #0a0b11; }
+    .examples-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #0a0b11; }
+    .holo-widget-stage { position: relative; height: min(360px, 50vh); min-height: 280px; overflow: hidden; background: radial-gradient(circle at 72% 50%, rgba(0,213,255,.16), transparent 28%), linear-gradient(135deg, #101625, #39205d 52%, #0c2431); }
+    .holo-widget-stage iframe { position: absolute; right: 3%; bottom: 2%; width: min(38%, 300px); height: 96%; border: 0; background: transparent; }
+    .holo-widget-stage::before { content: "透明背景 / CORNER WIDGET"; position: absolute; left: 28px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,.45); font: 11px var(--mono); letter-spacing: .14em; }
     .lens-demo .triangle-light-head .data-marker { color: #8fa8ff; }
     .lens-stage { position: relative; overflow: hidden; background: #050505; }
     #lensCanvas { display: block; width: 100%; aspect-ratio: 16 / 7; min-height: 300px; cursor: crosshair; }
@@ -661,13 +729,14 @@
       </section>
 
       <section class="library-bar" aria-label="Filter library">
-        <span class="asset-count" id="assetCount">8 visible</span>
+        <span class="asset-count" id="assetCount">14 visible</span>
         <div class="filter-list" role="group" aria-label="Filter assets">
           <button class="filter-button" type="button" data-filter="all" aria-pressed="true">All</button>
           <button class="filter-button" type="button" data-filter="image" aria-pressed="false">Images</button>
           <button class="filter-button" type="button" data-filter="brand" aria-pressed="false">Brand</button>
           <button class="filter-button" type="button" data-filter="icon" aria-pressed="false">Icons</button>
           <button class="filter-button" type="button" data-filter="pattern" aria-pressed="false">Patterns</button>
+          <button class="filter-button" type="button" data-filter="background" aria-pressed="false">Backgrounds</button>
         </div>
         <label>
           <span class="sr-only">Search assets</span>
@@ -768,6 +837,109 @@
             <button class="triangle-light-toggle" type="button" id="lensToggle" aria-pressed="false">Pause motion</button>
           </div>
           <div class="triangle-light-controls"><span>WebGL1 study / no external dependency / full playground in references/rebuilds/sheryjs-liquid-lens</span><a class="triangle-light-toggle" href="references/rebuilds/sheryjs-liquid-lens/index.html">Open playground ↗</a> <a class="triangle-light-toggle" href="references/rebuilds/sheryjs-liquid-lens/background-demo.html">Slide background (no zoom) ↗</a></div>
+        </div>
+
+        <div class="particles-demo" id="particlesDemo" data-kind="pattern" data-search="particles playground image particles WebGL Three.js GLSL shader mouse interaction tail texture transition 图片粒子 鼠标交互">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">WEBGL PATTERN / 02</span><h3>Particles, in motion.</h3></div>
+            <p>把图片拆成可交互的粒子。移动鼠标制造尾迹，点击触发纵深爆发，用左右箭头或键盘切换不同的粒子场景。</p>
+          </div>
+          <div class="particles-stage">
+            <iframe src="references/rebuilds/particles-playground/index.html" title="Interactive particles playground"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>Three.js + GLSL / offline rebuild / embedded images</span><a class="triangle-light-toggle" href="references/rebuilds/particles-playground/index.html" target="_blank" rel="noopener">Open standalone ↗</a></div>
+        </div>
+        <div class="portfolio-demo" id="portfolioDemo" data-kind="pattern" data-search="Portfolio V2 3D developer portfolio purple gradient line field computer desktop PC stars earth planet contact background 紫色渐变 线条 电脑 地球 星空">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">PORTFOLIO V2 / MATERIALS</span><h3>Three fragments, one system.</h3></div>
+            <p>从一个 3D Portfolio 中提取的首页紫色线场、电脑模型，以及 Contact 页的星空和地球。全部资源已内嵌，支持离线查看。</p>
+          </div>
+          <div class="portfolio-stage">
+            <iframe src="references/rebuilds/portfolio-v2-3d/index.html" title="Portfolio V2 3D material study"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>gradient / computer / stars + earth / offline rebuild</span><a class="triangle-light-toggle" href="references/rebuilds/portfolio-v2-3d/index.html" target="_blank" rel="noopener">Open standalone ↗</a></div>
+        </div>
+
+        <div class="sphere-demo" id="sphereDemo" data-kind="pattern" data-search="sphere particle morph text particle ball three.js GSAP WebGL interactive 粒子球 粒子文字 文字变形">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">PARTICLE PATTERN / 01</span><h3>Let the particles speak.</h3></div>
+            <p>输入一段文字，12,000 个粒子会从旋转球体重组成文字，再回到球体。适合标题揭示、章节转场和关键词聚合。</p>
+          </div>
+          <div class="sphere-stage">
+            <iframe src="references/rebuilds/sphere-particle/index.html" title="Interactive particle sphere morph"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>Three.js + GSAP / optimized offline rebuild / sphere ↔ text</span><a class="triangle-light-toggle" href="references/rebuilds/sphere-particle/index.html" target="_blank" rel="noopener">Open standalone ↗</a></div>
+        </div>
+
+        <div class="holo-demo" id="holoDemo" data-kind="pattern" data-search="HOLO.SYS hologram holographic shader three.js GLSL cyberpunk neon cyan 3D geometry 全息 hologram holographic">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">HOLOGRAM SHADER / 01</span><h3>Make the geometry glow.</h3></div>
+            <p>赛博朋克风格的全息几何体：扫描线、边缘光、故障位移和形状切换。可用于科技、AI、Web3 和未来感 PPT 封面。</p>
+          </div>
+          <div class="holo-stage">
+            <iframe src="references/rebuilds/hologram-shader-portable/index.html" title="Offline holographic shader visualizer"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>single HTML / offline / WebGL + GLSL / GPU required</span><a class="triangle-light-toggle" href="references/rebuilds/hologram-shader-portable/index.html" target="_blank" rel="noopener">Open standalone ↗</a><a class="triangle-light-toggle" href="references/rebuilds/hologram-shader-portable/hologram-background.mp4" target="_blank" rel="noopener">Open PPT video ↗</a></div>
+        </div>
+
+        <div class="cardrow-demo" id="cardrowDemo" data-kind="pattern" data-search="hover card row movie card chapter cards 3d tilt expand agenda 卡片 悬停 立体 展开 章节 议题">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">CARD PATTERN / 01</span><h3>Ideas, in a row.</h3></div>
+            <p>页面下方并排的章节卡片。悬停时卡片抬起并产生立体倾斜，同时展开更多信息，其余卡片自动退到背景。支持 3 张与 4 张布局。</p>
+          </div>
+          <div class="cardrow-stage">
+            <iframe src="references/rebuilds/hover-card-row/index.html" title="Hover card row demo"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>CSS gradients / 3D tilt / offline / no external images</span><a class="triangle-light-toggle" href="references/rebuilds/hover-card-row/index.html" target="_blank" rel="noopener">Open standalone ↗</a></div>
+        </div>
+
+        <div class="motion-demo" id="motionDemo" data-kind="pattern" data-search="anime.js motion intro stagger text reveal svg draw timeline 入场 动效 动画 逐字 数字滚动 折线 library 库">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">MOTION PATTERN / 01</span><h3>Motion, in a few lines.</h3></div>
+            <p>用 Anime.js 做的一段开场动效：文字逐字入场、卡片错峰浮现、数字滚动、折线自行绘制。库已内嵌，单文件离线可跑。</p>
+          </div>
+          <div class="motion-stage">
+            <iframe src="references/rebuilds/anime-motion-intro/index.html" title="Anime.js motion intro demo"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>anime.js v4.5.0 / inlined library / single HTML / offline</span><a class="triangle-light-toggle" href="references/rebuilds/anime-motion-intro/index.html" target="_blank" rel="noopener">Open standalone ↗</a></div>
+        </div>
+
+        <div class="examples-demo" id="examplesDemo" data-kind="pattern" data-search="anime.js examples gallery 26 官方示例 stagger svg text timeline draggable onscroll auto layout 错峰 文字 路径描边 滚动 拖拽 画廊">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">MOTION LIBRARY / 03</span><h3>35 examples, one gallery.</h3></div>
+            <p>Anime.js 官方示例的离线改造版：错峰动画、文字效果、路径描边、时间轴、可拖拽轮播、滚动驱动、布局动画等。左侧选示例，右侧实时预览。</p>
+          </div>
+          <div class="examples-stage">
+            <iframe src="references/rebuilds/anime-examples/index.html" title="Anime.js examples gallery"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>26 examples / 36 pages / 35 offline / MIT</span><a class="triangle-light-toggle" href="references/rebuilds/anime-examples/index.html" target="_blank" rel="noopener">Open gallery ↗</a></div>
+        </div>
+
+        <div class="holo-widget-demo" id="holoWidgetDemo" data-kind="pattern" data-search="hologram corner widget transparent background icon holographic shader 角标 透明背景 全息图标">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">HOLOGRAM WIDGET / 02</span><h3>A small signal in the corner.</h3></div>
+            <p>透明背景的小型全息角标，只保留几何体和白色圆台。适合固定在 HTML 演示页面的一角持续变换。</p>
+          </div>
+          <div class="holo-widget-stage">
+            <iframe src="references/rebuilds/hologram-corner-widget/index.html" title="Transparent holographic corner widget"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>single HTML / transparent / iframe-ready / GPU required</span><a class="triangle-light-toggle" href="references/rebuilds/hologram-corner-widget/index.html" target="_blank" rel="noopener">Open standalone ↗</a></div>
+        </div>
+
+        <div class="bg-demo" id="bgDemo" data-kind="background" data-search="background loop wireframe vertices sphere torus knot noise twist bend pixelate boundary deform 背景 循环 线框 顶点 球体 圆环 环结 底图 幻灯片">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">BACKGROUND LOOP / 01</span><h3>A form that keeps turning.</h3></div>
+            <p>三套循环背景：固定形体、持续自转、线框加顶点，每隔几秒平滑切换一种变形。可以直接当幻灯底图放在文字后面。</p>
+          </div>
+          <div class="bg-tabs" role="group" aria-label="选择背景形体">
+            <button class="bg-tab" type="button" data-bg="sphere" aria-pressed="true">Sphere / 球体</button>
+            <button class="bg-tab" type="button" data-bg="torus" aria-pressed="false">Torus / 圆环</button>
+            <button class="bg-tab" type="button" data-bg="knot" aria-pressed="false">Knot / 环结</button>
+          </div>
+          <div class="bg-stage">
+            <iframe id="bgFrame" src="references/rebuilds/stlshaper-forms/backgrounds/sphere.html?label=1" title="Looping wireframe background"></iframe>
+          </div>
+          <div class="triangle-light-controls"><span>noise / twist / bend / pixelate / boundary · no UI · offline loop</span><a class="triangle-light-toggle" id="bgOpen" href="references/rebuilds/stlshaper-forms/backgrounds/sphere.html" target="_blank" rel="noopener">Open standalone ↗</a></div>
         </div>
       </section>
 
@@ -1064,7 +1236,7 @@
         localStorage.setItem("design-library-theme", nextTheme);
       });
 
-      const cards = [...document.querySelectorAll(".asset-card[data-kind]")];
+      const cards = [...document.querySelectorAll(".asset-card[data-kind], .particles-demo[data-kind], .portfolio-demo[data-kind], .sphere-demo[data-kind], .holo-demo[data-kind], .holo-widget-demo[data-kind], .bg-demo[data-kind], .cardrow-demo[data-kind], .motion-demo[data-kind], .examples-demo[data-kind]")];
       const filterButtons = [...document.querySelectorAll("[data-filter]")];
       const search = document.querySelector("#assetSearch");
       const assetCount = document.querySelector("#assetCount");
@@ -1117,6 +1289,22 @@
         const paused = stickerPreview.classList.toggle("is-paused");
         stickerToggle.setAttribute("aria-pressed", String(paused));
         stickerToggle.textContent = paused ? "Resume motion" : "Pause motion";
+      });
+
+      // Background loop: one iframe at a time, so switching shapes keeps a
+      // single extra WebGL context alive instead of three.
+      const bgFrame = document.querySelector("#bgFrame");
+      const bgOpen = document.querySelector("#bgOpen");
+      const bgBase = "references/rebuilds/stlshaper-forms/backgrounds/";
+      document.querySelectorAll("[data-bg]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const name = button.dataset.bg;
+          document.querySelectorAll("[data-bg]").forEach((item) => {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+          if (bgFrame) bgFrame.src = `${bgBase}${name}.html?label=1`;
+          if (bgOpen) bgOpen.href = `${bgBase}${name}.html`;
+        });
       });
 
       const dynamicWordDemo = document.querySelector("#dynamicWordDemo");

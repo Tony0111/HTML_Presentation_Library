@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Offline particle sphere to text morph">
+  <title>Particle Morph — Offline</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="container"></div>
+  <div class="brand"><span>PARTICLE</span><strong>MORPH</strong><small>SPHERE / TEXT / SPHERE</small></div>
+  <div class="hint">TYPE A SHORT MESSAGE<br><span>THE PARTICLES WILL FIND IT</span></div>
+  <div class="input-container">
+    <div class="input-wrapper">
+      <input type="text" id="morphText" placeholder="Type something..." maxlength="20" autocomplete="off" aria-label="Text to form with particles">
+      <button id="typeBtn" type="button"><span class="button-content"><span>CREATE</span><span class="arrow">↗</span></span></button>
+    </div>
+    <div class="status" id="status">12,000 PARTICLES / READY</div>
+  </div>
+  <script src="./vendor/three.min.js"></script>
+  <script src="./vendor/gsap.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

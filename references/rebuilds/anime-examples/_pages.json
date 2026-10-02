@@ -1,0 +1,182 @@
+[
+  {
+    "html": "additive-creature/index.html",
+    "js": "additive-creature/index.js",
+    "portable": true
+  },
+  {
+    "html": "additive-fireflies/index.html",
+    "js": "additive-fireflies/index.js",
+    "portable": true
+  },
+  {
+    "html": "advanced-grid-staggering/index.html",
+    "js": "advanced-grid-staggering/index.js",
+    "portable": true
+  },
+  {
+    "html": "animatable-follow-cursor/index.html",
+    "js": "animatable-follow-cursor/index.js",
+    "portable": true
+  },
+  {
+    "html": "animejs-v4-logo-animation/index.html",
+    "js": "animejs-v4-logo-animation/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/accordion/index.html",
+    "js": "auto-layout/accordion/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/cards/index.html",
+    "js": "auto-layout/cards/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/code/index.html",
+    "js": "auto-layout/code/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/grid-columns/index.html",
+    "js": "auto-layout/grid-columns/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/nav/index.html",
+    "js": "auto-layout/nav/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/onscroll/index.html",
+    "js": "auto-layout/onscroll/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/periodic-table/index.html",
+    "js": "auto-layout/periodic-table/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/planets/index.html",
+    "js": "auto-layout/planets/index.js",
+    "portable": true
+  },
+  {
+    "html": "auto-layout/todo-list/index.html",
+    "js": "auto-layout/todo-list/index.js",
+    "portable": true
+  },
+  {
+    "html": "canvas-2d/index.html",
+    "js": "canvas-2d/index.js",
+    "portable": true
+  },
+  {
+    "html": "clock-playback-controls/index.html",
+    "js": "clock-playback-controls/index.js",
+    "portable": true
+  },
+  {
+    "html": "draggable-infinite-auto-carousel/index.html",
+    "js": "draggable-infinite-auto-carousel/index.js",
+    "portable": true
+  },
+  {
+    "html": "draggable-mouse-scroll-snap-carousel/index.html",
+    "js": "draggable-mouse-scroll-snap-carousel/index.js",
+    "portable": true
+  },
+  {
+    "html": "draggable-playground/index.html",
+    "js": "draggable-playground/index.js",
+    "portable": true
+  },
+  {
+    "html": "irregular-playback-typewriter/index.html",
+    "js": "irregular-playback-typewriter/index.js",
+    "portable": true
+  },
+  {
+    "html": "layered-css-transforms/index.html",
+    "js": "layered-css-transforms/index.js",
+    "portable": true
+  },
+  {
+    "html": "onscroll-responsive-scope/index.html",
+    "js": "onscroll-responsive-scope/index.js",
+    "portable": true
+  },
+  {
+    "html": "onscroll-sticky/index.html",
+    "js": "onscroll-sticky/index.js",
+    "portable": true
+  },
+  {
+    "html": "stagger/index.html",
+    "js": "stagger/index.js",
+    "portable": true
+  },
+  {
+    "html": "svg-graph/index.html",
+    "js": "svg-graph/index.js",
+    "portable": true
+  },
+  {
+    "html": "svg-line-drawing/index.html",
+    "js": "svg-line-drawing/index.js",
+    "portable": true
+  },
+  {
+    "html": "text/hover-effects/index.html",
+    "js": "text/hover-effects/index.js",
+    "portable": true
+  },
+  {
+    "html": "text/scramble/index.html",
+    "js": "text/scramble/index.js",
+    "portable": true
+  },
+  {
+    "html": "text/scramble-tl/index.html",
+    "js": "text/scramble-tl/index.js",
+    "portable": true
+  },
+  {
+    "html": "text/split-effects/index.html",
+    "js": "text/split-effects/index.js",
+    "portable": true
+  },
+  {
+    "html": "text/split-playground/index.html",
+    "js": "text/split-playground/index.js",
+    "portable": true
+  },
+  {
+    "html": "threejs/transforms/index.html",
+    "js": "threejs/transforms/index.js",
+    "portable": false
+  },
+  {
+    "html": "timeline-50K-stars/index.html",
+    "js": "timeline-50K-stars/index.js",
+    "portable": true
+  },
+  {
+    "html": "timeline-refresh-starlings/index.html",
+    "js": "timeline-refresh-starlings/index.js",
+    "portable": true
+  },
+  {
+    "html": "timeline-seamless-loop/index.html",
+    "js": "timeline-seamless-loop/index.js",
+    "portable": true
+  },
+  {
+    "html": "timeline-stress-test/index.html",
+    "js": "timeline-stress-test/index.js",
+    "portable": true
+  }
+]
