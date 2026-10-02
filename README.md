@@ -30,13 +30,19 @@ Design/
 ├── references/
 │   ├── patterns/                      可复用模式的学习笔记
 │   │   ├── backgrounds/               渐变背景、三角灯光场
+│   │   ├── cursor/                    指针跟随、磁吸、悬停放大、媒体镜头
 │   │   ├── data/                      FLOPS、OWID 比较表
 │   │   ├── scrollytelling/            滚动驱动的页面翻页
 │   │   ├── stickers/                  贴纸与 Sprite 动画
 │   │   ├── terminal/                  终端播放与命令切换
-│   │   └── typography/                Roman / pixel 与动态词槽
+│   │   ├── typography/                Roman / pixel 与动态词槽
+│   │   └── webgl/                     DOM 到 WebGL 平面、shader 风格拆解
+│   ├── rebuilds/                      自己写的无依赖复刻（可直接打开）
 │   ├── datasets/                      体积小、来源明确、可发布的数据
 │   └── sources/                       本地网页快照，默认不上传 GitHub
+│
+├── github_res/                        他人开源仓库的本地研读副本，整体不上传 GitHub
+│   └── sheryjs/                       Shery.js（MIT），已阅读
 │
 └── archive/
     └── MONICA/                        旧项目完整存档，默认不上传 GitHub
@@ -52,6 +58,14 @@ Design/
 - [FLOPS 数据叙事图表](references/patterns/data/supercomputer-power-flops-chart.md)
 - [OWID 比较表与时间范围](references/patterns/data/owid-comparison-table-timeline.md)
 - [动态标题最后一个词](references/patterns/typography/dynamic-last-word.md)
+- [Shery.js：DOM 到 WebGL 平面的体系结构](references/patterns/webgl/sheryjs-effect-architecture.md)
+- [Shery.js：7 种图像 shader 语言](references/patterns/webgl/sheryjs-image-effect-styles.md)
+- [Shery.js：指针玩趣套件](references/patterns/cursor/sheryjs-cursor-playfulness.md)
+- [液体折射背景（用于演示）](references/patterns/webgl/liquid-background-for-presentation.md)：静止背景 + 悬停曲率放大，含接入注意事项和给 AI 的指令
+
+## 本地复刻
+
+- [Liquid Lens](references/rebuilds/sheryjs-liquid-lens/index.html)：不依赖 three.js / GSAP 的 WebGL1 复刻，滑杆直接绑定 uniform，可导出 / 导入 JSON 预设，也可拖入自己的图片。素材库页面里有它的精简版。
 
 ## 上传到 GitHub
 
@@ -66,6 +80,7 @@ Design/
 
 ### 默认不上传
 
+- `github_res/`（已在 `.gitignore` 中），其中是第三方仓库，只用于本地阅读
 - `references/sources/` 中下载的第三方 HTML 快照和 `_files/` 资源
 - `*.download`、浏览器缓存脚本、临时导出和 IDE 配置
 - `archive/MONICA/` 中的旧项目原始文件和大体积图片

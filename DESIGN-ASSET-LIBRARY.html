@@ -394,6 +394,16 @@
     .triangle-light-toggle { appearance: none; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 7px 11px; background: transparent; color: #fff; cursor: pointer; font: 10px var(--mono); }
     .triangle-light-toggle:hover, .triangle-light-toggle:focus-visible { border-color: #fff; }
 
+    .lens-demo { margin-top: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); background: #070707; color: #f7f7f5; }
+    .lens-demo .triangle-light-head .data-marker { color: #8fa8ff; }
+    .lens-stage { position: relative; overflow: hidden; background: #050505; }
+    #lensCanvas { display: block; width: 100%; aspect-ratio: 16 / 7; min-height: 300px; cursor: crosshair; }
+    .lens-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 13px 16px; border-top: 1px solid rgba(255,255,255,.12); color: rgba(247,247,245,.52); font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+    .lens-tools label { display: flex; align-items: center; gap: 8px; }
+    .lens-tools input[type="range"] { width: 110px; accent-color: #8fa8ff; }
+    .lens-tools .triangle-light-toggle:first-of-type { margin-left: auto; }
+    a.triangle-light-toggle { text-decoration: none; }
+
     .sticker-preview {
       position: relative;
       min-height: 310px;
@@ -591,6 +601,8 @@
       .triangle-light-stage, #triangleLightCanvas { min-height: 360px; height: 360px; }
       .triangle-light-hud { inset: auto 12px 12px; }
       .triangle-light-controls { align-items: flex-start; flex-direction: column; }
+      #lensCanvas { min-height: 240px; }
+      .lens-tools .triangle-light-toggle:first-of-type { margin-left: 0; }
       .footer { display: block; }
       .footer span { display: block; }
       .footer span:last-child { margin-top: 10px; text-align: left; }
@@ -737,6 +749,25 @@
             <div class="triangle-light-hud"><span id="triangleLightStatus"><strong>FIELD / IDLE</strong></span><span>10 LEDs / pointer field</span></div>
           </div>
           <div class="triangle-light-controls"><span>WebGL2 original / Canvas 2D study / no external dependency</span><button class="triangle-light-toggle" type="button" id="triangleLightToggle" aria-pressed="false">Pause motion</button></div>
+        </div>
+
+        <div class="lens-demo" id="lensDemo">
+          <div class="triangle-light-head">
+            <div><span class="data-marker">SHERY.JS PATTERN / 01</span><h3>Liquid lens.</h3></div>
+            <p>One plane, one noise surface, one lerped hover gate. Move in and the picture refracts and magnifies under the pointer; move out and it settles back to stillness.</p>
+          </div>
+          <div class="lens-stage">
+            <canvas id="lensCanvas" role="img" aria-label="A procedural test image refracted by a noise surface, with a magnifying lens following the pointer"></canvas>
+            <div class="triangle-light-hud"><span id="lensStatus"><strong>GATE / 0.00</strong></span><span>refract / lens / hover gate</span></div>
+          </div>
+          <div class="lens-tools">
+            <label>Wobble <input type="range" id="lensWobble" min="0.05" max="1.4" step="0.01" value="0.72"></label>
+            <label>Lens <input type="range" id="lensPower" min="0" max="2" step="0.01" value="0.55"></label>
+            <label>Speed <input type="range" id="lensSpeed" min="0" max="12" step="0.1" value="2"></label>
+            <button class="triangle-light-toggle" type="button" id="lensCopy">Copy config</button>
+            <button class="triangle-light-toggle" type="button" id="lensToggle" aria-pressed="false">Pause motion</button>
+          </div>
+          <div class="triangle-light-controls"><span>WebGL1 study / no external dependency / full playground in references/rebuilds/sheryjs-liquid-lens</span><a class="triangle-light-toggle" href="references/rebuilds/sheryjs-liquid-lens/index.html">Open playground ↗</a> <a class="triangle-light-toggle" href="references/rebuilds/sheryjs-liquid-lens/background-demo.html">Slide background (no zoom) ↗</a></div>
         </div>
       </section>
 
@@ -933,6 +964,26 @@
             <a class="pattern-row" href="references/patterns/backgrounds/vercel-triangle-light.md">
               <span class="pattern-number">A / 04</span>
               <div><h3>Triangle light field</h3><p>Pointer proximity turns geometry into a living background.</p></div>
+              <span class="pattern-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="pattern-row" href="references/patterns/webgl/sheryjs-effect-architecture.md">
+              <span class="pattern-number">A / 05</span>
+              <div><h3>DOM-to-WebGL plane</h3><p>One world unit equals one CSS pixel; a lerped gate makes any effect hover-only.</p></div>
+              <span class="pattern-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="pattern-row" href="references/patterns/webgl/sheryjs-image-effect-styles.md">
+              <span class="pattern-number">A / 06</span>
+              <div><h3>Seven shader languages</h3><p>Liquid refraction, wind, perlin, tile pulse, gooey dissolve, SDF crop.</p></div>
+              <span class="pattern-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="pattern-row" href="references/patterns/cursor/sheryjs-cursor-playfulness.md">
+              <span class="pattern-number">A / 07</span>
+              <div><h3>Cursor playfulness</h3><p>Stretching dot, magnet, mask zoom, mirrored text stagger, media lens.</p></div>
+              <span class="pattern-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="pattern-row" href="references/patterns/webgl/liquid-background-for-presentation.md">
+              <span class="pattern-number">A / 08</span>
+              <div><h3>Liquid background for slides</h3><p>Static background with a hover lens, one dependency-free script, with integration notes and an AI prompt.</p></div>
               <span class="pattern-arrow" aria-hidden="true">↗</span>
             </a>
           </div>
@@ -1686,6 +1737,102 @@
       };
       window.addEventListener("scroll", updateProgress, { passive: true });
       updateProgress();
+
+      /* Liquid lens (Shery.js study): refract noise + pointer lens + lerped hover gate */
+      (() => {
+        const canvas = document.querySelector("#lensCanvas");
+        const gl = canvas.getContext("webgl", { premultipliedAlpha: false });
+        const status = document.querySelector("#lensStatus");
+        if (!gl) { status.innerHTML = "<strong>WEBGL / unavailable</strong>"; return; }
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+        const prog = gl.createProgram();
+        gl.attachShader(prog, sh(gl.VERTEX_SHADER, "attribute vec2 p;varying vec2 u;void main(){gl_Position=vec4(p,0.,1.);u=p*.5+.5;}"));
+        gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, `precision highp float;varying vec2 u;
+          uniform sampler2D tex;uniform float asp,t,gate,speed,wob,lens;uniform vec2 m;
+          float h(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+          float vn(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+            return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),
+                       mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z)*2.-1.;}
+          void main(){
+            vec3 v=vec3(u.x*4.+t*speed/10.,u.y*4.,t*speed*.4);
+            vec2 s=vec2(vn(v)*.08,vn(v+9.)*.02)*gate;
+            vec2 uv=u+refract(vec2(0.),s,wob);
+            vec2 pos=vec2(u.x,u.y/asp),mp=vec2(m.x,m.y/asp);
+            float k=(1.-smoothstep(.06,.2,distance(mp,pos)))*gate;
+            uv=m+(uv-m)/(1.+k*lens*2.);
+            gl_FragColor=texture2D(tex,uv);}`));
+        gl.linkProgram(prog); gl.useProgram(prog);
+        gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+        const L = (n) => gl.getUniformLocation(prog, n);
+
+        const c = document.createElement("canvas"); c.width = 960; c.height = 420;
+        const x = c.getContext("2d");
+        const g = x.createLinearGradient(0, 0, 960, 420);
+        g.addColorStop(0, "#1b2a52"); g.addColorStop(.5, "#2e7c6b"); g.addColorStop(1, "#f0b27a");
+        x.fillStyle = g; x.fillRect(0, 0, 960, 420);
+        x.strokeStyle = "rgba(255,255,255,.22)";
+        for (let i = 0; i <= 24; i++) { x.beginPath(); x.moveTo(i * 40, 0); x.lineTo(i * 40, 420); x.stroke(); }
+        for (let i = 0; i <= 10; i++) { x.beginPath(); x.moveTo(0, i * 42); x.lineTo(960, i * 42); x.stroke(); }
+        x.fillStyle = "#f7f7f5"; x.font = "600 120px Georgia, serif"; x.fillText("Look closer.", 48, 230);
+        x.font = "500 18px monospace"; x.fillStyle = "rgba(247,247,245,.8)";
+        x.fillText("refract(vec2(0.), noiseSurface, eta)", 52, 290);
+        x.lineWidth = 5; x.strokeStyle = "#fff"; x.beginPath(); x.arc(800, 210, 110, 0, 7); x.stroke();
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]
+          .forEach(([k, v]) => gl.texParameteri(gl.TEXTURE_2D, k, v));
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
+
+        const P = { wob: 0.72, lens: 0.55, speed: 2 };
+        [["#lensWobble", "wob"], ["#lensPower", "lens"], ["#lensSpeed", "speed"]].forEach(([sel, key]) =>
+          document.querySelector(sel).addEventListener("input", (e) => (P[key] = +e.target.value)));
+
+        let hover = false, gate = 0, paused = reduced, time = 0, last = performance.now();
+        const mouse = { x: .5, y: .5, tx: .5, ty: .5 };
+        const toggle = document.querySelector("#lensToggle");
+        const sync = () => { toggle.setAttribute("aria-pressed", String(paused)); toggle.textContent = paused ? "Resume motion" : "Pause motion"; };
+        sync();
+        toggle.addEventListener("click", () => { paused = !paused; sync(); });
+        document.querySelector("#lensCopy").addEventListener("click", async (e) => {
+          const btn = e.currentTarget;
+          try { await navigator.clipboard.writeText(JSON.stringify({ wobble: P.wob, lens: P.lens, speed: P.speed }, null, 2)); btn.textContent = "Copied"; }
+          catch { btn.textContent = "Copy failed"; }
+          setTimeout(() => (btn.textContent = "Copy config"), 1400);
+        });
+        canvas.addEventListener("pointerenter", () => (hover = true));
+        canvas.addEventListener("pointerleave", () => (hover = false));
+        canvas.addEventListener("pointermove", (e) => {
+          const r = canvas.getBoundingClientRect();
+          mouse.tx = (e.clientX - r.left) / r.width; mouse.ty = 1 - (e.clientY - r.top) / r.height;
+        });
+        const resize = () => {
+          const d = Math.min(devicePixelRatio || 1, 2);
+          canvas.width = Math.max(1, Math.round(canvas.clientWidth * d));
+          canvas.height = Math.max(1, Math.round(canvas.clientHeight * d));
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          gl.uniform1f(L("asp"), canvas.width / canvas.height);
+        };
+        if ("ResizeObserver" in window) new ResizeObserver(resize).observe(canvas);
+        resize();
+
+        const lerp = (a, b, n) => a * (1 - n) + b * n;
+        const frame = (now) => {
+          const dt = Math.min((now - last) / 1000, .05); last = now;
+          if (!paused) time += dt;
+          gate = lerp(gate, hover && !reduced ? 1 : 0, .07);
+          mouse.x = lerp(mouse.x, mouse.tx, .07); mouse.y = lerp(mouse.y, mouse.ty, .07);
+          gl.uniform1f(L("t"), time); gl.uniform1f(L("gate"), gate);
+          gl.uniform1f(L("speed"), P.speed); gl.uniform1f(L("wob"), P.wob); gl.uniform1f(L("lens"), P.lens);
+          gl.uniform2f(L("m"), mouse.x, mouse.y);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+          status.innerHTML = `<strong>GATE / ${gate.toFixed(2)}</strong>`;
+          requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      })();
     })();
   </script>
 </body>
