@@ -20,17 +20,10 @@
 ## S02 | contents
 # 阅读路径
 
-## S03 | section-divider
+## S04 | headline-points
 @chapter: ch1
 @chapterTitle: 问题
 @chapterEnglish: THE QUESTION
-@eyebrow: CHAPTER 01 / QUESTION
-# 先把问题
-# 说清楚。
-@subtitle: 好的开场不急着给出答案，它先建立一个值得继续听下去的方向。
-
-## S04 | headline-points
-@chapter: ch1
 @eyebrow: A CLEAR STARTING POINT
 # 研究从一个
 # 可被复述的问题开始。
@@ -57,17 +50,10 @@
 - 材料来源与示意边界写在图注与来源区。
 - 图形保持原始比例、图例与标注，不做遮挡。
 
-## S07 | section-divider
+## S08 | headline-points
 @chapter: ch2
 @chapterTitle: 方法
 @chapterEnglish: THE METHOD
-@eyebrow: CHAPTER 02 / METHOD
-# 再让方法
-# 获得形状。
-@subtitle: 方法不是一串步骤，而是一条能被观众跟上的路径。
-
-## S08 | headline-points
-@chapter: ch2
 @eyebrow: A REPEATABLE PATH
 # 每一步都回答
 # 一个小问题。
@@ -140,17 +126,10 @@
 ]
 ~~~
 
-## S12 | section-divider
+## S13 | chart-focus
 @chapter: ch3
 @chapterTitle: 证据
 @chapterEnglish: THE EVIDENCE
-@eyebrow: CHAPTER 03 / EVIDENCE
-# 让证据
-# 自己站得住。
-@subtitle: 视觉可以制造注意力，但不能替数据完成论证。
-
-## S13 | chart-focus
-@chapter: ch3
 @eyebrow: ILLUSTRATIVE DATA / BAR
 # 几个类别差在哪里？
 @asset: assets/charts/bar.svg
@@ -241,17 +220,10 @@
 # 一页只留下一个真正重要的判断。
 @subtitle: 演示不是信息的仓库，而是一条经过取舍的观看路径。
 
-## S20 | section-divider
+## S21 | headline-points
 @chapter: ch4
 @chapterTitle: 讨论
 @chapterEnglish: DISCUSSION
-@eyebrow: CHAPTER 04 / DISCUSSION
-# 最后留下
-# 诚实的边界。
-@subtitle: 把已知、未知与下一步分开说清楚。
-
-## S21 | headline-points
-@chapter: ch4
 @eyebrow: HONEST LIMITS
 # 限制不是弱点，
 # 是判断的一部分。

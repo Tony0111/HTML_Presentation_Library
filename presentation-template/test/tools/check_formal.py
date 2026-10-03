@@ -39,9 +39,10 @@ with sync_playwright() as p:
 
     slides = page.evaluate("PRESENTATION.config.slides.map(s => ({id:s.id, type:s.type}))")
     ok('has a 20-30 page regression deck', 20 <= len(slides) <= 30)
-    ok('covers every page type', {'cover', 'contents', 'section-divider', 'headline-points', 'statement',
+    ok('covers every page type', {'cover', 'contents', 'headline-points', 'statement',
         'split-media', 'chart-focus', 'process-flow', 'table-focus', 'comparison', 'timeline',
         'video-focus', 'references', 'closing'} <= {s['type'] for s in slides})
+    ok('contents enters the first actual slide of every chapter', page.evaluate("PRESENTATION.config.chapters.every(c => PRESENTATION.config.slides.find(s => s.id === c.firstSlideId).type !== 'section-divider')"))
 
     # --- visit every slide, assert it renders and the DOM slide is populated ---
     for index, slide in enumerate(slides):
@@ -55,29 +56,29 @@ with sync_playwright() as p:
             ok(f"{slide['id']} shows a reading page", page.evaluate("!document.getElementById('slide').hidden"))
 
     # page-type specifics
-    page.evaluate("PRESENTATION.goto(14)")  # table-focus
+    page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.type === 'table-focus'))")
     page.wait_for_timeout(400)
     ok('table-focus renders a semantic table', page.evaluate("!!document.querySelector('#slide table.data-table tbody tr')"))
-    page.evaluate("PRESENTATION.goto(15)")  # comparison
+    page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.type === 'comparison'))")
     page.wait_for_timeout(400)
     ok('comparison renders bars', page.evaluate("document.querySelectorAll('#slide .bar-row').length >= 3"))
-    page.evaluate("PRESENTATION.goto(16)")  # timeline
+    page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.type === 'timeline'))")
     page.wait_for_timeout(400)
     ok('timeline renders nodes', page.evaluate("document.querySelectorAll('#slide .timeline-node').length >= 3"))
-    page.evaluate("PRESENTATION.goto(22)")  # references
+    page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.type === 'references'))")
     page.wait_for_timeout(400)
     ok('references renders items', page.evaluate("document.querySelectorAll('#slide .references-list li').length >= 1"))
     ok('missing source is marked pending', page.evaluate("!!document.querySelector('#slide .pending')"))
 
     # --- media lifecycle ---
-    page.evaluate("PRESENTATION.goto(17)")  # video-focus
+    page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.type === 'video-focus'))")
     page.wait_for_timeout(500)
     ok('video element present', page.evaluate("!!document.querySelector('#presentation-video')"))
     ok('video does not auto-play', page.evaluate("document.getElementById('presentation-video').paused"))
     page.keyboard.press('p')
     page.wait_for_timeout(500)
     ok('P starts playback', page.evaluate("!document.getElementById('presentation-video').paused"))
-    page.evaluate("PRESENTATION.goto(18)")
+    page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.type === 'references'))")
     page.wait_for_timeout(500)
     ok('leaving video pauses and resets', page.evaluate("!document.getElementById('presentation-video') || (document.getElementById('presentation-video').paused && document.getElementById('presentation-video').currentTime === 0)"))
 
@@ -117,7 +118,7 @@ with sync_playwright() as p:
           }
           return visible > 10;
         }'''))
-        page.evaluate("PRESENTATION.goto(3)")
+        page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.id === 'S04'))")
         page.wait_for_function("document.getElementById('stage').dataset.slide === 'S04'")
         ok(f'reading page fills {w}x{h}', page.evaluate('''() => {
           const r = document.getElementById('slide').getBoundingClientRect();
@@ -136,7 +137,7 @@ with sync_playwright() as p:
     page.evaluate("PRESENTATION.goto(1)")
     page.wait_for_timeout(400)
     ok('reduced motion reaches contents', page.evaluate("document.getElementById('stage').dataset.slide") == 'S02')
-    page.evaluate("PRESENTATION.goto(3)")
+    page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.id === 'S04'))")
     page.wait_for_timeout(300)
     ok('reduced motion reaches a reading page', page.evaluate("document.getElementById('stage').dataset.slide") == 'S04')
 

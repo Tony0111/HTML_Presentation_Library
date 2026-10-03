@@ -46,8 +46,8 @@
       const canvas = document.createElement('canvas');
       canvas.width = 720; canvas.height = 1080;
       const g = canvas.getContext('2d');
-      const grey = index % 3 === 1;
-      g.fillStyle = grey ? '#d5d4d0' : BRICK;
+      const grey = index % 2 === 1;
+      g.fillStyle = grey ? '#f3efe6' : BRICK;
       g.fillRect(0, 0, 720, 1080);
       g.strokeStyle = grey ? '#aaa9a4' : '#d8816a';
       g.lineWidth = 2;
@@ -147,6 +147,9 @@
         if (t === 1) { animating = false; settle(); }
       }
       const p = progress, time = reduced ? 0 : now * 0.00035;
+      // Keep the stack's depth separation until the sheets no longer overlap
+      // horizontally. Only then bring the selected chapter forward.
+      const depthRelease = clamp((p - 0.9) / 0.1);
       smoothPointer.x += (pointer.x - smoothPointer.x) * 0.06;
       smoothPointer.y += (pointer.y - smoothPointer.y) * 0.06;
       camera.position.set(reduced ? 0 : smoothPointer.x * 24, reduced ? 0 : -smoothPointer.y * 18, F - p * 100);
@@ -155,14 +158,16 @@
       const contentsScale = Math.min(1, 4 / count);
       for (const sheet of sheets) {
         const i = sheet.index;
-        const coverX = 370 + (i - (count - 1) / 2) * 118;
+        // Cover: a controlled offset stack. Every sheet stays in front of or
+        // behind its neighbor instead of twisting through the next sheet.
+        const coverX = 338 + i * 46;
         const contentsX = (i - (count - 1) / 2) * spacing;
         sheet.mesh.position.set(coverX * (1 - p) + contentsX * p,
-          -30 + 45 * p + Math.sin(time + i * 0.65) * (reduced ? 0 : 10),
-          i * 30 * (1 - p) + (i === selected ? 65 : -35) * p);
-        sheet.mesh.rotation.set(-0.26 * (1 - p) + 0.08 * p,
-          (-0.8 + i * 0.32) * (1 - p) + (i === selected ? -0.1 : 0.12) * p + (reduced ? 0 : Math.sin(time + i) * 0.025),
-          -0.43 * (1 - p) + (i % 2 ? -0.035 : 0.035) * p);
+          (-20 + i * 8) * (1 - p) + (-30 + 45 * p) + Math.sin(time + i * 0.65) * (reduced ? 0 : 6),
+          -(count - 1 - i) * 110 * (1 - depthRelease) + (i === selected ? 35 : -35) * depthRelease);
+        sheet.mesh.rotation.set(-0.02 * (1 - p) + 0.04 * p,
+          -0.08 * (1 - p) + (i === selected ? -0.1 : 0.12) * p + (reduced ? 0 : Math.sin(time + i) * 0.008),
+          -0.1 * (1 - p) + (i % 2 ? -0.035 : 0.035) * p);
         sheet.mesh.scale.set(1.16 * (1 - p) + contentsScale * 0.78 * p,
           1.16 * (1 - p) + contentsScale * 0.6 * p, 1);
         sheet.mat.emissive.set(p > 0.8 && i === selected ? '#1b0803' : '#000000');
@@ -171,8 +176,8 @@
         const pos = sheet.geo.attributes.position;
         for (let n = 0; n < pos.count; n++) {
           const x = sheet.base[n * 3], y = sheet.base[n * 3 + 1];
-          const curl = Math.sin((x / 360 + 0.5) * Math.PI) * (115 - 55 * p);
-          pos.setXYZ(n, x, y, curl + Math.sin(y / 190 + time + i * 0.4) * (reduced ? 14 : 22));
+          const curl = Math.sin((x / 360 + 0.5) * Math.PI) * (24 + 16 * p);
+          pos.setXYZ(n, x, y, curl + Math.sin(y / 190 + time + i * 0.4) * 6);
         }
         pos.needsUpdate = true;
         sheet.geo.computeVertexNormals();
