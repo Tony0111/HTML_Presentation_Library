@@ -19,7 +19,8 @@
 
   SlideRenderer.setReferences(config.references);
   const pad = n => String(n).padStart(2, '0');
-  const state = { index: 0, chapterSelected: 0, returnIndex: null, busy: false, pending: null };
+  const state = { index: 0, chapterSelected: 0, returnIndex: null, busy: true, pending: null };
+  let initialized = false;
 
   // --- canvas scaling ---
   // Scale content uniformly, expanding the logical canvas to fill the viewport.
@@ -47,21 +48,27 @@
     return slide.type;
   }
 
-  async function renderSlide(index, direction) {
+  async function renderSlide(index) {
     const slide = config.slides[index];
     if (!slide) return;
     Media.release();
     state.index = index;
-    if (config.chapters.some(c => c.id === slide.meta.chapter)) {
-      state.chapterSelected = Math.max(0, Navigation.chapterIndexOfSlide(config, index));
-    }
+    if (slide.type === 'cover') state.chapterSelected = 0;
+    const chapterIndex = Navigation.chapterIndexOfSlide(config, index);
+    if (chapterIndex >= 0) state.chapterSelected = chapterIndex;
+
+    counterEl.textContent = pad(index + 1) + ' / ' + pad(config.slides.length);
+    titleEl.textContent = config.meta.title || '';
+    stage.dataset.slide = slide.id;
+    document.title = slide.title.join(' ') + ' — ' + (config.meta.title || 'presentation');
 
     if (Navigation.isSpatial(slide.type)) {
       slideEl.hidden = true;
       setSpatialVisible(true);
       const options = slide.type === 'section-divider'
         ? { chapter: state.chapterSelected }
-        : slide.type === 'closing' ? { subtitle: slide.subtitle, note: slide.meta.note } : {};
+        : slide.type === 'closing' ? { subtitle: slide.subtitle, note: slide.meta.note }
+        : { chapter: state.chapterSelected };
       await SpatialStage.show(sceneFor(slide), options);
     } else {
       setSpatialVisible(false);
@@ -73,10 +80,6 @@
       Media.activate(slideEl);
     }
 
-    counterEl.textContent = pad(index + 1) + ' / ' + pad(config.slides.length);
-    titleEl.textContent = config.meta.title || '';
-    stage.dataset.slide = slide.id;
-    document.title = slide.title.join(' ') + ' — ' + (config.meta.title || 'presentation');
   }
 
   // --- actions ---
@@ -90,7 +93,7 @@
     const chapter = config.chapters[state.chapterSelected];
     if (!chapter) return;
     const target = config.slides.findIndex(s => s.id === chapter.firstSlideId);
-    if (state.returnIndex != null && config.slides[state.returnIndex].meta.chapter === chapter.id) {
+    if (state.returnIndex != null && Navigation.chapterIndexOfSlide(config, state.returnIndex) === state.chapterSelected) {
       const back = state.returnIndex; state.returnIndex = null; await goto(back);
     } else {
       state.returnIndex = null; await goto(target);
@@ -103,7 +106,17 @@
       case 'goto': state.returnIndex = null; await goto(action.index); break;
       case 'next': await goto(state.index + 1); break;
       case 'previous': await goto(state.index - 1); break;
-      case 'openContents': state.returnIndex = state.index; await goto(1); break;
+      case 'openContents':
+        if (state.index === 1) break;
+        state.returnIndex = state.index === 0 ? null : state.index;
+        await goto(1);
+        break;
+      case 'cancelContents': {
+        const back = state.returnIndex == null ? 0 : state.returnIndex;
+        state.returnIndex = null;
+        await goto(back);
+        break;
+      }
       case 'selectChapter': {
         state.chapterSelected = Math.max(0, Math.min(config.chapters.length - 1, state.chapterSelected + action.delta));
         await SpatialStage.show('contents', { chapter: state.chapterSelected });
@@ -121,19 +134,38 @@
   }
 
   function dispatch(action) {
-    if (state.busy) { state.pending = action; return; }
-    if (!action) return;
+    if (!action || !initialized) return;
+    // Fullscreen must run in the key event's user activation, not an animation queue.
+    if (action.type === 'fullscreen') { toggleFullscreen(); return; }
+    if (state.busy) {
+      state.pending = action;
+      SpatialStage.finish();
+      return;
+    }
     state.busy = true;
-    execute(action).catch(error => fail(error && error.message)).finally(() => {
-      state.busy = false;
-      if (state.pending) { const next = state.pending; state.pending = null; dispatch(next); }
-    });
+    execute(action).catch(error => fail(error && error.message)).finally(completeDispatch);
+  }
+
+  function completeDispatch() {
+    state.busy = false;
+    const next = state.pending;
+    state.pending = null;
+    if (next) dispatch(next);
   }
 
   function toggleFullscreen() {
     const done = () => fit();
-    if (document.fullscreenElement) document.exitFullscreen().then(done).catch(done);
-    else document.documentElement.requestFullscreen().then(done).catch(done);
+    const button = document.getElementById('fullscreen');
+    const rejected = () => {
+      button.title = '浏览器拒绝全屏请求，请使用 F11。';
+      button.setAttribute('aria-label', button.title);
+      done();
+    };
+    button.title = '';
+    button.setAttribute('aria-label', '全屏');
+    if (document.fullscreenElement) document.exitFullscreen().then(done).catch(rejected);
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().then(done).catch(rejected);
+    else rejected();
   }
 
   // --- controls ---
@@ -143,14 +175,26 @@
   document.getElementById('fullscreen').onclick = () => toggleFullscreen();
 
   addEventListener('keydown', event => {
-    if (event.target.closest && event.target.closest('button,input,select,a')) return;
+    if (event.defaultPrevented || event.isComposing || event.ctrlKey || event.altKey || event.metaKey) return;
+    if (event.key === 'Escape') {
+      if (!event.repeat && document.fullscreenElement) {
+        document.exitFullscreen().then(fit).catch(fit);
+      }
+      return;
+    }
+    const target = event.target;
+    if (target.isContentEditable || (target.closest && target.closest('input,textarea,select'))) return;
+    const fullscreen = event.key.toLowerCase() === 'f';
+    if (!fullscreen && target.closest && target.closest('button,a')) return;
+    const action = Navigation.intent(event.key, state, config);
+    const handled = ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', ' ', 'Enter', 'PageDown', 'PageUp', 'Home', 'End', 'Backspace'];
+    const mediaKey = Media.active && ['p', 'm'].includes(event.key.toLowerCase());
+    if (action || mediaKey || handled.includes(event.key)) event.preventDefault();
+    if (event.repeat) return;
     if (Media.active && (event.key === 'p' || event.key === 'P' || event.key === 'm' || event.key === 'M')) {
       event.preventDefault(); Media.handleKey(event.key); return;
     }
-    const handled = ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', ' ', 'Enter', 'PageDown', 'PageUp', 'Home', 'End', 'Backspace'];
-    if (handled.includes(event.key)) event.preventDefault();
-    if (event.repeat) return;
-    dispatch(Navigation.intent(event.key, state, config));
+    dispatch(action);
   });
 
   let controlTimer = null;
@@ -180,8 +224,8 @@
       slideEl.hidden = false;
     }
     fit();
-    state.busy = true;
-    renderSlide(0).finally(() => { state.busy = false; });
+    initialized = true;
+    renderSlide(0).catch(error => fail(error && error.message)).finally(completeDispatch);
     revealControls();
     stage.dataset.ready = 'true';
   }

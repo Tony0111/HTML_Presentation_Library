@@ -177,8 +177,12 @@
 
   function show(name, options) {
     if (failed) return Promise.resolve(false);
+    if (tween.active) render(performance.now());
+    if (pendingResolve) { const resolve = pendingResolve; pendingResolve = null; resolve(false); }
     setTargets(name, options);
-    if (reduced) {
+    const samePosition = current.x === target.x && current.y === target.y && current.z === target.z;
+    if (reduced || samePosition) {
+      tween.active = false;
       current = { ...target };
       objects.forEach(o => { o.mat.opacity = o.target; });
       if (pathLine) pathLine.material.opacity = pathTarget;
@@ -188,6 +192,15 @@
     }
     tween = { active: true, from: { ...current }, t0: performance.now(), dur: name === 'divider' ? 700 : 900 };
     return new Promise(resolve => { pendingResolve = resolve; });
+  }
+
+  function finish() {
+    if (!ready || !tween.active) return;
+    tween.t0 = performance.now() - tween.dur;
+    objects.forEach(o => { o.mat.opacity = o.target; });
+    if (pathLine) pathLine.material.opacity = pathTarget;
+    markers.forEach(m => { m.material.opacity = markerTarget; });
+    render(performance.now());
   }
 
   function render(now) {
@@ -225,7 +238,7 @@
   });
 
   window.SpatialStage = {
-    init, show,
+    init, show, finish,
     get ready() { return ready; },
     get failed() { return failed; },
     resize(width = W, height = H, scale = 1) {
