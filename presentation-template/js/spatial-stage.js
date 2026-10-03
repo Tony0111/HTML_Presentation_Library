@@ -24,7 +24,7 @@
   const sansFont = (size, weight) => `${weight} ${size}px ${SANS}`;
   const titleLines = value => String(value || '').replace(/(.{3})/, '$1\n');
 
-  function fovFor() { return 2 * Math.atan((H / 2) / F) * 180 / Math.PI; }
+  function fovFor(height = H) { return 2 * Math.atan((height / 2) / F) * 180 / Math.PI; }
 
   function makeText(text, size, weight, font, color) {
     const lines = String(text).split('\n');
@@ -97,7 +97,7 @@
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
       renderer.setSize(W, H, false);
-      renderer.domElement.style.cssText = `width:${W}px;height:${H}px;`;
+      renderer.domElement.style.cssText = 'width:100%;height:100%;';
       el.appendChild(renderer.domElement);
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(fovFor(), W / H, 1, 12000);
@@ -177,8 +177,12 @@
 
   function show(name, options) {
     if (failed) return Promise.resolve(false);
+    if (tween.active) render(performance.now());
+    if (pendingResolve) { const resolve = pendingResolve; pendingResolve = null; resolve(false); }
     setTargets(name, options);
-    if (reduced) {
+    const samePosition = current.x === target.x && current.y === target.y && current.z === target.z;
+    if (reduced || samePosition) {
+      tween.active = false;
       current = { ...target };
       objects.forEach(o => { o.mat.opacity = o.target; });
       if (pathLine) pathLine.material.opacity = pathTarget;
@@ -188,6 +192,15 @@
     }
     tween = { active: true, from: { ...current }, t0: performance.now(), dur: name === 'divider' ? 700 : 900 };
     return new Promise(resolve => { pendingResolve = resolve; });
+  }
+
+  function finish() {
+    if (!ready || !tween.active) return;
+    tween.t0 = performance.now() - tween.dur;
+    objects.forEach(o => { o.mat.opacity = o.target; });
+    if (pathLine) pathLine.material.opacity = pathTarget;
+    markers.forEach(m => { m.material.opacity = markerTarget; });
+    render(performance.now());
   }
 
   function render(now) {
@@ -225,9 +238,17 @@
   });
 
   window.SpatialStage = {
-    init, show,
+    init, show, finish,
     get ready() { return ready; },
     get failed() { return failed; },
-    resize() { if (renderer) { renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setSize(W, H, false); } }
+    resize(width = W, height = H, scale = 1) {
+      if (!renderer || !camera) return;
+      camera.aspect = width / height;
+      camera.fov = fovFor(height);
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+      renderer.setSize(width * scale, height * scale, false);
+      render(performance.now());
+    }
   };
 })();
