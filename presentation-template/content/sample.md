@@ -125,7 +125,6 @@
   {"id":"source-02", "short":"待补来源", "text":"", "note":"", "pending": true}
 ]
 ~~~
-
 ## S13 | chart-focus
 @chapter: ch3
 @chapterTitle: 证据
@@ -243,21 +242,6 @@
 @eyebrow: SOURCES / REPRODUCIBILITY
 # 让来源可追溯。
 > 正文短引与参考页共享来源 ID；缺失来源明确标记为待补。
-~~~references
-[
-  {"id":"source-01", "short":"示例来源 · 占位", "text":"合成示例来源，用于演示引用编号与来源页的一致性，不是真实文献。", "note":"模板占位，请替换为真实来源。"},
-  {"id":"source-02", "short":"待补来源", "text":"", "note":"", "pending": true}
-]
-~~~
-
-## S24 | closing
-@chapter: ch4
-@eyebrow: END / BEGIN AGAIN
-# 现在，轮到
-# 具体内容了。
-@subtitle: 模板负责提供结构、节奏与视觉语言；下一步，把它交给一个真实的问题。
-@note: TEMPLATE 01 · A REUSABLE EDITORIAL SYSTEM
-
 ~~~references
 [
   {"id":"source-01", "short":"示例来源 · 占位", "text":"合成示例来源，用于演示引用编号与来源页的一致性，不是真实文献。", "note":"模板占位，请替换为真实来源。"},

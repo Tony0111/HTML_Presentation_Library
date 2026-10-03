@@ -38,17 +38,17 @@ with sync_playwright() as p:
     ok('starts on cover', page.evaluate("document.getElementById('stage').dataset.slide") == 'S01')
 
     slides = page.evaluate("PRESENTATION.config.slides.map(s => ({id:s.id, type:s.type}))")
-    ok('has a 20-30 page regression deck', 20 <= len(slides) <= 30)
+    ok('has 19 pages without legacy dark pages', len(slides) == 19 and not any(s['type'] in ('closing', 'section-divider') for s in slides))
     ok('covers every page type', {'cover', 'contents', 'headline-points', 'statement',
         'split-media', 'chart-focus', 'process-flow', 'table-focus', 'comparison', 'timeline',
-        'video-focus', 'references', 'closing'} <= {s['type'] for s in slides})
+        'video-focus', 'references'} <= {s['type'] for s in slides})
     ok('contents enters the first actual slide of every chapter', page.evaluate("PRESENTATION.config.chapters.every(c => PRESENTATION.config.slides.find(s => s.id === c.firstSlideId).type !== 'section-divider')"))
 
     # --- visit every slide, assert it renders and the DOM slide is populated ---
     for index, slide in enumerate(slides):
         page.evaluate(f"PRESENTATION.goto({index})")
         page.wait_for_function("id => document.getElementById('stage').dataset.slide === id", arg=slide['id'], timeout=6000)
-        page.wait_for_timeout(120)
+        page.wait_for_function('!PRESENTATION.state.busy')
         ok(f"{slide['id']} renders", page.evaluate("document.getElementById('error').hidden"))
         if slide['type'] in ('cover', 'contents', 'section-divider', 'closing'):
             ok(f"{slide['id']} uses the spatial stage", page.evaluate("document.getElementById('slide').hidden"))

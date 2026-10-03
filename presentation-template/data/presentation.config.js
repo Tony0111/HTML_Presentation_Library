@@ -652,42 +652,6 @@ window.PRESENTATION_CONFIG = {
       },
       "refs": [],
       "index": 18
-    },
-    {
-      "id": "S24",
-      "type": "closing",
-      "meta": {
-        "chapter": "ch4",
-        "eyebrow": "END / BEGIN AGAIN",
-        "subtitle": "模板负责提供结构、节奏与视觉语言；下一步，把它交给一个真实的问题。",
-        "note": "TEMPLATE 01 · A REUSABLE EDITORIAL SYSTEM"
-      },
-      "title": [
-        "现在，轮到",
-        "具体内容了。"
-      ],
-      "bullets": [],
-      "paragraphs": [],
-      "quote": "",
-      "blocks": {
-        "references": [
-          {
-            "id": "source-01",
-            "short": "示例来源 · 占位",
-            "text": "合成示例来源，用于演示引用编号与来源页的一致性，不是真实文献。",
-            "note": "模板占位，请替换为真实来源。"
-          },
-          {
-            "id": "source-02",
-            "short": "待补来源",
-            "text": "",
-            "note": "",
-            "pending": true
-          }
-        ]
-      },
-      "refs": [],
-      "index": 19
     }
   ],
   "references": [

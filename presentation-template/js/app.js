@@ -21,6 +21,42 @@
   const pad = n => String(n).padStart(2, '0');
   const state = { index: 0, chapterSelected: 0, returnIndex: null, busy: true, pending: null };
   let initialized = false;
+  let pageAnimations = [];
+
+  async function transitionReading(entering, chapterIndex = state.chapterSelected) {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+      || new URLSearchParams(location.search).get('reduced') === '1';
+    if (reduced) {
+      if (entering) { SpatialStage.hideOpening(); setSpatialVisible(false); }
+      else slideEl.hidden = true;
+      return;
+    }
+    const chapterCount = Math.max(1, config.chapters.length);
+    const origin = ((chapterIndex + 0.5) / chapterCount * 100) + '% 48%';
+    const folded = { opacity: 0, transform: 'perspective(1800px) translateY(100px) rotateY(-14deg) scale(0.38)', transformOrigin: origin };
+    const flat = { opacity: 1, transform: 'perspective(1800px) translateY(0) rotateY(0deg) scale(1)', transformOrigin: origin };
+    const options = { duration: 560, easing: 'cubic-bezier(.22,.7,.24,1)', fill: 'both' };
+    stage.dataset.transition = entering ? 'enter-content' : 'return-contents';
+    slideEl.style.zIndex = '4';
+    const openingEl = document.getElementById('editorial-opening');
+    pageAnimations = [slideEl.animate(entering ? [folded, flat] : [flat, folded], options)];
+    for (const layer of [spatialEl, openingEl]) {
+      if (!layer) continue;
+      const near = { opacity: 0, transform: 'scale(1.14)' };
+      const distant = { opacity: 1, transform: 'scale(1)' };
+      pageAnimations.push(layer.animate(entering ? [distant, near] : [near, distant], options));
+    }
+    try {
+      await Promise.all(pageAnimations.map(animation => animation.finished));
+    } finally {
+      if (entering) { SpatialStage.hideOpening(); setSpatialVisible(false); }
+      else slideEl.hidden = true;
+      pageAnimations.forEach(animation => animation.cancel());
+      pageAnimations = [];
+      slideEl.style.removeProperty('z-index');
+      delete stage.dataset.transition;
+    }
+  }
 
   // --- canvas scaling ---
   // Scale content uniformly, expanding the logical canvas to fill the viewport.
@@ -51,6 +87,10 @@
   async function renderSlide(index) {
     const slide = config.slides[index];
     if (!slide) return;
+    const previousType = config.slides[state.index].type;
+    const previousChapter = Navigation.chapterIndexOfSlide(config, state.index);
+    const entering = previousType === 'contents' && !Navigation.isSpatial(slide.type);
+    const returning = !Navigation.isSpatial(previousType) && slide.type === 'contents';
     Media.release();
     state.index = index;
     if (slide.type === 'cover') state.chapterSelected = 0;
@@ -63,22 +103,30 @@
     document.title = slide.title.join(' ') + ' — ' + (config.meta.title || 'presentation');
 
     if (Navigation.isSpatial(slide.type)) {
-      slideEl.hidden = true;
+      slideEl.hidden = !returning;
       setSpatialVisible(true);
       const options = slide.type === 'section-divider'
         ? { chapter: state.chapterSelected }
         : slide.type === 'closing' ? { subtitle: slide.subtitle, note: slide.meta.note }
         : { chapter: state.chapterSelected };
-      await SpatialStage.show(sceneFor(slide), options);
+      const sceneReady = SpatialStage.show(sceneFor(slide), options);
+      if (returning) SpatialStage.finish();
+      await Promise.all([sceneReady, returning ? transitionReading(false, Math.max(0, previousChapter)) : Promise.resolve()]);
+      slideEl.hidden = true;
     } else {
-      SpatialStage.hideOpening();
-      setSpatialVisible(false);
+      if (!entering) {
+        SpatialStage.hideOpening();
+        setSpatialVisible(false);
+      }
       slideEl.innerHTML = SlideRenderer.render(slide, config, index, config.slides.length);
       slideEl.hidden = false;
       slideEl.classList.remove('arrive');
       void slideEl.offsetWidth;
       slideEl.classList.add('arrive');
       Media.activate(slideEl);
+      if (entering) {
+        await transitionReading(true);
+      }
     }
 
   }
@@ -105,7 +153,16 @@
     if (!action) return;
     switch (action.type) {
       case 'goto': state.returnIndex = null; await goto(action.index); break;
-      case 'next': await goto(state.index + 1); break;
+      case 'next': {
+        const currentChapter = Navigation.chapterIndexOfSlide(config, state.index);
+        const nextChapter = Navigation.chapterIndexOfSlide(config, state.index + 1);
+        if (currentChapter >= 0 && nextChapter > currentChapter) {
+          state.returnIndex = state.index;
+          state.chapterSelected = nextChapter;
+          await goto(1);
+        } else await goto(state.index + 1);
+        break;
+      }
       case 'previous': await goto(state.index - 1); break;
       case 'openContents':
         if (state.index === 1) break;
@@ -141,6 +198,7 @@
     if (state.busy) {
       state.pending = action;
       SpatialStage.finish();
+      pageAnimations.forEach(animation => animation.finish());
       return;
     }
     state.busy = true;
