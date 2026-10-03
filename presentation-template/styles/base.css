@@ -1,4 +1,4 @@
-/* Reset, fixed 16:9 canvas, shared layers, controls shell. */
+/* Reset, viewport-filling logical canvas, shared layers, controls shell. */
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0b0c; }
@@ -28,6 +28,7 @@ body { font-family: var(--font-sans); color: var(--paper); -webkit-font-smoothin
   padding: 6px 8px; border: 1px solid #423d3a; background: rgba(19, 17, 18, .92);
   color: #c8c2b8; font: 13px var(--font-sans);
   opacity: 0; pointer-events: none; transition: opacity 160ms ease;
+  max-width: calc(100% - 16px); white-space: nowrap;
 }
 body.show-controls .presentation-controls,
 .presentation-controls:hover, .presentation-controls:focus-within { opacity: 1; pointer-events: auto; }
@@ -38,4 +39,9 @@ body.show-controls .presentation-controls,
 .presentation-controls button:hover { background: #353130; color: #fff; }
 .presentation-controls :focus-visible { outline: 2px solid var(--brick-soft); }
 .presentation-controls .counter { padding: 0 8px; font-family: var(--font-mono); color: #b9b2a7; }
-.presentation-controls .title { padding: 0 8px; color: #8f887e; }
+.presentation-controls .title { padding: 0 8px; color: #8f887e; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.presentation-controls button, .presentation-controls .counter { flex-shrink: 0; }
+@media (max-width: 600px) {
+  .presentation-controls { gap: 2px; }
+  .presentation-controls .title { display: none; }
+}

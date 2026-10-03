@@ -81,19 +81,52 @@ with sync_playwright() as p:
     page.wait_for_timeout(500)
     ok('leaving video pauses and resets', page.evaluate("!document.getElementById('presentation-video') || (document.getElementById('presentation-video').paused && document.getElementById('presentation-video').currentTime === 0)"))
 
-    # --- viewports: equal scale, no overflow, 16:9 preserved ---
+    # --- viewports: uniform content scale, full viewport coverage, no overflow ---
     page.goto((ROOT / 'index.html').as_uri() + '?debug=1')
     page.wait_for_selector('#stage[data-ready="true"]')
     page.wait_for_timeout(900)
-    for w, h in [(1920, 1080), (2560, 1440), (1440, 900), (1366, 768)]:
+    for w, h in [(1920, 1080), (2560, 1440), (1440, 900), (1366, 768),
+                 (2560, 1080), (390, 844), (844, 390)]:
         page.set_viewport_size({'width': w, 'height': h})
         page.wait_for_timeout(200)
         fits = page.evaluate('''() => {
           const r = document.getElementById('stage').getBoundingClientRect();
-          return r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1
-            && document.documentElement.scrollWidth <= innerWidth && Math.abs(r.width / r.height - 16 / 9) < 0.01;
+          const m = new DOMMatrix(getComputedStyle(document.getElementById('stage')).transform);
+          return Math.abs(r.left) < 1 && Math.abs(r.top) < 1
+            && Math.abs(r.width - innerWidth) < 1 && Math.abs(r.height - innerHeight) < 1
+            && document.documentElement.scrollWidth <= innerWidth
+            && document.documentElement.scrollHeight <= innerHeight && Math.abs(m.a - m.d) < 0.0001;
         }''')
         ok(f'canvas fits {w}x{h}', fits)
+        ok(f'spatial canvas fills {w}x{h}', page.evaluate('''() => {
+          const r = document.querySelector('#spatial canvas').getBoundingClientRect();
+          return Math.abs(r.width - innerWidth) < 1 && Math.abs(r.height - innerHeight) < 1;
+        }'''))
+        ok(f'spatial canvas has visible content {w}x{h}', page.evaluate('''() => {
+          const stage = document.getElementById('stage');
+          SpatialStage.resize(stage.clientWidth, stage.clientHeight, innerWidth / stage.clientWidth);
+          const source = document.querySelector('#spatial canvas');
+          const canvas = document.createElement('canvas');
+          canvas.width = 160; canvas.height = 90;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(source, 0, 0, 160, 90);
+          const pixels = ctx.getImageData(0, 0, 160, 90).data;
+          let visible = 0;
+          for (let i = 0; i < pixels.length; i += 4) {
+            if (pixels[i + 3] > 20 && pixels[i] + pixels[i + 1] + pixels[i + 2] > 100) visible++;
+          }
+          return visible > 10;
+        }'''))
+        page.evaluate("PRESENTATION.goto(3)")
+        page.wait_for_function("document.getElementById('stage').dataset.slide === 'S04'")
+        ok(f'reading page fills {w}x{h}', page.evaluate('''() => {
+          const r = document.getElementById('slide').getBoundingClientRect();
+          const footer = document.querySelector('#slide .slide-footer').getBoundingClientRect();
+          return Math.abs(r.width - innerWidth) < 1 && Math.abs(r.height - innerHeight) < 1
+            && footer.bottom <= innerHeight && footer.left >= 0 && footer.right <= innerWidth;
+        }'''))
+        page.evaluate("PRESENTATION.goto(0)")
+        page.wait_for_function("document.getElementById('stage').dataset.slide === 'S01'")
 
     # --- reduced motion still navigates and keeps depth ---
     page.set_viewport_size({'width': 1600, 'height': 900})

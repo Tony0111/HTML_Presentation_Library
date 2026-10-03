@@ -22,14 +22,19 @@
   const state = { index: 0, chapterSelected: 0, returnIndex: null, busy: false, pending: null };
 
   // --- canvas scaling ---
+  // Scale content uniformly, expanding the logical canvas to fill the viewport.
   function fit() {
-    const scale = Math.min(innerWidth / 1920, innerHeight / 1080);
+    const baseWidth = 1920, baseHeight = 1080;
+    const scale = Math.min(innerWidth / baseWidth, innerHeight / baseHeight);
+    const logicalWidth = innerWidth / scale, logicalHeight = innerHeight / scale;
+    stage.style.setProperty('--canvas-w', logicalWidth + 'px');
+    stage.style.setProperty('--canvas-h', logicalHeight + 'px');
+    stage.style.setProperty('--extra-y', (logicalHeight - baseHeight) / 2 + 'px');
     stage.style.transform = `scale(${scale})`;
-    stage.style.left = (innerWidth - 1920 * scale) / 2 + 'px';
-    stage.style.top = (innerHeight - 1080 * scale) / 2 + 'px';
-    SpatialStage.resize();
+    SpatialStage.resize(logicalWidth, logicalHeight, scale);
   }
   addEventListener('resize', fit);
+  document.addEventListener('fullscreenchange', fit);
 
   function setSpatialVisible(visible) {
     spatialEl.style.transition = 'opacity 320ms ease';

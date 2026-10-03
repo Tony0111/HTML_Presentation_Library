@@ -24,7 +24,7 @@
   const sansFont = (size, weight) => `${weight} ${size}px ${SANS}`;
   const titleLines = value => String(value || '').replace(/(.{3})/, '$1\n');
 
-  function fovFor() { return 2 * Math.atan((H / 2) / F) * 180 / Math.PI; }
+  function fovFor(height = H) { return 2 * Math.atan((height / 2) / F) * 180 / Math.PI; }
 
   function makeText(text, size, weight, font, color) {
     const lines = String(text).split('\n');
@@ -97,7 +97,7 @@
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
       renderer.setSize(W, H, false);
-      renderer.domElement.style.cssText = `width:${W}px;height:${H}px;`;
+      renderer.domElement.style.cssText = 'width:100%;height:100%;';
       el.appendChild(renderer.domElement);
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(fovFor(), W / H, 1, 12000);
@@ -228,6 +228,14 @@
     init, show,
     get ready() { return ready; },
     get failed() { return failed; },
-    resize() { if (renderer) { renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setSize(W, H, false); } }
+    resize(width = W, height = H, scale = 1) {
+      if (!renderer || !camera) return;
+      camera.aspect = width / height;
+      camera.fov = fovFor(height);
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+      renderer.setSize(width * scale, height * scale, false);
+      render(performance.now());
+    }
   };
 })();
