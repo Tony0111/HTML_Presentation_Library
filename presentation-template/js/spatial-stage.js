@@ -12,7 +12,7 @@
   const NODE_TARGETS = [[300, 640], [700, 470], [1080, 300], [1350, 190], [1560, 110], [1720, 60]];
   const NODE_SCALES = [1.35, 1.0, 0.75, 0.6, 0.5, 0.42];
 
-  let renderer, scene, camera, config;
+  let renderer, scene, camera, config, opening;
   const objects = [];
   let pathLine, markers = [], failed = false, ready = false;
   let current = { x: 0, y: 0, z: 0 }, target = { x: 0, y: 0, z: 0 };
@@ -128,6 +128,7 @@
       return m;
     });
 
+    opening = EditorialOpening.create(config, reduced);
     ready = true;
     render(performance.now());
     loop();
@@ -177,6 +178,12 @@
 
   function show(name, options) {
     if (failed) return Promise.resolve(false);
+    if (name === 'cover' || name === 'contents') {
+      if (pendingResolve) { const done = pendingResolve; pendingResolve = null; done(false); }
+      tween.active = false;
+      return opening.show(name, options);
+    }
+    opening.hide();
     if (tween.active) render(performance.now());
     if (pendingResolve) { const resolve = pendingResolve; pendingResolve = null; resolve(false); }
     setTargets(name, options);
@@ -195,6 +202,7 @@
   }
 
   function finish() {
+    if (opening && opening.active) { opening.finish(); return; }
     if (!ready || !tween.active) return;
     tween.t0 = performance.now() - tween.dur;
     objects.forEach(o => { o.mat.opacity = o.target; });
@@ -204,6 +212,11 @@
   }
 
   function render(now) {
+    if (opening && opening.active) {
+      opening.update(now);
+      renderer.render(opening.scene, opening.camera);
+      return;
+    }
     const t = tween.active ? clamp((now - tween.t0) / tween.dur) : 1;
     const e = ease(t);
     const from = tween.from || target;
@@ -239,6 +252,7 @@
 
   window.SpatialStage = {
     init, show, finish,
+    hideOpening() { if (opening) opening.hide(); },
     get ready() { return ready; },
     get failed() { return failed; },
     resize(width = W, height = H, scale = 1) {
@@ -246,6 +260,7 @@
       camera.aspect = width / height;
       camera.fov = fovFor(height);
       camera.updateProjectionMatrix();
+      if (opening) opening.resize(width, height);
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
       renderer.setSize(width * scale, height * scale, false);
       render(performance.now());

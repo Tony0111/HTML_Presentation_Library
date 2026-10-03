@@ -23,6 +23,12 @@
 
 执行依据与逐阶段状态见 [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)。
 
+## 当前开场
+
+封面和目录已改为亮色编辑风：暖白底、浅灰纸面、大面积砖红折页、衬线主标题与印刷式章节编号。Three.js 折页会从封面的叠合构图连续展开为目录，支持轻微纸面起伏和指针视差；选章保持即时响应。减少动态模式下使用静止画面。
+
+参考 Library 中的 STLShaper Forms 参数化形体、Hover Card Row 立体抬升与字体层级思路，使用现有本地 Three.js 自行实现，不加载外部素材。此次只修改封面和目录；正文内容、章节扉页和结尾页保持原样。
+
 ## 运行
 
 双击 `index.html`。演示画布会自适应并铺满当前窗口，支持 16:9、16:10、超宽屏及竖屏；文字与图表保持等比显示，不拉伸、不裁切。演示前按 `F` 进入浏览器原生全屏，退出全屏或调整窗口时会自动重新适配。
@@ -53,9 +59,10 @@ presentation-template/
   content/sample.md           唯一人工内容主稿
   data/presentation.config.js 主稿生成的运行快照
   assets/charts/              已完成图表材料
-  styles/                     tokens / base / slides
+  styles/                     tokens / base / slides / opening
   js/navigation.js            导航意图（纯逻辑）
   js/slide-renderer.js        阅读页渲染
+  js/editorial-opening.js     亮色编辑式封面与目录
   js/spatial-stage.js         Three.js 空间舞台
   js/app.js                   初始化与统一输入
   tools/build_content.py      Markdown → 运行快照
@@ -77,9 +84,10 @@ presentation-template/
 ## 验证
 
 ```text
-python test/tools/check_formal.py    # 正式入口：24 页、全部页型、视口、减少动态、媒体、引用、离线
-python test/tools/check_keyboard.py  # 键盘契约、快速输入、返回目录、全屏与媒体焦点
-python test/opening/tools/verify.py  # 开场空间研究：纵深、选章、失败回退、投影一致
+python test/tools/check_formal.py             # 正式入口：24 页、全部页型、视口、减少动态、媒体、引用、离线
+python test/tools/check_keyboard.py           # 键盘契约、快速输入、返回目录、全屏与媒体焦点
+python test/tools/check_editorial_opening.py  # 亮色封面/目录、立体运动、响应式、静态回退
+python test/opening/tools/verify.py           # 历史开场空间研究：纵深、选章、失败回退、投影一致
 python test/tools/check.py           # 旧实验基线，仍保留
 ```
 

@@ -71,6 +71,7 @@
         : { chapter: state.chapterSelected };
       await SpatialStage.show(sceneFor(slide), options);
     } else {
+      SpatialStage.hideOpening();
       setSpatialVisible(false);
       slideEl.innerHTML = SlideRenderer.render(slide, config, index, config.slides.length);
       slideEl.hidden = false;
