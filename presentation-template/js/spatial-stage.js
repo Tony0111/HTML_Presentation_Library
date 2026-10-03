@@ -12,7 +12,7 @@
   const NODE_TARGETS = [[300, 640], [700, 470], [1080, 300], [1350, 190], [1560, 110], [1720, 60]];
   const NODE_SCALES = [1.35, 1.0, 0.75, 0.6, 0.5, 0.42];
 
-  let renderer, scene, camera, config;
+  let renderer, scene, camera, config, opening;
   const objects = [];
   let pathLine, markers = [], failed = false, ready = false;
   let current = { x: 0, y: 0, z: 0 }, target = { x: 0, y: 0, z: 0 };
@@ -24,7 +24,7 @@
   const sansFont = (size, weight) => `${weight} ${size}px ${SANS}`;
   const titleLines = value => String(value || '').replace(/(.{3})/, '$1\n');
 
-  function fovFor() { return 2 * Math.atan((H / 2) / F) * 180 / Math.PI; }
+  function fovFor(height = H) { return 2 * Math.atan((height / 2) / F) * 180 / Math.PI; }
 
   function makeText(text, size, weight, font, color) {
     const lines = String(text).split('\n');
@@ -97,7 +97,7 @@
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
       renderer.setSize(W, H, false);
-      renderer.domElement.style.cssText = `width:${W}px;height:${H}px;`;
+      renderer.domElement.style.cssText = 'width:100%;height:100%;';
       el.appendChild(renderer.domElement);
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(fovFor(), W / H, 1, 12000);
@@ -128,6 +128,7 @@
       return m;
     });
 
+    opening = EditorialOpening.create(config, reduced);
     ready = true;
     render(performance.now());
     loop();
@@ -177,8 +178,18 @@
 
   function show(name, options) {
     if (failed) return Promise.resolve(false);
+    if (name === 'cover' || name === 'contents') {
+      if (pendingResolve) { const done = pendingResolve; pendingResolve = null; done(false); }
+      tween.active = false;
+      return opening.show(name, options);
+    }
+    opening.hide();
+    if (tween.active) render(performance.now());
+    if (pendingResolve) { const resolve = pendingResolve; pendingResolve = null; resolve(false); }
     setTargets(name, options);
-    if (reduced) {
+    const samePosition = current.x === target.x && current.y === target.y && current.z === target.z;
+    if (reduced || samePosition) {
+      tween.active = false;
       current = { ...target };
       objects.forEach(o => { o.mat.opacity = o.target; });
       if (pathLine) pathLine.material.opacity = pathTarget;
@@ -190,7 +201,22 @@
     return new Promise(resolve => { pendingResolve = resolve; });
   }
 
+  function finish() {
+    if (opening && opening.active) { opening.finish(); return; }
+    if (!ready || !tween.active) return;
+    tween.t0 = performance.now() - tween.dur;
+    objects.forEach(o => { o.mat.opacity = o.target; });
+    if (pathLine) pathLine.material.opacity = pathTarget;
+    markers.forEach(m => { m.material.opacity = markerTarget; });
+    render(performance.now());
+  }
+
   function render(now) {
+    if (opening && opening.active) {
+      opening.update(now);
+      renderer.render(opening.scene, opening.camera);
+      return;
+    }
     const t = tween.active ? clamp((now - tween.t0) / tween.dur) : 1;
     const e = ease(t);
     const from = tween.from || target;
@@ -225,9 +251,19 @@
   });
 
   window.SpatialStage = {
-    init, show,
+    init, show, finish,
+    hideOpening() { if (opening) opening.hide(); },
     get ready() { return ready; },
     get failed() { return failed; },
-    resize() { if (renderer) { renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setSize(W, H, false); } }
+    resize(width = W, height = H, scale = 1) {
+      if (!renderer || !camera) return;
+      camera.aspect = width / height;
+      camera.fov = fovFor(height);
+      camera.updateProjectionMatrix();
+      if (opening) opening.resize(width, height);
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+      renderer.setSize(width * scale, height * scale, false);
+      render(performance.now());
+    }
   };
 })();

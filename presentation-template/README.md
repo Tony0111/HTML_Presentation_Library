@@ -4,9 +4,9 @@
 
 ## 当前状态
 
-正式入口 `index.html` 已实现一套 24 页、4 章的完整回归演示，覆盖首版全部页型：
+正式入口 `index.html` 已实现一套 19 页、4 章的完整回归演示，覆盖首版正文与结构页型：
 
-- 封面、目录、章节扉页、结尾由本地 Three.js 空间舞台渲染；
+- 封面和目录由亮色编辑式 Three.js 空间舞台渲染，旧黑色结束页已移除；
 - 要点、陈述、图文、图表、流程、表格、比较、时间线、视频、引用由暖白阅读页渲染；
 - 内容由 Markdown 主稿编译为运行快照；
 - 字体以子集 WOFF2 随目录携带，离线可用。
@@ -23,19 +23,34 @@
 
 执行依据与逐阶段状态见 [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)。
 
+## 当前开场
+
+封面和目录已改为亮色编辑风：暖白底、砖红与暖白交替的折页、衬线主标题与印刷式章节编号。Three.js 折页会从封面的叠合构图连续展开为目录，支持轻微纸面起伏和指针视差；选章保持即时响应。减少动态模式下使用静止画面。
+
+参考 Library 中的 STLShaper Forms 参数化形体、Hover Card Row 立体抬升与字体层级思路，使用现有本地 Three.js 自行实现，不加载外部素材。封面折页按固定前后层次叠放，展开时先分开再收拢深度，避免穿模。旧路线图式章节扉页与黑色结束页已移除，正文内容保持原样，页码随总页数更新。
+
+每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。最后一章的参考资料页是演示末页，前进时保持停留。
+
 ## 运行
 
-双击 `index.html`。建议在 1920 × 1080 或常见 16:10 桌面屏幕使用，演示前按 `F` 进入浏览器原生全屏。
+双击 `index.html`。演示画布会自适应并铺满当前窗口，支持 16:9、16:10、超宽屏及竖屏；文字与图表保持等比显示，不拉伸、不裁切。演示前按 `F` 进入浏览器原生全屏，退出全屏或调整窗口时会自动重新适配。
 
 ## 键盘
 
 | 按键 | 操作 |
 | --- | --- |
-| `Enter` / `Space` / `→` / `↓` | 封面进入目录；目录进入所选章；正文下一页 |
+| `Enter` / `Space` / `→` / `↓` | 封面进入目录 |
+| `Enter` / `Space` | 目录进入所选章；临时目录未改选时回原页 |
+| `Space` / `→` / `↓` / `PageDown` | 章内下一页；章末返回目录并预选下一章；演示末页停留 |
 | `←` / `→` | 目录中选章；正文中翻前后页 |
-| `↑` / `Backspace` | 正文返回目录 |
-| `Home` / `End` | 首张正文 / 结尾 |
-| `F` | 浏览器全屏 |
+| `PageUp` | 正文上一页 |
+| `↑` / `Backspace` | 正文打开临时目录；目录取消并回原页或封面 |
+| `Home` / `End` | 目录选首章 / 末章；正文跳首张正文 / 最后一张内容页 |
+| `1`–`8` | 目录选对应章节，不存在则不响应 |
+| `P` / `M` | 视频播放暂停 / 静音 |
+| `F` / `Escape` | 切换浏览器原生全屏 / 仅退出全屏 |
+
+长按不连续翻页；转场期间至多保留一个待处理动作，后续导航可提前完成转场；原地选章立即响应。输入框及按钮的原生键盘操作不会重复触发翻页。
 
 ## 目录结构（当前实现）
 
@@ -46,9 +61,10 @@ presentation-template/
   content/sample.md           唯一人工内容主稿
   data/presentation.config.js 主稿生成的运行快照
   assets/charts/              已完成图表材料
-  styles/                     tokens / base / slides
+  styles/                     tokens / base / slides / opening
   js/navigation.js            导航意图（纯逻辑）
   js/slide-renderer.js        阅读页渲染
+  js/editorial-opening.js     亮色编辑式封面与目录
   js/spatial-stage.js         Three.js 空间舞台
   js/app.js                   初始化与统一输入
   tools/build_content.py      Markdown → 运行快照
@@ -70,8 +86,11 @@ presentation-template/
 ## 验证
 
 ```text
-python test/tools/check_formal.py    # 正式入口：24 页、全部页型、视口、减少动态、媒体、引用、离线
-python test/opening/tools/verify.py  # 开场空间研究：纵深、选章、失败回退、投影一致
+python test/tools/check_formal.py             # 正式入口：19 页、全部页型、视口、减少动态、媒体、引用、离线
+python test/tools/check_keyboard.py           # 键盘契约、快速输入、返回目录、全屏与媒体焦点
+python test/tools/check_editorial_opening.py  # 亮色封面/目录、立体运动、响应式、静态回退
+python test/tools/check_chapter_transitions.py # 章节回目录、双向动画、快速反向操作与缩放
+python test/opening/tools/verify.py           # 历史开场空间研究：纵深、选章、失败回退、投影一致
 python test/tools/check.py           # 旧实验基线，仍保留
 ```
 
@@ -87,4 +106,3 @@ python test/tools/check.py           # 旧实验基线，仍保留
 - 内容主稿使用受限 Markdown 方言；新增页型需要改渲染代码，不能仅靠内容。
 - 视频与图表为预制本地材料；播放阶段不生成图表、不做统计计算。
 - `test/` 下的历史实验与截图仍保留，会增大交付体积；它们不参与运行时。
-- 结尾页复用封面文案结构；如需独立结束文案需在内容契约中扩展。

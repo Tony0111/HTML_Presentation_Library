@@ -15,28 +15,28 @@ window.PRESENTATION_CONFIG = {
       "number": "01",
       "title": "问题",
       "english": "THE QUESTION",
-      "firstSlideId": "S03"
+      "firstSlideId": "S04"
     },
     {
       "id": "ch2",
       "number": "02",
       "title": "方法",
       "english": "THE METHOD",
-      "firstSlideId": "S07"
+      "firstSlideId": "S08"
     },
     {
       "id": "ch3",
       "number": "03",
       "title": "证据",
       "english": "THE EVIDENCE",
-      "firstSlideId": "S12"
+      "firstSlideId": "S13"
     },
     {
       "id": "ch4",
       "number": "04",
       "title": "讨论",
       "english": "DISCUSSION",
-      "firstSlideId": "S20"
+      "firstSlideId": "S21"
     }
   ],
   "slides": [
@@ -74,31 +74,12 @@ window.PRESENTATION_CONFIG = {
       "index": 1
     },
     {
-      "id": "S03",
-      "type": "section-divider",
-      "meta": {
-        "chapter": "ch1",
-        "chapterTitle": "问题",
-        "chapterEnglish": "THE QUESTION",
-        "eyebrow": "CHAPTER 01 / QUESTION",
-        "subtitle": "好的开场不急着给出答案，它先建立一个值得继续听下去的方向。"
-      },
-      "title": [
-        "先把问题",
-        "说清楚。"
-      ],
-      "bullets": [],
-      "paragraphs": [],
-      "quote": "",
-      "blocks": {},
-      "refs": [],
-      "index": 2
-    },
-    {
       "id": "S04",
       "type": "headline-points",
       "meta": {
         "chapter": "ch1",
+        "chapterTitle": "问题",
+        "chapterEnglish": "THE QUESTION",
         "eyebrow": "A CLEAR STARTING POINT"
       },
       "title": [
@@ -114,7 +95,7 @@ window.PRESENTATION_CONFIG = {
       "quote": "把复杂背景压缩成观众能够带走的一句话，再让证据逐层回应它。",
       "blocks": {},
       "refs": [],
-      "index": 3
+      "index": 2
     },
     {
       "id": "S05",
@@ -132,7 +113,7 @@ window.PRESENTATION_CONFIG = {
       "quote": "",
       "blocks": {},
       "refs": [],
-      "index": 4
+      "index": 3
     },
     {
       "id": "S06",
@@ -156,34 +137,15 @@ window.PRESENTATION_CONFIG = {
       "quote": "先把观察范围画出来，再让后面的证据在同一尺度上对话。",
       "blocks": {},
       "refs": [],
-      "index": 5
-    },
-    {
-      "id": "S07",
-      "type": "section-divider",
-      "meta": {
-        "chapter": "ch2",
-        "chapterTitle": "方法",
-        "chapterEnglish": "THE METHOD",
-        "eyebrow": "CHAPTER 02 / METHOD",
-        "subtitle": "方法不是一串步骤，而是一条能被观众跟上的路径。"
-      },
-      "title": [
-        "再让方法",
-        "获得形状。"
-      ],
-      "bullets": [],
-      "paragraphs": [],
-      "quote": "",
-      "blocks": {},
-      "refs": [],
-      "index": 6
+      "index": 4
     },
     {
       "id": "S08",
       "type": "headline-points",
       "meta": {
         "chapter": "ch2",
+        "chapterTitle": "方法",
+        "chapterEnglish": "THE METHOD",
         "eyebrow": "A REPEATABLE PATH"
       },
       "title": [
@@ -199,7 +161,7 @@ window.PRESENTATION_CONFIG = {
       "quote": "可解释的路径，比漂亮的跳跃更值得信任。",
       "blocks": {},
       "refs": [],
-      "index": 7
+      "index": 5
     },
     {
       "id": "S09",
@@ -256,7 +218,7 @@ window.PRESENTATION_CONFIG = {
         }
       },
       "refs": [],
-      "index": 8
+      "index": 6
     },
     {
       "id": "S10",
@@ -328,7 +290,7 @@ window.PRESENTATION_CONFIG = {
         }
       },
       "refs": [],
-      "index": 9
+      "index": 7
     },
     {
       "id": "S11",
@@ -378,34 +340,15 @@ window.PRESENTATION_CONFIG = {
           "number": 1
         }
       ],
-      "index": 10
-    },
-    {
-      "id": "S12",
-      "type": "section-divider",
-      "meta": {
-        "chapter": "ch3",
-        "chapterTitle": "证据",
-        "chapterEnglish": "THE EVIDENCE",
-        "eyebrow": "CHAPTER 03 / EVIDENCE",
-        "subtitle": "视觉可以制造注意力，但不能替数据完成论证。"
-      },
-      "title": [
-        "让证据",
-        "自己站得住。"
-      ],
-      "bullets": [],
-      "paragraphs": [],
-      "quote": "",
-      "blocks": {},
-      "refs": [],
-      "index": 11
+      "index": 8
     },
     {
       "id": "S13",
       "type": "chart-focus",
       "meta": {
         "chapter": "ch3",
+        "chapterTitle": "证据",
+        "chapterEnglish": "THE EVIDENCE",
         "eyebrow": "ILLUSTRATIVE DATA / BAR",
         "asset": "assets/charts/bar.svg",
         "caption": "合成示例数据；柱状图数值轴从零开始，单位为任意单位（a.u.）。",
@@ -423,7 +366,7 @@ window.PRESENTATION_CONFIG = {
       "quote": "",
       "blocks": {},
       "refs": [],
-      "index": 12
+      "index": 9
     },
     {
       "id": "S14",
@@ -456,7 +399,7 @@ window.PRESENTATION_CONFIG = {
           "number": 2
         }
       ],
-      "index": 13
+      "index": 10
     },
     {
       "id": "S15",
@@ -510,7 +453,7 @@ window.PRESENTATION_CONFIG = {
         }
       },
       "refs": [],
-      "index": 14
+      "index": 11
     },
     {
       "id": "S16",
@@ -549,7 +492,7 @@ window.PRESENTATION_CONFIG = {
         }
       },
       "refs": [],
-      "index": 15
+      "index": 12
     },
     {
       "id": "S17",
@@ -593,7 +536,7 @@ window.PRESENTATION_CONFIG = {
         }
       },
       "refs": [],
-      "index": 16
+      "index": 13
     },
     {
       "id": "S18",
@@ -615,7 +558,7 @@ window.PRESENTATION_CONFIG = {
       "quote": "视频不自动播放、不自动发声；离开本页立即暂停并回到起点。",
       "blocks": {},
       "refs": [],
-      "index": 17
+      "index": 14
     },
     {
       "id": "S19",
@@ -633,34 +576,15 @@ window.PRESENTATION_CONFIG = {
       "quote": "",
       "blocks": {},
       "refs": [],
-      "index": 18
-    },
-    {
-      "id": "S20",
-      "type": "section-divider",
-      "meta": {
-        "chapter": "ch4",
-        "chapterTitle": "讨论",
-        "chapterEnglish": "DISCUSSION",
-        "eyebrow": "CHAPTER 04 / DISCUSSION",
-        "subtitle": "把已知、未知与下一步分开说清楚。"
-      },
-      "title": [
-        "最后留下",
-        "诚实的边界。"
-      ],
-      "bullets": [],
-      "paragraphs": [],
-      "quote": "",
-      "blocks": {},
-      "refs": [],
-      "index": 19
+      "index": 15
     },
     {
       "id": "S21",
       "type": "headline-points",
       "meta": {
         "chapter": "ch4",
+        "chapterTitle": "讨论",
+        "chapterEnglish": "DISCUSSION",
         "eyebrow": "HONEST LIMITS"
       },
       "title": [
@@ -676,7 +600,7 @@ window.PRESENTATION_CONFIG = {
       "quote": "把限制写在结论旁边，而不是藏在脚注里。",
       "blocks": {},
       "refs": [],
-      "index": 20
+      "index": 16
     },
     {
       "id": "S22",
@@ -694,7 +618,7 @@ window.PRESENTATION_CONFIG = {
       "quote": "",
       "blocks": {},
       "refs": [],
-      "index": 21
+      "index": 17
     },
     {
       "id": "S23",
@@ -727,43 +651,7 @@ window.PRESENTATION_CONFIG = {
         ]
       },
       "refs": [],
-      "index": 22
-    },
-    {
-      "id": "S24",
-      "type": "closing",
-      "meta": {
-        "chapter": "ch4",
-        "eyebrow": "END / BEGIN AGAIN",
-        "subtitle": "模板负责提供结构、节奏与视觉语言；下一步，把它交给一个真实的问题。",
-        "note": "TEMPLATE 01 · A REUSABLE EDITORIAL SYSTEM"
-      },
-      "title": [
-        "现在，轮到",
-        "具体内容了。"
-      ],
-      "bullets": [],
-      "paragraphs": [],
-      "quote": "",
-      "blocks": {
-        "references": [
-          {
-            "id": "source-01",
-            "short": "示例来源 · 占位",
-            "text": "合成示例来源，用于演示引用编号与来源页的一致性，不是真实文献。",
-            "note": "模板占位，请替换为真实来源。"
-          },
-          {
-            "id": "source-02",
-            "short": "待补来源",
-            "text": "",
-            "note": "",
-            "pending": true
-          }
-        ]
-      },
-      "refs": [],
-      "index": 23
+      "index": 18
     }
   ],
   "references": [

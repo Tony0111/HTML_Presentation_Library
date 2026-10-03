@@ -1,5 +1,5 @@
 /* Reading-plane page types (warm white). Spatial pages live in spatial-stage.js. */
-#slide { padding: 72px var(--pad-x) 96px; }
+#slide { padding: calc(72px + var(--extra-y, 0px)) var(--pad-x) 96px; }
 .slide-eyebrow {
   display: flex; justify-content: space-between; gap: 24px;
   font: 500 20px/1.2 var(--font-sans); letter-spacing: .18em; text-transform: uppercase;
@@ -8,7 +8,7 @@
 .slide-eyebrow .flag { color: var(--brick); letter-spacing: .1em; text-transform: none; }
 #slide h1 {
   font: 600 84px/1.24 var(--font-display); letter-spacing: 0; color: var(--ink);
-  margin: 44px 0 24px; max-width: 1560px;
+  margin: 44px 0 24px; max-width: 93%;
 }
 .slide-quote { font: 400 30px/1.55 var(--font-display); font-style: italic; color: var(--ink-soft); margin: 0 0 30px; max-width: 1360px; }
 .slide-body { margin-top: 10px; }
@@ -73,7 +73,7 @@
 }
 
 /* table-focus */
-.table-wrap { margin-top: 26px; max-width: 1560px; }
+.table-wrap { margin-top: 26px; max-width: 93%; }
 .data-table { width: 100%; border-collapse: collapse; font: 400 26px/1.5 var(--font-sans); }
 .data-table th, .data-table td { text-align: right; padding: 20px 18px; border-bottom: 1px solid var(--hair); }
 .data-table thead th { font: 500 19px/1.4 var(--font-sans); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
@@ -86,7 +86,7 @@
 .table-source { color: var(--brick); }
 
 /* comparison bars */
-.bars { margin-top: 40px; max-width: 1500px; }
+.bars { margin-top: 40px; max-width: 90%; }
 .bar-row { display: grid; grid-template-columns: 200px 1fr 150px 150px; align-items: center; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--hair); }
 .bar-label { font: 600 26px/1.4 var(--font-sans); }
 .bar-track { height: 22px; background: var(--paper-dim); position: relative; }
@@ -97,7 +97,7 @@
 .bar-note { font: 400 20px/1.4 var(--font-sans); color: var(--muted); text-align: right; }
 
 /* timeline */
-.timeline { position: relative; margin-top: 70px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 1620px; }
+.timeline { position: relative; margin-top: 70px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 97%; }
 .timeline-line { position: absolute; left: 0; right: 0; top: 88px; height: 2px; background: var(--hair); }
 .timeline[data-kind="phase"] .timeline-line { background: repeating-linear-gradient(90deg, var(--brick) 0 14px, transparent 14px 26px); }
 .timeline-node { position: relative; padding-top: 70px; text-align: left; }
