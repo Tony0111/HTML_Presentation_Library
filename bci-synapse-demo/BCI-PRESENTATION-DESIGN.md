@@ -2,7 +2,7 @@
 
 > 文档状态：内容与版式设计稿 v0.1  
 > 项目目录：`bci-synapse-demo/`  
-> 基础模板：`../spatial-presentation/`  
+> 基础模板：`../presentation-template/`  
 > 演示性质：未来脑机接口概念示例；数字、指标和场景均为视觉占位，不构成医学或技术事实陈述。
 
 ## 1. 演示定位

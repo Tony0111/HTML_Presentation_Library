@@ -5,7 +5,6 @@
 ## 快速入口
 
 - [可视化素材库](DESIGN-ASSET-LIBRARY.html)：直接打开，查看当前素材和交互演示。
-- [学习路线](LEARNING-ROADMAP.md)：从观察、拆解到独立复刻的练习计划。
 - [交互与视觉模式](references/patterns/)：每个参考案例的拆解笔记。
 - [可发布数据](references/datasets/)：演示页面使用的数据文件与来源说明。
 - [本地参考网页](references/sources/README.md)：下载网页快照的本地目录说明。
@@ -15,7 +14,6 @@
 ```text
 Design/
 ├── README.md                         项目说明、上传边界和目录索引
-├── LEARNING-ROADMAP.md               学习与积累路线
 ├── DESIGN-ASSET-LIBRARY.html         可直接打开的交互式素材库
 ├── .gitignore                        GitHub 上传排除规则
 │
@@ -112,7 +110,7 @@ Design/
 
 ### 建议上传
 
-- `README.md`、`LEARNING-ROADMAP.md` 和 `.gitignore`
+- `README.md` 和 `.gitignore`
 - `DESIGN-ASSET-LIBRARY.html`
 - `assets/` 中已经整理并在素材库中使用的素材
 - `references/patterns/` 中的拆解笔记

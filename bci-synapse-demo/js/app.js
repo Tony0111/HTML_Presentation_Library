@@ -29,8 +29,8 @@
 
   var state = {
     view: "title",
-    selectedIndex: 2,
-    visualIndex: 2,
+    selectedIndex: 0,
+    visualIndex: 0,
     chapterPageIndex: 0,
     pageAnimating: false,
     chapterEndTimer: null,
@@ -675,7 +675,7 @@
       }
       return;
     }
-    if (state.view === "title" && (key === "Enter" || key === " " || key === "ArrowDown")) {
+    if (state.view === "title" && (key === "Enter" || key === " " || key === "ArrowDown" || key === "ArrowRight")) {
       startOpening();
       return;
     }

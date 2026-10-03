@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Presentation Template</title>
+    <link rel="stylesheet" href="styles/tokens.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/slides.css" />
+  </head>
+  <body>
+    <main id="stage" aria-label="编辑式演示模板">
+      <div id="spatial" aria-hidden="true"></div>
+      <section id="slide" aria-live="polite" hidden></section>
+      <div id="error" role="alert" hidden></div>
+    </main>
+
+    <footer class="presentation-controls" aria-label="演示控制">
+      <span class="title" id="control-title"></span>
+      <span class="counter" id="counter">01 / 08</span>
+      <button id="prev" type="button" aria-label="上一页">←</button>
+      <button id="next" type="button" aria-label="下一页">→</button>
+      <button id="contents" type="button" aria-label="打开目录">目录</button>
+      <button id="fullscreen" type="button" aria-label="全屏">全屏 F</button>
+    </footer>
+
+    <script src="vendor/three.min.js"></script>
+    <script src="data/presentation.config.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/slide-renderer.js"></script>
+    <script src="js/media.js"></script>
+    <script src="js/spatial-stage.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

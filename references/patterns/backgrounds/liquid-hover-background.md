@@ -46,11 +46,11 @@
 
 ## 接入 PPT / 演示页前必须注意
 
-以下针对本仓库的 `spatial-presentation/`，其他项目按同样思路检查。
+以下针对本仓库的 `presentation-template/`，其他项目按同样思路检查。
 
 ### 1. 与现有 WebGL 舞台的关系
 
-- `spatial-presentation/index.html` 里 `#stage`（Three.js 画布，`z-index: 0`）和 `.noise`（`z-index: 1`）都是全屏 `position: fixed`。再加一个全屏 WebGL 画布会产生**第二个 WebGL 上下文**，两者会互相遮挡。
+- `presentation-template/index.html` 里 `#stage`（Three.js 画布，`z-index: 0`）和 `.noise`（`z-index: 1`）都是全屏 `position: fixed`。再加一个全屏 WebGL 画布会产生**第二个 WebGL 上下文**，两者会互相遮挡。
 - 推荐只在不需要 Three.js 舞台的页面使用：把 `container` 指向要显示背景的容器，并让该页面的 `#stage` 隐藏；或者用 `bg.destroy()` 在切页时销毁、`LiquidBackground()` 重新创建。
 - 现有项目没有改动，这里的接入方式**还没有在 PPT 里实际跑过**，需要第一次接入时预览确认。
 

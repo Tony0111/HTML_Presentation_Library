@@ -1,0 +1,41 @@
+/* Reset, fixed 16:9 canvas, shared layers, controls shell. */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0b0c; }
+body { font-family: var(--font-sans); color: var(--paper); -webkit-font-smoothing: antialiased; }
+
+#stage {
+  position: fixed; left: 0; top: 0;
+  width: var(--canvas-w); height: var(--canvas-h);
+  transform-origin: 0 0; overflow: hidden;
+  background: var(--ink-stage);
+}
+#spatial, #spatial canvas { position: absolute; inset: 0; display: block; }
+#spatial { z-index: 1; }
+#slide { position: absolute; inset: 0; z-index: 2; background: var(--paper); color: var(--ink); }
+#slide[hidden] { display: none; }
+
+#error {
+  position: absolute; inset: 12% 10%; z-index: 9;
+  background: #2a1a17; border: 1px solid var(--brick); color: var(--paper);
+  padding: 40px; font: 22px/1.7 var(--font-sans);
+}
+#error strong { color: var(--brick-soft); }
+
+.presentation-controls {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+  z-index: 20; display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; border: 1px solid #423d3a; background: rgba(19, 17, 18, .92);
+  color: #c8c2b8; font: 13px var(--font-sans);
+  opacity: 0; pointer-events: none; transition: opacity 160ms ease;
+}
+body.show-controls .presentation-controls,
+.presentation-controls:hover, .presentation-controls:focus-within { opacity: 1; pointer-events: auto; }
+.presentation-controls button {
+  background: transparent; border: 0; color: inherit; font: inherit;
+  padding: 7px 10px; cursor: pointer;
+}
+.presentation-controls button:hover { background: #353130; color: #fff; }
+.presentation-controls :focus-visible { outline: 2px solid var(--brick-soft); }
+.presentation-controls .counter { padding: 0 8px; font-family: var(--font-mono); color: #b9b2a7; }
+.presentation-controls .title { padding: 0 8px; color: #8f887e; }
