@@ -10,6 +10,7 @@
 .slide-brush-5 { right: 15%; top: 26%; height: 410px; color: #425066; transform: rotate(-1deg); }
 .slide-brush-6 { left: 32%; bottom: -210px; height: 420px; color: #e4c6d0; transform: rotate(4deg); }
 #slide > :not(.slide-brush-field) { position: relative; z-index: 1; }
+#slide > .slide-footer { position: absolute; z-index: 2; }
 .slide-eyebrow {
   display: flex; justify-content: space-between; gap: 24px;
   font: 500 20px/1.2 var(--font-sans); letter-spacing: .18em; text-transform: uppercase;

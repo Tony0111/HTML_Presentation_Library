@@ -33,9 +33,12 @@
 #editorial-opening[data-mode="closing"] .opening-masthead,
 #editorial-opening[data-mode="closing"] .opening-cover,
 #editorial-opening[data-mode="closing"] .opening-contents,
-#editorial-opening[data-mode="closing"] .opening-footer { display: none; }
+#editorial-opening[data-mode="closing"] .opening-footer,
+#editorial-opening[data-mode="closing"] .opening-closing { display: none; }
+body:has(#editorial-opening[data-mode="closing"]) .presentation-controls { display: none; }
 .opening-closing { display: none; position: absolute; inset: 0; z-index: 4; align-items: center; justify-content: center; flex-direction: column; color: #f6f7f5; text-align: center; pointer-events: none; }
 #editorial-opening[data-mode="closing"] .opening-closing { display: flex; }
+#editorial-opening[data-mode="closing"] .opening-closing { display: none; }
 .opening-closing span { font: 15px/1.4 var(--font-mono); letter-spacing: .16em; color: #edb79c; }
 .opening-closing strong { margin-top: 24px; font: 600 156px/1 var(--font-display); letter-spacing: .04em; color: #f6f7f5; text-shadow: 0 0 22px rgba(228,198,208,.32); }
 .opening-closing small { margin-top: 28px; font: 16px/1.4 var(--font-mono); letter-spacing: .14em; color: #e9eeb9; }
