@@ -14,10 +14,10 @@
   font-weight: 400; font-display: swap;
 }
 :root {
-  --paper: #f3fbf7; --paper-dim: #e1f1eb; --ink: #123f40; --ink-stage: #0a555a;
-  --ink-soft: #2d6766; --muted: #5d8580; --hair: #b8d8cf;
-  --brick: #ee8b3e; --brick-soft: #ffbd7e;
-  --cyan: #0d9291; --cyan-deep: #075e63;
+  --paper: #fff8ee; --paper-dim: #f6e4ca; --ink: #4b2c20; --ink-stage: #6d3824;
+  --ink-soft: #79503d; --muted: #94735d; --hair: #e2c8ac;
+  --brick: #df6b32; --brick-soft: #f6ad65;
+  --cyan: #2d8b86; --cyan-deep: #216c69;
   --font-display: 'Presentation Serif SC', Georgia, 'Noto Serif SC', 'Songti SC', serif;
   --font-sans: 'Presentation Sans SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
   --font-mono: 'Presentation Mono', Consolas, monospace;

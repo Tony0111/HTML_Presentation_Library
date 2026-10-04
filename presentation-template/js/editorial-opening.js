@@ -25,8 +25,7 @@
     const title = cover ? cover.title : [config.meta.title];
     const chapters = config.chapters || [];
     el.innerHTML = `
-      <header class="opening-masthead"><span class="opening-brand">${esc(config.meta.display || config.meta.title)}</span>
-        <span class="opening-edition">${esc(config.meta.meta || '')}</span><span class="opening-mark" aria-hidden="true">01</span></header>
+      <header class="opening-masthead"><span class="opening-brand">${esc(config.meta.display || config.meta.title)}</span></header>
       <div class="opening-cover"><div class="opening-kicker">${esc(config.meta.kicker || '')}</div>
         <h1>${title.map((line, i) => `<span${i === title.length - 1 ? ' class="opening-title-accent"' : ''}>${esc(line)}</span>`).join('')}</h1>
         <p class="opening-author">${esc(config.meta.author || '')}</p><span class="opening-watermark" aria-hidden="true">01</span></div>
