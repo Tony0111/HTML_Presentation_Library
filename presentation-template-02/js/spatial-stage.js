@@ -84,15 +84,15 @@
     const canvas = document.createElement('canvas');
     canvas.width = 1280; canvas.height = 720;
     const g = canvas.getContext('2d');
-    const colors = [['#fff0d5', '#ef954d'], ['#8b3f2a', '#52231e'], ['#ffd39d', '#dd6934'], ['#f7b166', '#c65331']];
+    const colors = [['#e0f7f1', '#64c8be'], ['#236f70', '#12494e'], ['#ffe4bc', '#f1aa68'], ['#bceee7', '#3ca9a8']];
     const palette = colors[index % colors.length];
     const dark = index % 4 === 1;
-    const ink = dark ? '#fff3df' : '#5a2d21';
-    const muted = dark ? '#f0bb8d' : '#965439';
+    const ink = dark ? '#effcf8' : '#174b4c';
+    const muted = dark ? '#b9e8df' : '#356a68';
     const grad = g.createLinearGradient(0, 0, canvas.width, canvas.height);
     grad.addColorStop(0, palette[0]); grad.addColorStop(1, palette[1]);
     g.fillStyle = grad; g.fillRect(0, 0, canvas.width, canvas.height);
-    g.strokeStyle = dark ? 'rgba(255,232,202,0.22)' : 'rgba(131,65,38,0.18)';
+    g.strokeStyle = dark ? 'rgba(211,247,235,0.22)' : 'rgba(28,113,108,0.18)';
     g.lineWidth = 1.3;
     for (let i = 0; i < 24; i++) {
       g.beginPath();
@@ -104,7 +104,7 @@
     }
     g.fillStyle = muted; g.font = '500 23px "Presentation Mono", monospace';
     g.fillText('CHAPTER / ' + chapter.number, 56, 74);
-    g.strokeStyle = dark ? '#d99063' : '#c77a51';
+    g.strokeStyle = dark ? '#71b9b1' : '#5da9a0';
     g.beginPath(); g.moveTo(56, 108); g.lineTo(1224, 108); g.stroke();
     g.fillStyle = ink; g.font = 'italic 230px Georgia, serif';
     g.fillText(chapter.number, 48, 324);
@@ -130,31 +130,31 @@
     camera = new THREE.PerspectiveCamera(36, W / H, 1, 10000);
     camera.position.set(0, 100, F); camera.lookAt(0, 0, 0);
     screenRoot = new THREE.Group(); screenScene.add(screenRoot);
-    screenScene.add(new THREE.HemisphereLight(0xfff7ed, 0x70402e, 2.5));
-    const light = new THREE.DirectionalLight(0xfff6e8, 3.2);
+    screenScene.add(new THREE.HemisphereLight(0xf4fffc, 0x426b68, 2.5));
+    const light = new THREE.DirectionalLight(0xffffff, 3.2);
     light.position.set(-650, 1100, 1300); light.castShadow = true;
     light.shadow.mapSize.set(1024, 1024);
     Object.assign(light.shadow.camera, { left: -1600, right: 1600, top: 1000, bottom: -1000, near: 1, far: 4000 });
     light.shadow.bias = -0.001; light.shadow.normalBias = 3;
     screenScene.add(light);
-    const fill = new THREE.DirectionalLight(0xffb16b, 1.6);
+    const fill = new THREE.DirectionalLight(0xbceee8, 1.6);
     fill.position.set(1000, 200, -400); screenScene.add(fill);
-    const bezelMat = new THREE.MeshStandardMaterial({ color: '#4d2a24', roughness: 0.32, metalness: 0.7 });
-    const backMat = new THREE.MeshStandardMaterial({ color: '#9b5336', roughness: 0.52, metalness: 0.22 });
+    const edgeMat = new THREE.MeshStandardMaterial({ color: '#4a8a85', roughness: 0.48, metalness: 0.25 });
+    const backMat = new THREE.MeshStandardMaterial({ color: '#70b9b0', roughness: 0.52, metalness: 0.22 });
     const count = Math.max(1, config.chapters.length);
     const ringRadius = 760;
     config.chapters.forEach((chapter, i) => {
       const group = new THREE.Group(); screenRoot.add(group);
       group.scale.setScalar(PANEL_SCALE);
       const front = new THREE.MeshStandardMaterial({ map: panelTexture(chapter, i), roughness: 0.53, metalness: 0.05 });
-      const chassis = new THREE.Mesh(new THREE.BoxGeometry(PANEL_WIDTH + 40, PANEL_HEIGHT + 40, PANEL_DEPTH), [bezelMat, bezelMat, bezelMat, bezelMat, bezelMat, backMat]);
+      const chassis = new THREE.Mesh(new THREE.BoxGeometry(PANEL_WIDTH, PANEL_HEIGHT, PANEL_DEPTH), [edgeMat, edgeMat, edgeMat, edgeMat, backMat, backMat]);
       chassis.castShadow = true; chassis.receiveShadow = true; group.add(chassis);
       const screen = new THREE.Mesh(new THREE.PlaneGeometry(PANEL_WIDTH, PANEL_HEIGHT), front);
       screen.position.z = PANEL_DEPTH / 2 + 1; screen.castShadow = true; group.add(screen);
       const theta = i / count * Math.PI * 2;
       group.position.set(Math.sin(theta) * ringRadius, Math.cos(theta * 2) * 18, Math.cos(theta) * ringRadius);
       group.rotation.y = theta;
-      panels.push({ group, front, theta });
+      panels.push({ group, front, chassis });
     });
   }
 
@@ -171,7 +171,6 @@
         <h1>${cover.title.map((line, i) => `<span${i === cover.title.length - 1 ? ' class="opening-title-accent"' : ''}>${esc(line)}</span>`).join('')}</h1>
         <p class="opening-subtitle">${esc(config.meta.subtitle || '')}</p>
         <div class="opening-byline"><span class="opening-byline-rule"></span><p>${esc(config.meta.author || '')}</p></div>
-        <button class="cover-enter" type="button" title="打开目录" aria-label="打开目录"><i data-lucide="arrow-up-right" aria-hidden="true"></i></button>
       </div>
       <div class="opening-contents">
         <div class="opening-contents-head"><div><span class="opening-kicker">THE READING PATH</span>
@@ -187,7 +186,6 @@
         <span class="opening-footer-index"></span></footer>`;
     document.getElementById('stage').appendChild(overlay);
     if (window.lucide) lucide.createIcons();
-    overlay.querySelector('.cover-enter').onclick = () => emit({ type: 'openContents' });
     chapterButtons = Array.from(overlay.querySelectorAll('[data-chapter]'));
     chapterButtons.forEach(button => {
       const i = Number(button.dataset.chapter);
@@ -273,7 +271,7 @@
     screenRoot.rotation.y = carouselAngle;
     panels.forEach((panel, i) => {
       const amount = i === selected ? 0.16 : 0.01;
-      panel.front.emissive.setRGB(amount, amount * 0.38, amount * 0.12);
+      panel.front.emissive.setRGB(amount * 0.12, amount * 0.7, amount * 0.65);
     });
     // The live 3D projections also provide aligned, accessible pointer targets.
     screenRoot.updateMatrixWorld(true); camera.updateMatrixWorld(true);
@@ -350,6 +348,8 @@
   window.SpatialStage = { init, show, finish, hideOpening, resize };
   if (new URLSearchParams(location.search).get('debug') === '1') {
     SpatialStage.inspect = () => ({ angle: carouselAngle, target: carouselTarget, panelScale: PANEL_SCALE,
+      borderless: panels.every(panel => panel.chassis.geometry.parameters.width === PANEL_WIDTH
+        && panel.chassis.geometry.parameters.height === PANEL_HEIGHT),
       framePending: raf !== null, renderCalls: renderer && renderer.info.render.calls });
   }
 })();

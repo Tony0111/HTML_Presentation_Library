@@ -66,6 +66,7 @@ with sync_playwright() as p:
       )
     '''))
     check('cover does not show a template number marker', page.locator('.opening-mark').count() == 0)
+    check('cover has no right-side jump button', page.locator('.opening-cover button').count() == 0)
     # Freeze the intentional title animation while comparing lens-only pixels below.
     page.evaluate("document.querySelectorAll('.opening-cover h1 span').forEach(span => span.style.animation = 'none')")
     shot(page, 'cover-desktop')
@@ -87,6 +88,11 @@ with sync_playwright() as p:
     page.keyboard.press('Enter')
     page.wait_for_function('PRESENTATION.state.index === 1 && !PRESENTATION.state.busy')
     shot(page, 'contents-desktop')
+    pixels = list(Image.open(SHOTS / 'contents-desktop.png').convert('RGB').resize((160, 90)).getdata())
+    cyan = sum(g > r + 10 and b > r + 5 for r, g, b in pixels)
+    orange = sum(r > g + 20 and g > b + 15 for r, g, b in pixels)
+    check('contents is predominantly cyan with orange accents', cyan > 2000 and cyan > orange * 2)
+    check('screen faces have no oversized frame', page.evaluate('SpatialStage.inspect().borderless'))
     check('screen scene has colored rendered pixels', page.evaluate('''() => {
       const source = document.querySelector('#spatial canvas');
       const c = document.createElement('canvas'); c.width = 160; c.height = 90;
@@ -237,6 +243,7 @@ with sync_playwright() as p:
     fallback.keyboard.press('Enter')
     fallback.wait_for_function('PRESENTATION.state.index === 1 && !PRESENTATION.state.busy')
     check('WebGL failure retains styled contents', fallback.locator('#stage').get_attribute('data-fallback') == 'true')
+    check('fallback chapter panels are also borderless', fallback.locator('[data-chapter]').first.evaluate('(button) => getComputedStyle(button).borderWidth === "0px"'))
     shot(fallback, 'contents-fallback')
     fallback.locator('[data-chapter="1"]').click()
     fallback.wait_for_function('!PRESENTATION.state.busy')
