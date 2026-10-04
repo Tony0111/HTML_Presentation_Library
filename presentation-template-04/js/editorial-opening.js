@@ -116,7 +116,7 @@
       const rand = random(904);
       const colors = ['#ed9874', '#e9eeb9', '#0c567d', '#edb79c', '#425066', '#e4c6d0'];
       const particles = [];
-      for (let y = minY; y <= maxY; y += 3) for (let x = minX; x <= maxX; x += 3) {
+      for (let y = minY; y <= maxY; y += 5) for (let x = minX; x <= maxX; x += 5) {
         if (pixels[(y * source.width + x) * 4 + 3] <= 120) continue;
         const angle = rand() * Math.PI * 2, radius = 250 + rand() * 850;
         particles.push({
@@ -127,7 +127,7 @@
           drift: 3 + rand() * 13, depth: rand(), text: true
         });
       }
-      for (let i = 0; i < 1500; i++) {
+      for (let i = 0; i < 420; i++) {
         const angle = rand() * Math.PI * 2, radius = 500 + rand() * 760;
         particles.push({
           x: Math.cos(angle) * radius, y: Math.sin(angle) * radius * .52,
@@ -250,8 +250,8 @@
         }
         g.globalAlpha = alpha; g.fillStyle = particle.color;
         g.beginPath(); g.arc(x, y, radius, 0, Math.PI * 2); g.fill();
-        if (particle.text && radius > 1.5) {
-          g.globalAlpha = alpha * .18; g.beginPath(); g.arc(x, y, radius * 2.8, 0, Math.PI * 2); g.fill();
+        if (particle.text && radius > 2.1) {
+          g.globalAlpha = alpha * .13; g.beginPath(); g.arc(x, y, radius * 2.4, 0, Math.PI * 2); g.fill();
         }
       }
       g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
