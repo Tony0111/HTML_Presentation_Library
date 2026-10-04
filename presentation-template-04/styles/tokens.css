@@ -1,0 +1,41 @@
+/* Single theme: editorial-spatial. Warm white reading plane, ink stage, brick accent. */
+@font-face {
+  font-family: 'Presentation Serif SC';
+  src: url('../assets/fonts/noto-serif-sc-subset.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Presentation Sans SC';
+  src: url('../assets/fonts/noto-sans-sc-subset.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Presentation Mono';
+  src: url('../assets/fonts/dejavu-sans-mono-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --paper: #f6f7f5;
+  --paper-dim: #e4eae5;
+  --ink: #161415;
+  --ink-stage: #131112;
+  --ink-soft: #48534c;
+  --muted: #69746d;
+  --hair: #d2dbd4;
+  --brick: #577463;
+  --brick-soft: #a9bfb0;
+
+  --font-display: 'Presentation Serif SC', Georgia, 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --font-sans: 'Presentation Sans SC', 'Noto Sans SC', 'Source Han Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'Presentation Mono', Consolas, 'SFMono-Regular', 'Menlo', monospace;
+
+  --canvas-w: 1920px;
+  --canvas-h: 1080px;
+  --pad-x: 120px;
+  --pad-y: 80px;
+  --grid-gap: 32px;
+}
