@@ -91,6 +91,7 @@ presentation-template-03/
 
 ## 文档
 
+- [AI-CONTENT-GUIDE.md](AI-CONTENT-GUIDE.md)：给其他 AI 的内容制作、章节组织、页型和审阅操作指南。
 - [DESIGN-DIRECTION.md](DESIGN-DIRECTION.md)：首版视觉与页面方向。
 - [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)：分阶段执行计划与验收条件。
 - [REQUIREMENTS.md](REQUIREMENTS.md)：产品场景、交互和学术内容需求。
