@@ -30,8 +30,20 @@
 .opening-cover, .opening-contents { transition: opacity 650ms ease; }
 #editorial-opening[data-mode="cover"] .opening-contents { opacity: 0; visibility: hidden; }
 #editorial-opening[data-mode="contents"] .opening-cover { opacity: 0; visibility: hidden; }
+#editorial-opening[data-mode="closing"] .opening-masthead,
+#editorial-opening[data-mode="closing"] .opening-cover,
+#editorial-opening[data-mode="closing"] .opening-contents,
+#editorial-opening[data-mode="closing"] .opening-footer { display: none; }
+.opening-closing { display: none; position: absolute; inset: 0; z-index: 4; align-items: center; justify-content: center; flex-direction: column; color: #f6f7f5; text-align: center; pointer-events: none; }
+#editorial-opening[data-mode="closing"] .opening-closing { display: flex; }
+.opening-closing span { font: 15px/1.4 var(--font-mono); letter-spacing: .16em; color: #edb79c; }
+.opening-closing strong { margin-top: 24px; font: 600 156px/1 var(--font-display); letter-spacing: .04em; color: #f6f7f5; text-shadow: 0 0 22px rgba(228,198,208,.32); }
+.opening-closing small { margin-top: 28px; font: 16px/1.4 var(--font-mono); letter-spacing: .14em; color: #e9eeb9; }
 body:has(#stage[data-opening]) .presentation-controls { background: rgba(246,247,245,.96); border-color: #d2dad4; color: #49574e; }
 body:has(#stage[data-opening]) .presentation-controls button:hover { background: #e4ebe5; color: #526d5c; }
 body:has(#stage[data-opening]) .presentation-controls .counter, body:has(#stage[data-opening]) .presentation-controls .title { color: #78867b; }
+body:has(#stage[data-opening="closing"]) .presentation-controls { background: rgba(21,32,42,.94); border-color: #425066; color: #e4c6d0; }
+body:has(#stage[data-opening="closing"]) .presentation-controls button:hover { background: rgba(66,80,102,.55); color: #e9eeb9; }
+body:has(#stage[data-opening="closing"]) .presentation-controls .counter, body:has(#stage[data-opening="closing"]) .presentation-controls .title { color: #edb79c; }
 @media (prefers-reduced-motion: reduce) { .opening-cover, .opening-contents { transition: none; } }
 #editorial-opening[data-reduced="true"] .opening-cover, #editorial-opening[data-reduced="true"] .opening-contents { transition: none; }

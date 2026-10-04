@@ -248,3 +248,10 @@
   {"id":"source-02", "short":"待补来源", "text":"", "note":"", "pending": true}
 ]
 ~~~
+
+## S24 | closing
+@chapter: ch4
+@eyebrow: END / THANKS
+# THANKS
+@subtitle: KEEP THE QUESTION MOVING
+@note: TEMPLATE 04 · PASTEL ROUTE

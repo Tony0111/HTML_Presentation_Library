@@ -652,6 +652,25 @@ window.PRESENTATION_CONFIG = {
       },
       "refs": [],
       "index": 18
+    },
+    {
+      "id": "S24",
+      "type": "closing",
+      "meta": {
+        "chapter": "ch4",
+        "eyebrow": "END / THANKS",
+        "subtitle": "KEEP THE QUESTION MOVING",
+        "note": "TEMPLATE 04 · PASTEL ROUTE"
+      },
+      "title": [
+        "THANKS"
+      ],
+      "bullets": [],
+      "paragraphs": [],
+      "quote": "",
+      "blocks": {},
+      "refs": [],
+      "index": 19
     }
   ],
   "references": [

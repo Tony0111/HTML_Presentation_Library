@@ -107,7 +107,7 @@
       setSpatialVisible(true);
       const options = slide.type === 'section-divider'
         ? { chapter: state.chapterSelected }
-        : slide.type === 'closing' ? { subtitle: slide.subtitle, note: slide.meta.note }
+        : slide.type === 'closing' ? { subtitle: slide.meta.subtitle, note: slide.meta.note }
         : { chapter: state.chapterSelected };
       const sceneReady = SpatialStage.show(sceneFor(slide), options);
       if (returning) SpatialStage.finish();

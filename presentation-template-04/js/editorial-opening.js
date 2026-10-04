@@ -52,7 +52,8 @@
           const end = chapters[i + 1] ? config.slides.findIndex(s => s.id === chapters[i + 1].firstSlideId) : config.slides.length;
           return `<li data-chapter="${i}"><button type="button" aria-label="${esc(c.number + ' ' + c.title)}" title="${esc(c.title)}"><span class="opening-chapter-number">${esc(c.number)}</span><span class="opening-chapter-copy"><strong>${esc(c.title)}</strong><em>${esc(c.english)}</em><small>${String(start + 1).padStart(2, '0')} / ${String(end).padStart(2, '0')}</small></span></button></li>`;
         }).join('')}</ol></div>
-      <footer class="opening-footer"><span>${esc(config.meta.title)}</span><span class="opening-footer-index"></span></footer>`;
+      <footer class="opening-footer"><span>${esc(config.meta.title)}</span><span class="opening-footer-index"></span></footer>
+      <div class="opening-closing" aria-hidden="true"><span>PASTEL ROUTE / STUDY 04</span><strong>THANKS</strong><small>KEEP THE QUESTION MOVING</small></div>`;
     const textures = COLORS.map((color, i) => brushTexture(color, i + 41));
     function makeBrushes(fieldWidth) {
       const rand = random(404);
@@ -79,6 +80,8 @@
       }));
     }
     let brushes = makeBrushes(W);
+    const closingParticles = makeClosingParticles();
+    let closingStart = 0;
     const items = [...el.querySelectorAll('[data-chapter]')];
     let active = false, selected = 0, width = W, height = H;
     let progress = 0, from = 0, to = 0, start = 0, animating = false, resolve = null;
@@ -94,13 +97,34 @@
       const item = event.target.closest('[data-chapter]');
       if (item) window.dispatchEvent(new CustomEvent('template04chapter', { detail: Number(item.dataset.chapter) }));
     });
+    function makeClosingParticles() {
+      const source = document.createElement('canvas');
+      source.width = 960; source.height = 260;
+      const sg = source.getContext('2d');
+      sg.fillStyle = '#fff'; sg.textAlign = 'center'; sg.textBaseline = 'middle';
+      sg.font = '700 184px Arial, sans-serif'; sg.fillText('THANKS', 480, 132);
+      const pixels = sg.getImageData(0, 0, source.width, source.height).data;
+      const rand = random(904);
+      const targets = [];
+      for (let y = 0; y < source.height; y += 5) for (let x = 0; x < source.width; x += 5) {
+        if (pixels[(y * source.width + x) * 4 + 3] > 120) targets.push({ x: x - 480, y: y - 130 });
+      }
+      const colors = ['#ed9874', '#e9eeb9', '#0c567d', '#edb79c', '#425066', '#e4c6d0'];
+      return targets.map((target, i) => ({
+        x: (rand() - .5) * 1800, y: (rand() - .5) * 900,
+        tx: target.x, ty: target.y, size: .8 + rand() * 2.4,
+        color: colors[i % colors.length], phase: rand() * Math.PI * 2,
+        drift: 4 + rand() * 12
+      }));
+    }
     function settle(value = true) { if (resolve) { const done = resolve; resolve = null; done(value); } }
     function show(name, options = {}) {
       const wasActive = active;
       active = true; el.hidden = false; mode = name;
+      if (name === 'closing') closingStart = performance.now();
       selected = options.chapter ?? 0;
       el.dataset.mode = name; el.dataset.reduced = String(reduced); stage.dataset.opening = name;
-      el.querySelector('.opening-footer-index').textContent = name === 'cover' ? '01 / COVER' : '02 / CONTENTS';
+      el.querySelector('.opening-footer-index').textContent = name === 'cover' ? '01 / COVER' : name === 'closing' ? '03 / THANKS' : '02 / CONTENTS';
       items.forEach((item, i) => {
         item.classList.toggle('is-selected', i === selected);
         item.querySelector('button').setAttribute('aria-current', String(i === selected));
@@ -108,7 +132,7 @@
       cameraFrom = cameraOffset; cameraTo = chapters.length > 1 ? (selected / (chapters.length - 1) - .5) * 18 : 0;
       cameraStart = performance.now();
       settle(false); from = progress; to = name === 'contents' ? 1 : 0; start = performance.now();
-      animating = !reduced && wasActive && Math.abs(from - to) > .001;
+      animating = name !== 'closing' && !reduced && wasActive && Math.abs(from - to) > .001;
       if (!animating) { progress = to; if (reduced) cameraOffset = cameraTo; return Promise.resolve(true); }
       return new Promise(done => { resolve = done; });
     }
@@ -117,6 +141,7 @@
     }
     function update(now, g) {
       if (!active) return;
+      if (mode === 'closing') { updateClosing(now, g); return; }
       if (animating) {
         const t = clamp((now - start) / DURATION);
         progress = from + (to - from) * ease(t);
@@ -179,6 +204,30 @@
         g.restore();
       }
       stage.dataset.openingProgress = p.toFixed(3);
+    }
+    function updateClosing(now, g) {
+      if (!g) return;
+      const t = reduced ? 1 : clamp((now - closingStart) / 1500);
+      const settleAmount = ease(t);
+      const extraX = (width - W) / 2, extraY = (height - H) / 2;
+      smooth.x += (pointer.x - smooth.x) * .045; smooth.y += (pointer.y - smooth.y) * .045;
+      g.clearRect(0, 0, width, height);
+      g.fillStyle = '#15202a'; g.fillRect(0, 0, width, height);
+      const glow = g.createRadialGradient(width * .52, height * .48, 30, width * .52, height * .48, width * .58);
+      glow.addColorStop(0, 'rgba(66,80,102,.48)'); glow.addColorStop(.5, 'rgba(12,86,125,.18)'); glow.addColorStop(1, 'rgba(21,32,42,0)');
+      g.fillStyle = glow; g.fillRect(0, 0, width, height);
+      const px = width / 2 + smooth.x * width * .22, py = height / 2 + smooth.y * height * .22;
+      for (const particle of closingParticles) {
+        const wave = reduced ? 0 : Math.sin(now * .0014 + particle.phase) * particle.drift;
+        let x = width / 2 + particle.x * (1 - settleAmount) + (particle.tx + wave) * settleAmount;
+        let y = height / 2 + particle.y * (1 - settleAmount) + particle.ty * settleAmount;
+        const dx = x - px, dy = y - py, distance = Math.hypot(dx, dy);
+        if (!reduced && distance < 120) { const force = (120 - distance) / 120 * 34; x += dx / (distance || 1) * force; y += dy / (distance || 1) * force; }
+        g.globalAlpha = .45 + settleAmount * .5; g.fillStyle = particle.color;
+        g.beginPath(); g.arc(extraX + x, extraY + y, particle.size, 0, Math.PI * 2); g.fill();
+      }
+      g.globalAlpha = 1;
+      stage.dataset.openingProgress = t.toFixed(3);
     }
     return { show, update,
       get active() { return active; },

@@ -78,6 +78,8 @@ with sync_playwright() as p:
     for i in range(2, 19):
         go(i)
         ok('reading page ' + str(i), page.locator('#slide').is_visible() and page.locator('#slide .slide-eyebrow').count() == 1)
+    go(19)
+    ok('thanks page uses particle stage', page.evaluate("PRESENTATION.config.slides[19].type === 'closing' && document.getElementById('editorial-opening').dataset.mode === 'closing' && document.getElementById('slide').hidden"))
     go(0)
     page.evaluate("() => { for (const key of ['Enter', 'Enter']) window.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles:true})); }")
     settled()
@@ -113,6 +115,8 @@ with sync_playwright() as p:
     ok('reduced motion finishes immediately', page.locator('#stage').get_attribute('data-opening-progress') == '1.000')
     go(2)
     ok('reduced motion enters content', page.locator('#slide').is_visible())
+    go(19)
+    ok('thanks closing uses particle stage', page.evaluate("PRESENTATION.config.slides[19].type === 'closing' && document.getElementById('editorial-opening').dataset.mode === 'closing' && document.getElementById('slide').hidden"))
     ok('no remote dependencies', not remote)
     ok('no JavaScript errors', not errors)
     browser.close()

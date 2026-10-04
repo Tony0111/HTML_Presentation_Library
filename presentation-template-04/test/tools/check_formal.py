@@ -38,7 +38,7 @@ with sync_playwright() as p:
     ok('starts on cover', page.evaluate("document.getElementById('stage').dataset.slide") == 'S01')
 
     slides = page.evaluate("PRESENTATION.config.slides.map(s => ({id:s.id, type:s.type}))")
-    ok('has 19 pages without legacy dark pages', len(slides) == 19 and not any(s['type'] in ('closing', 'section-divider') for s in slides))
+    ok('has 20 pages with a particle closing page', len(slides) == 20 and slides[-1]['type'] == 'closing' and not any(s['type'] == 'section-divider' for s in slides))
     ok('covers every page type', {'cover', 'contents', 'headline-points', 'statement',
         'split-media', 'chart-focus', 'process-flow', 'table-focus', 'comparison', 'timeline',
         'video-focus', 'references'} <= {s['type'] for s in slides})
@@ -142,6 +142,9 @@ with sync_playwright() as p:
     ok('reduced motion reaches a reading page', page.evaluate("document.getElementById('stage').dataset.slide") == 'S04')
 
     ok('no remote requests', not results['remote_requests'])
+    page.evaluate("PRESENTATION.goto(PRESENTATION.config.slides.length - 1)")
+    page.wait_for_function('!PRESENTATION.state.busy')
+    ok('closing shows particle stage', page.evaluate("document.getElementById('editorial-opening').dataset.mode === 'closing' && document.getElementById('slide').hidden"))
     ok('no JavaScript errors', not results['errors'])
     browser.close()
 
