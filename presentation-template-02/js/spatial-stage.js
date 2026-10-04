@@ -3,6 +3,7 @@
   'use strict';
   const W = 1920, H = 1080, F = 1600;
   const PANEL_WIDTH = 720, PANEL_HEIGHT = 405, PANEL_DEPTH = 22;
+  const PANEL_SCALE = 0.62;
   const clamp = n => Math.max(0, Math.min(1, n));
   const ease = t => t * t * (3 - 2 * t);
   let renderer, host, config, overlay, coverScene, coverCamera, screenScene, camera;
@@ -12,6 +13,14 @@
   let animating = false, hover = false, seen = false, carouselAngle = 0, carouselTarget = 0;
   const pointer = new THREE.Vector2(0.5, 0.5), target = new THREE.Vector2(0.5, 0.5);
   const panels = [];
+  let chapterButtons = [];
+  const projected = new THREE.Vector3();
+  const corners = [
+    new THREE.Vector3(-PANEL_WIDTH / 2, -PANEL_HEIGHT / 2, PANEL_DEPTH / 2 + 1),
+    new THREE.Vector3(PANEL_WIDTH / 2, -PANEL_HEIGHT / 2, PANEL_DEPTH / 2 + 1),
+    new THREE.Vector3(-PANEL_WIDTH / 2, PANEL_HEIGHT / 2, PANEL_DEPTH / 2 + 1),
+    new THREE.Vector3(PANEL_WIDTH / 2, PANEL_HEIGHT / 2, PANEL_DEPTH / 2 + 1),
+  ];
   const esc = value => SlideRenderer.escape(value);
   const pad = n => String(n).padStart(2, '0');
 
@@ -124,7 +133,7 @@
     screenScene.add(new THREE.HemisphereLight(0xfff7ed, 0x70402e, 2.5));
     const light = new THREE.DirectionalLight(0xfff6e8, 3.2);
     light.position.set(-650, 1100, 1300); light.castShadow = true;
-    light.shadow.mapSize.set(2048, 2048);
+    light.shadow.mapSize.set(1024, 1024);
     Object.assign(light.shadow.camera, { left: -1600, right: 1600, top: 1000, bottom: -1000, near: 1, far: 4000 });
     light.shadow.bias = -0.001; light.shadow.normalBias = 3;
     screenScene.add(light);
@@ -136,6 +145,7 @@
     const ringRadius = 760;
     config.chapters.forEach((chapter, i) => {
       const group = new THREE.Group(); screenRoot.add(group);
+      group.scale.setScalar(PANEL_SCALE);
       const front = new THREE.MeshStandardMaterial({ map: panelTexture(chapter, i), roughness: 0.53, metalness: 0.05 });
       const chassis = new THREE.Mesh(new THREE.BoxGeometry(PANEL_WIDTH + 40, PANEL_HEIGHT + 40, PANEL_DEPTH), [bezelMat, bezelMat, bezelMat, bezelMat, bezelMat, backMat]);
       chassis.castShadow = true; chassis.receiveShadow = true; group.add(chassis);
@@ -178,10 +188,12 @@
     document.getElementById('stage').appendChild(overlay);
     if (window.lucide) lucide.createIcons();
     overlay.querySelector('.cover-enter').onclick = () => emit({ type: 'openContents' });
-    overlay.querySelectorAll('[data-chapter]').forEach(button => {
+    chapterButtons = Array.from(overlay.querySelectorAll('[data-chapter]'));
+    chapterButtons.forEach(button => {
       const i = Number(button.dataset.chapter);
-      button.addEventListener('pointerenter', () => emit({ type: 'selectChapterTo', index: i }));
-      button.addEventListener('focus', () => emit({ type: 'selectChapterTo', index: i }));
+      button.addEventListener('focus', () => {
+        if (button.matches(':focus-visible')) emit({ type: 'selectChapterTo', index: i });
+      });
       button.addEventListener('click', () => emit({ type: 'openChapter', index: i }));
     });
     overlay.querySelector('.opening-chapter-total').innerHTML = pad(config.chapters.length) + ' CHAPTERS<br>'
@@ -204,18 +216,20 @@
       renderer.domElement.style.cssText = 'width:100%;height:100%;display:block';
       host.appendChild(renderer.domElement);
       createCover(); createScreens();
+      renderer.compile(coverScene, coverCamera);
+      renderer.compile(screenScene, camera);
     } catch (error) {
       failed = true;
       document.getElementById('stage').dataset.fallback = 'true';
     }
     addEventListener('pointermove', event => {
-      if (!active || reduced) return;
+      if (!active || reduced || mode !== 'cover') return;
       hover = true; target.set(event.clientX / innerWidth, 1 - event.clientY / innerHeight);
       if (!seen) { pointer.copy(target); seen = true; }
     });
     document.documentElement.addEventListener('pointerleave', () => { hover = false; });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) { cancelAnimationFrame(raf); raf = null; }
+      if (document.hidden) { cancelAnimationFrame(raf); raf = null; last = 0; }
       else if (active) loop();
     });
     return true;
@@ -223,6 +237,7 @@
 
   function show(name, options = {}) {
     settle(false);
+    if (raf === null) last = 0;
     mode = name === 'cover' ? 'cover' : 'contents';
     selected = Math.max(0, Math.min(config.chapters.length - 1, options.chapter || 0));
     const step = Math.PI * 2 / Math.max(1, config.chapters.length);
@@ -233,7 +248,7 @@
     overlay.dataset.mode = mode; overlay.dataset.reduced = String(reduced);
     document.getElementById('stage').dataset.opening = mode;
     overlay.querySelector('.opening-footer-index').textContent = mode === 'cover' ? '01 / COVER' : '02 / CONTENTS';
-    overlay.querySelectorAll('[data-chapter]').forEach((button, i) => {
+    chapterButtons.forEach((button, i) => {
       button.classList.toggle('is-selected', i === selected);
       if (i === selected) button.setAttribute('aria-current', 'true');
       else button.removeAttribute('aria-current');
@@ -245,44 +260,44 @@
     return new Promise(done => { resolve = done; });
   }
 
-  function updateScreens(now, dt) {
+  function updateScreens(dt) {
     const count = panels.length;
-    const contentsScale = Math.min(1, 4 / Math.max(1, count)) * (width / height < 0.8 ? 1.13 : 1);
-    const swayX = reduced ? 0 : (pointer.x - 0.5) * 28;
-    const swayY = reduced ? 0 : (pointer.y - 0.5) * 16;
-    camera.position.set(swayX, 115 + swayY, F);
+    const contentsScale = Math.min(1, 4 / Math.max(1, count));
+    camera.position.set(0, 115, F);
     camera.lookAt(0, -20, 0);
     screenRoot.scale.setScalar(contentsScale);
-    screenRoot.position.set(0, -110, -80 * (1 - progress));
-    const turn = 1 - Math.exp(-dt * 7.5);
+    screenRoot.position.set(0, -50, -80 * (1 - progress));
+    const turn = 1 - Math.exp(-dt * 10);
     carouselAngle += (carouselTarget - carouselAngle) * turn;
+    if (Math.abs(carouselTarget - carouselAngle) < 0.0001) carouselAngle = carouselTarget;
     screenRoot.rotation.y = carouselAngle;
     panels.forEach((panel, i) => {
-      panel.group.position.y = Math.cos(panel.theta * 2) * 18 + (reduced ? 0 : Math.sin(now / 950 + i * 1.6) * 10);
       const amount = i === selected ? 0.16 : 0.01;
       panel.front.emissive.setRGB(amount, amount * 0.38, amount * 0.12);
     });
     // The live 3D projections also provide aligned, accessible pointer targets.
-    overlay.querySelectorAll('[data-chapter]').forEach((button, i) => {
+    screenRoot.updateMatrixWorld(true); camera.updateMatrixWorld(true);
+    chapterButtons.forEach((button, i) => {
       if (!panels[i]) return;
       const panel = panels[i].group;
-      screenRoot.updateMatrixWorld(true); camera.updateMatrixWorld(true);
-      const corners = [[-PANEL_WIDTH / 2, -PANEL_HEIGHT / 2], [PANEL_WIDTH / 2, -PANEL_HEIGHT / 2], [-PANEL_WIDTH / 2, PANEL_HEIGHT / 2], [PANEL_WIDTH / 2, PANEL_HEIGHT / 2]].map(([x, y]) => {
-        const point = panel.localToWorld(new THREE.Vector3(x, y, PANEL_DEPTH / 2 + 1)).project(camera);
-        return { x: (point.x + 1) / 2 * width, y: (1 - point.y) / 2 * height };
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      corners.forEach(corner => {
+        projected.copy(corner).applyMatrix4(panel.matrixWorld).project(camera);
+        const x = (projected.x + 1) / 2 * width, y = (1 - projected.y) / 2 * height;
+        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
       });
-      const minX = Math.min(...corners.map(p => p.x)), maxX = Math.max(...corners.map(p => p.x));
-      const minY = Math.min(...corners.map(p => p.y)), maxY = Math.max(...corners.map(p => p.y));
       button.style.setProperty('--hit-x', minX + 'px');
       button.style.setProperty('--hit-y', minY + 'px');
       button.style.setProperty('--hit-w', (maxX - minX) + 'px');
       button.style.setProperty('--hit-h', (maxY - minY) + 'px');
+      button.style.zIndex = String(Math.round(panel.matrixWorld.elements[14] + 10000));
     });
   }
 
   function draw(now) {
     if (!active || failed || !renderer) return;
-    const dt = Math.min(0.05, Math.max(0, (now - (last || now)) / 1000)); last = now;
+    const dt = Math.max(0, (now - (last || now)) / 1000); last = now;
     if (animating) {
       const t = clamp((now - start) / 820);
       progress = from + (to - from) * ease(t);
@@ -295,7 +310,7 @@
       coverMaterial.uniforms.gate.value = gate;
       renderer.render(coverScene, coverCamera);
     } else {
-      updateScreens(now, dt);
+      updateScreens(dt);
       renderer.render(screenScene, camera);
     }
   }
@@ -305,7 +320,9 @@
     const frame = now => {
       raf = null;
       if (!active || document.hidden) return;
-      draw(now); raf = requestAnimationFrame(frame);
+      draw(now);
+      if (mode === 'cover' || animating || carouselAngle !== carouselTarget) raf = requestAnimationFrame(frame);
+      else last = 0;
     };
     raf = requestAnimationFrame(frame);
   }
@@ -328,6 +345,11 @@
     camera.updateProjectionMatrix();
     coverMaterial.uniforms.asp.value = w / h;
     draw(performance.now());
+    if (raf === null) last = 0;
   }
   window.SpatialStage = { init, show, finish, hideOpening, resize };
+  if (new URLSearchParams(location.search).get('debug') === '1') {
+    SpatialStage.inspect = () => ({ angle: carouselAngle, target: carouselTarget, panelScale: PANEL_SCALE,
+      framePending: raf !== null, renderCalls: renderer && renderer.info.render.calls });
+  }
 })();

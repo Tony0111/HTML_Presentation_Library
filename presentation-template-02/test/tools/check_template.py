@@ -27,10 +27,17 @@ def goto(page, index):
     page.wait_for_function('(i) => PRESENTATION.state.index === i && !PRESENTATION.state.busy', arg=index)
 
 
+def settled_ring(page):
+    page.wait_for_function('''() => {
+      const ring = SpatialStage.inspect();
+      return ring.angle === ring.target && !ring.framePending;
+    }''')
+
+
 def shot(page, name):
     page.evaluate("document.body.classList.remove('show-controls')")
     page.wait_for_timeout(180)
-    page.screenshot(path=str(SHOTS / (name + '.png')))
+    page.screenshot(path=str(SHOTS / (name + '.png')), style='.presentation-controls { visibility: hidden !important; }')
 
 
 def variance(path):
@@ -90,6 +97,12 @@ with sync_playwright() as p:
       return visible > 2000;
     }'''))
     check('four accessible chapter buttons', page.locator('[data-chapter]').count() == 4)
+    settled_ring(page)
+    check('screens are uniformly scaled to 62 percent', page.evaluate('SpatialStage.inspect().panelScale === 0.62'))
+    front = page.locator('[data-chapter]').nth(0).bounding_box()
+    check('desktop screen clears footer', front['y'] + front['height'] < page.locator('.opening-footer').bounding_box()['y'])
+    check('desktop screen width is below half the viewport', front['width'] < 800)
+    page.mouse.move(front['x'] + front['width'] / 2, front['y'] + front['height'] / 2)
     page.keyboard.press('ArrowRight')
     page.wait_for_function('!PRESENTATION.state.busy')
     check('arrow selects method', page.evaluate('PRESENTATION.state.chapterSelected === 1'))
@@ -97,6 +110,25 @@ with sync_playwright() as p:
     shot(page, 'contents-after-right')
     ring_difference = ImageChops.difference(Image.open(SHOTS / 'contents-desktop.png').convert('RGB'), Image.open(SHOTS / 'contents-after-right.png').convert('RGB'))
     check('arrow rotates the chapter screen ring', sum(ImageStat.Stat(ring_difference).mean) > 2)
+    settled_ring(page)
+    check('stationary pointer does not reselect chapter during rotation', page.evaluate('PRESENTATION.state.chapterSelected === 1'))
+    still = page.locator('[data-chapter]').nth(1).bounding_box()
+    page.mouse.move(30, 30)
+    page.wait_for_timeout(200)
+    check('idle screen and click target remain fixed', still == page.locator('[data-chapter]').nth(1).bounding_box())
+    page.keyboard.press('ArrowLeft')
+    settled_ring(page)
+    check('left returns exactly to chapter one', page.evaluate('PRESENTATION.state.chapterSelected === 0 && SpatialStage.inspect().angle === 0'))
+    page.keyboard.press('ArrowRight')
+    page.wait_for_timeout(80)
+    page.keyboard.press('ArrowLeft')
+    settled_ring(page)
+    check('mid-turn reversal settles at chapter one', page.evaluate('PRESENTATION.state.chapterSelected === 0 && SpatialStage.inspect().angle === 0'))
+    for key in ['ArrowRight', 'ArrowRight', 'ArrowRight', 'ArrowLeft', 'ArrowLeft']:
+        page.keyboard.press(key)
+    page.wait_for_function('!PRESENTATION.state.busy')
+    settled_ring(page)
+    check('rapid alternating input settles at final chapter', page.evaluate('PRESENTATION.state.chapterSelected === 1 && SpatialStage.inspect().angle === SpatialStage.inspect().target'))
     page.keyboard.press('Enter')
     page.wait_for_function('!PRESENTATION.state.busy')
     check('selected chapter enters correct content', page.evaluate('PRESENTATION.config.slides[PRESENTATION.state.index].id === "S08"'))
