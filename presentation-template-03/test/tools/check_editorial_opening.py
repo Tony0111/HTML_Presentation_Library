@@ -96,7 +96,7 @@ with sync_playwright() as p:
     page.keyboard.press('ArrowRight')
     page.wait_for_function('!PRESENTATION.state.busy', timeout=300)
     ok('selected chapter is reflected in accessible DOM', page.locator('.opening-chapters [aria-current="true"]').get_attribute('data-chapter') == '1')
-    ok('selected chapter repositions the planet', first != canvas_pixels(page))
+    ok('directory planet keeps rotating', first != canvas_pixels(page))
     go(3)
     ok('opening leaves no overlay or palette on reading pages', page.evaluate(
         "document.getElementById('editorial-opening').hidden && !document.getElementById('stage').dataset.opening"))
@@ -108,6 +108,9 @@ with sync_playwright() as p:
     first = canvas_pixels(page)
     page.wait_for_timeout(300)
     ok('reduced-motion contents stays still', first == canvas_pixels(page))
+    page.keyboard.press('ArrowRight')
+    page.wait_for_function('!PRESENTATION.state.busy')
+    ok('chapter selection keeps the corner planet fixed', first == canvas_pixels(page))
 
     baseline = os.environ.get('PRESENTATION_BASELINE')
     if baseline:

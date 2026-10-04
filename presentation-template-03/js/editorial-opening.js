@@ -35,7 +35,7 @@
             <span class="opening-chapter-title">${esc(c.title)}</span><span class="opening-chapter-en">${esc(c.english)}</span>
             <span class="opening-chapter-pages">P.${String(start).padStart(2, '0')}</span><i class="opening-chapter-plus" data-lucide="arrow-up-right" aria-hidden="true"></i></button></li>`;
         }).join('')}</ol></div>
-      <footer class="opening-footer"><span>${esc(config.meta.title)}</span><span class="opening-footer-index"></span></footer>`;
+      <footer class="opening-footer"><span class="opening-footer-index"></span></footer>`;
     stage.appendChild(el);
     if (window.lucide) lucide.createIcons();
     if (spatial) {
@@ -46,6 +46,7 @@
     }
     let active = false, selected = 0, progress = 0, from = 0, to = 0, start = 0, animating = false, resolve;
     let pointer = { x:0, y:0 }, smooth = { x:0, y:0 }, stars = null, spin = 0, lastTime = null;
+    let logicalWidth = W, logicalHeight = H;
     const ready = !spatial ? Promise.resolve(false) : new Promise(done => {
       if (!THREE.GLTFLoader || !window.LIBRARY_PLANET_GLTF) { el.dataset.planet = 'failed'; done(false); return; }
       new THREE.GLTFLoader().parse(window.LIBRARY_PLANET_GLTF, '', gltf => {
@@ -109,11 +110,14 @@
       lastTime = now;
       if (!reduced) spin += dt * .12;
       smooth.x += (pointer.x - smooth.x) * .06; smooth.y += (pointer.y - smooth.y) * .06;
-      camera.position.set(smooth.x * 44, -smooth.y * 36, F); camera.lookAt(0, 0, 0);
-      root.position.set(450 * (1 - progress) + (selected - (chapters.length - 1) / 2) * 110 * progress, -20 - progress * 300, 0);
+      camera.position.set(smooth.x * 44 * (1 - progress), -smooth.y * 36 * (1 - progress), F); camera.lookAt(0, 0, 0);
+      const cornerScale = chapters.length > 4 ? .18 : .22;
+      const bottom = chapters.length > 4 ? 78 : 90;
+      root.position.set(450 * (1 - progress) + (-logicalWidth / 2 + 176) * progress,
+        -20 * (1 - progress) + (-logicalHeight / 2 + bottom) * progress, 0);
       root.rotation.set(.08, -.25 + spin + smooth.x * .08, 0);
-      root.scale.setScalar(1 - progress * .62);
-      if (stars) stars.rotation.y = -spin * .6;
+      root.scale.setScalar(1.1 * (1 - progress) + cornerScale * progress);
+      if (stars) { stars.rotation.y = -spin * .6; stars.scale.setScalar(1 - progress * .4); }
     }
     return { scene, camera, show, update, ready,
       get active() { return active; },
@@ -121,6 +125,7 @@
       finish() { if (animating) { progress = to; animating = false; update(performance.now()); settle(); } },
       setStatic() { spatial = false; reduced = true; animating = false; progress = to; el.dataset.reduced = 'true'; el.dataset.spatial = 'false'; settle(); },
       resize(width, height) {
+        logicalWidth = width; logicalHeight = height;
         if (!camera) return;
         camera.aspect = width / height;
         camera.fov = 2 * Math.atan(height / 2 / F) * 180 / Math.PI;

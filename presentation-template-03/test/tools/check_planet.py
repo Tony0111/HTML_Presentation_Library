@@ -56,6 +56,21 @@ with sync_playwright() as p:
     page.set_viewport_size({'width': 1600, 'height': 900})
     page.keyboard.press('Enter')
     page.wait_for_function('!PRESENTATION.state.busy')
+    ok('opening footer no longer repeats the presentation title', page.locator('.opening-footer').inner_text() == '02 / CONTENTS')
+    ok('directory model occupies the bottom-left corner', page.evaluate('''() => {
+      const stage = document.getElementById('stage');
+      SpatialStage.resize(stage.clientWidth, stage.clientHeight, innerWidth / stage.clientWidth);
+      const sample = document.createElement('canvas'); sample.width = 240; sample.height = 135;
+      const ctx = sample.getContext('2d');
+      ctx.drawImage(document.querySelector('#spatial canvas'), 0, 0, 240, 135);
+      const pixels = ctx.getImageData(0, 0, 240, 135).data;
+      const positions = [];
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] > 100 && pixels[i + 2] > pixels[i] * 1.1 && pixels[i + 2] > 35)
+          positions.push([i / 4 % 240, Math.floor(i / 4 / 240)]);
+      }
+      return positions.length > 20 && positions.every(([x, y]) => x < 60 && y > 100);
+    }'''))
     page.screenshot(path=str(OUT / 'contents-desktop.png'))
     page.close()
 

@@ -31,7 +31,7 @@
 
 ## 当前开场
 
-封面右侧使用 cmzw 的 Stylized planet 原模型，保留地球和云层贴图，配轻量星点与缓慢旋转；模型、贴图均随目录携带。进入目录时，地球缩小并移到章节下方，随选章重新定位。支持指针视差、点击选章和键盘选章。减少动态模式关闭旋转和视差；模型加载失败或 WebGL 不可用时显示同一模型生成的本地静态海报。
+封面右侧使用 cmzw 的 Stylized planet 原模型，保留地球和云层贴图，配轻量星点与缓慢旋转；封面比例放大 10%，模型、贴图均随目录携带。进入目录时，地球缩小并固定在左下角持续旋转，不随选章或鼠标移动；左下角的重复标题已移除。5–8 章时进一步缩小，避免遮挡第二排目录。支持封面指针视差、点击选章和键盘选章。减少动态模式关闭旋转和视差；模型加载失败或 WebGL 不可用时显示同一模型生成的本地静态海报。
 
 英文标题、编号与标签使用 Departure Mono 的真实像素字形，中文标题使用 Fusion Pixel 12px；不通过滤镜模拟像素。中文说明与长段落保留 Noto Sans SC，兼顾阅读。所有字体本地打包。
 
@@ -98,10 +98,10 @@ presentation-template-03/
 ```text
 python test/tools/check_formal.py              # 84 项：全部页型、视口、媒体、引用、离线
 python test/tools/check_keyboard.py            # 46 项：键盘、快速输入、全屏与焦点
-python test/tools/check_editorial_opening.py   # 39 项：地球旋转、视差、文字边界、减少动态
+python test/tools/check_editorial_opening.py   # 40 项：地球旋转、视差、文字边界、减少动态
 python test/tools/check_chapter_transitions.py # 33 项：章节回目录、双向动画、缩放
 python test/tools/check_cubist.py              # 48 项：3–8 章容量、静态回退、WebGL 丢失
-python test/tools/check_planet.py              # 14 项：Library 一致性、像素字体、模型失败回退
+python test/tools/check_planet.py              # 16 项：Library 一致性、像素字体、左下角位置、模型失败回退
 ```
 
 从 `presentation-template-03/` 目录执行。测试需要 Python、Playwright、Pillow 与本地 Chrome 或 Playwright Chromium，仅用于开发；观看演示不需要。新截图输出到系统临时目录 `presentation-template-03-opening/` 和 `presentation-template-03-cubist/`，不写入其他 Agent 的工作区。历史实验仍保留，但不作为当前模板 3 的验收依据。
