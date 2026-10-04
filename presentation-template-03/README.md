@@ -1,6 +1,6 @@
 # Presentation Template 03
 
-立体主义叙事演示模板，主题 ID 为 `cubist-spatial`。借鉴毕加索式多视角构成，以有厚度的几何切面、黑色轮廓与红 / 黄 / 蓝 / 绿强对比构成抽象肖像；进入目录时，同一组切面拆开重组。正文保留稳定的阅读结构，通过色彩与少量棱面细节延续视觉语言，不复制具体画作。
+像素 / 代码字体与地球舞台的离线演示模板。英文使用 Departure Mono，中文展示标题使用 Fusion Pixel；封面使用 Library 中 `Three fragments, one system / Stars + Earth` 的原始 Stylized planet 模型，几何肖像已移除。目录保留高对比色块与侧面阴影，正文保留稳定阅读结构。主题 ID 暂沿用 `cubist-spatial`，不改变既有内容契约。
 
 入口是 [index.html](index.html)，无需网络即可运行。封面按 `Enter`、空格或右方向键进入目录；目录中使用方向键、数字键或点击章节卡片进入内容。
 
@@ -10,7 +10,7 @@
 
 正式入口 `index.html` 已实现一套 19 页、4 章的完整回归演示，覆盖首版正文与结构页型：
 
-- 封面和目录由本地 Three.js 立体切面舞台与可访问 DOM 文字共同渲染；
+- 封面和目录由本地 Three.js 地球舞台与可访问 DOM 文字共同渲染；
 - 要点、陈述、图文、图表、流程、表格、比较、时间线、视频、引用由稳定的 DOM 阅读页渲染；
 - 目录支持 3–8 章：3–4 章为单排，5–8 章为双排，不改变章节跳转契约；
 - WebGL 不可用、Three.js 缺失或运行中丢失 WebGL 时，自动保留静态封面、可选章节目录和正文导航；
@@ -27,11 +27,13 @@
 | 审阅入口 | [review.html](review.html) |
 | 开发工作区 | `E:/Design-agent-template-03`，分支 `agent/template-03` |
 
-本 README 描述当前实现。继承的需求、设计方向与 P0–P6 文档记录旧编辑式方案，其中主题、页数和导航描述可能过时，不应据此覆盖模板 3 的现有立体主义方向。
+本 README 描述当前实现。继承的需求、设计方向与 P0–P6 文档记录旧编辑式方案，其中主题、页数和导航描述可能过时，不应据此覆盖模板 3 的现有方向。
 
 ## 当前开场
 
-封面使用原创几何肖像：脸部左右视角并置，眼睛朝向错位，鼻梁、颧面与肩部按不同深度挤出，侧面受光与黑色边线显示厚度。背景为中性浅灰，标题改用本地衬线字体，移除撕边、星形、植物与山丘装饰。进入目录时，肖像切面拆解为章节构成，选中章对应的切面前移；支持指针视差、点击选章和键盘选章。减少动态模式与静态回退关闭装饰运动，保留相同文字、章节状态和操作。
+封面右侧使用 cmzw 的 Stylized planet 原模型，保留地球和云层贴图，配轻量星点与缓慢旋转；模型、贴图均随目录携带。进入目录时，地球缩小并移到章节下方，随选章重新定位。支持指针视差、点击选章和键盘选章。减少动态模式关闭旋转和视差；模型加载失败或 WebGL 不可用时显示同一模型生成的本地静态海报。
+
+英文标题、编号与标签使用 Departure Mono 的真实像素字形，中文标题使用 Fusion Pixel 12px；不通过滤镜模拟像素。中文说明与长段落保留 Noto Sans SC，兼顾阅读。所有字体本地打包。
 
 每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。最后一章的参考资料页是演示末页，前进时保持停留。
 
@@ -68,13 +70,17 @@ presentation-template-03/
   styles/                     tokens / base / slides / opening
   js/navigation.js            导航意图（纯逻辑）
   js/slide-renderer.js        阅读页渲染
-  js/editorial-opening.js     立体主义肖像、目录与静态回退
+  js/editorial-opening.js     Library 地球、目录与静态回退
   js/spatial-stage.js         Three.js 空间舞台
   js/app.js                   初始化与统一输入
   tools/build_content.py      Markdown → 运行快照
+  tools/extract_library_planet.cjs 原始 Library 地球 → 离线资源快照
+  tools/capture_planet_poster.py   本地模型 → 静态回退海报
   design/                     样稿、分镜与决策记录
   test/                       实验、基线与证据
   vendor/three.min.js         本地 Three.js
+  vendor/GLTFLoader.js        同版本 glTF 加载器，适配经典脚本
+  assets/models/             地球资源快照与海报
   LICENSES/                   第三方许可
 ```
 
@@ -92,16 +98,22 @@ presentation-template-03/
 ```text
 python test/tools/check_formal.py              # 84 项：全部页型、视口、媒体、引用、离线
 python test/tools/check_keyboard.py            # 46 项：键盘、快速输入、全屏与焦点
-python test/tools/check_editorial_opening.py   # 39 项：切面运动、视差、文字边界、减少动态
+python test/tools/check_editorial_opening.py   # 39 项：地球旋转、视差、文字边界、减少动态
 python test/tools/check_chapter_transitions.py # 33 项：章节回目录、双向动画、缩放
 python test/tools/check_cubist.py              # 48 项：3–8 章容量、静态回退、WebGL 丢失
+python test/tools/check_planet.py              # 14 项：Library 一致性、像素字体、模型失败回退
 ```
 
 从 `presentation-template-03/` 目录执行。测试需要 Python、Playwright、Pillow 与本地 Chrome 或 Playwright Chromium，仅用于开发；观看演示不需要。新截图输出到系统临时目录 `presentation-template-03-opening/` 和 `presentation-template-03-cubist/`，不写入其他 Agent 的工作区。历史实验仍保留，但不作为当前模板 3 的验收依据。
 
 ## 离线与资源
 
-页面不使用 CDN、远程字体、远程素材或网络 API。字体子集、Three.js 与许可证随目录携带（`assets/fonts/`、`vendor/`、`LICENSES/`）。整个文件夹可复制到没有开发环境的电脑直接打开。
+页面不使用 CDN、远程字体、远程素材或网络 API。字体、Three.js、GLTFLoader、模型快照与许可证随目录携带。整个文件夹可复制到没有开发环境的电脑直接打开；运行时不依赖父目录 Library。
+
+- 地球基于 [Stylized planet](https://sketchfab.com/3d-models/stylized-planet-789725db86f547fc9163b00f302c3e70)，作者 [cmzw](https://sketchfab.com/cmzw)，CC BY 4.0；详见 `LICENSES/planet-license.txt`。
+- Departure Mono：Helena Zhang & Tobias Fried，MIT；详见 `LICENSES/departure-mono-LICENSE.txt`。
+- Fusion Pixel：SIL OFL；字体及来源字体许可见 `LICENSES/fusion-pixel/`。
+- 模型提取工具需要仓库的 Library 原文件，仅用于开发；观看演示不需要。
 
 ## 已知限制
 

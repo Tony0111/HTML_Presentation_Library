@@ -65,9 +65,9 @@ with sync_playwright() as p:
             go(index)
             page.wait_for_timeout(550)
             pixels = canvas_pixels(page)
-            ok(f'{name} has visible brick-red geometry at {w}x{h}',
+            ok(f'{name} has visible Library planet geometry at {w}x{h}',
                sum(1 for i in range(0, len(pixels), 4)
-                   if pixels[i] > pixels[i + 1] * 1.3 and pixels[i] > 90 and pixels[i + 3] > 100) > (30 if h > w else 150))
+                   if pixels[i + 2] > pixels[i] * 1.1 and pixels[i + 2] > 35 and pixels[i + 3] > 100) > (20 if h > w else 80))
             ok(f'{name} has a bright background at {w}x{h}', page.evaluate(
                 "getComputedStyle(document.getElementById('stage')).backgroundColor === 'rgb(244, 244, 240)'"))
             ok(f'{name} text stays within the viewport at {w}x{h}', page.evaluate('''() => {
@@ -85,18 +85,18 @@ with sync_playwright() as p:
     go(0)
     first = canvas_pixels(page)
     page.wait_for_timeout(650)
-    ok('cover sculpture moves over time', first != canvas_pixels(page))
+    ok('cover planet rotates over time', first != canvas_pixels(page))
     first = canvas_pixels(page)
     page.mouse.move(1450, 750)
     page.wait_for_timeout(300)
-    ok('sculpture responds to pointer parallax', first != canvas_pixels(page))
+    ok('planet responds to pointer parallax', first != canvas_pixels(page))
     page.keyboard.press('Enter')
     page.wait_for_function('!PRESENTATION.state.busy')
     first = canvas_pixels(page)
     page.keyboard.press('ArrowRight')
     page.wait_for_function('!PRESENTATION.state.busy', timeout=300)
     ok('selected chapter is reflected in accessible DOM', page.locator('.opening-chapters [aria-current="true"]').get_attribute('data-chapter') == '1')
-    ok('selected chapter changes the 3D facet pose', first != canvas_pixels(page))
+    ok('selected chapter repositions the planet', first != canvas_pixels(page))
     go(3)
     ok('opening leaves no overlay or palette on reading pages', page.evaluate(
         "document.getElementById('editorial-opening').hidden && !document.getElementById('stage').dataset.opening"))

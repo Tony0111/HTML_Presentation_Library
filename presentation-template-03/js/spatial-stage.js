@@ -273,6 +273,7 @@
     hideOpening() { if (opening) opening.hide(); },
     get ready() { return ready; },
     get failed() { return failed; },
+    get openingReady() { return opening ? opening.ready : Promise.resolve(false); },
     resize(width = W, height = H, scale = 1) {
       if (opening) opening.resize(width, height);
       if (failed) return;

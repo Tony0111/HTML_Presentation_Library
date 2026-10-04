@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
-    <title>立体主义叙事演示模板</title>
+    <title>像素地球演示模板</title>
     <link rel="stylesheet" href="styles/tokens.css" />
     <link rel="stylesheet" href="styles/base.css" />
     <link rel="stylesheet" href="styles/slides.css" />
     <link rel="stylesheet" href="styles/opening.css" />
   </head>
   <body>
-    <main id="stage" aria-label="立体主义叙事演示模板">
+    <main id="stage" aria-label="像素地球演示模板">
       <div id="spatial" aria-hidden="true"></div>
       <section id="slide" aria-live="polite" hidden></section>
       <div id="error" role="alert" hidden></div>
@@ -27,6 +27,8 @@
     </footer>
 
     <script src="vendor/three.min.js"></script>
+    <script src="vendor/GLTFLoader.js"></script>
+    <script src="assets/models/stylized-planet.js"></script>
     <script src="vendor/lucide.min.js"></script>
     <script src="data/presentation.config.js"></script>
     <script src="js/navigation.js"></script>

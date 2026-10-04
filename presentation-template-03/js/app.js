@@ -280,13 +280,15 @@
     if (document.fonts && document.fonts.load) {
       try {
         await Promise.all([
-          document.fonts.load('600 150px "Presentation Serif SC"'),
+          document.fonts.load('400 144px "Presentation Pixel SC"'),
+          document.fonts.load('400 22px "Departure Mono"'),
           document.fonts.load('500 30px "Presentation Sans SC"'),
           document.fonts.load('400 20px "Presentation Mono"'),
         ]);
       } catch (error) { /* fall back to system fonts */ }
     }
     SpatialStage.init(spatialEl, config);
+    await SpatialStage.openingReady;
     fit();
     initialized = true;
     renderSlide(0).catch(error => fail(error && error.message)).finally(completeDispatch);

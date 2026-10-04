@@ -1,4 +1,17 @@
-/* Template 03: contrasting cubist planes and quiet reading surfaces. */
+/* Template 03: pixel/code typography, Library planet and quiet reading surfaces. */
+@font-face {
+  font-family:'Departure Mono';
+  src:url('../assets/fonts/departure-mono.woff2') format('woff2');
+  font-weight:400;
+  font-display:swap;
+  unicode-range:U+0000-024F;
+}
+@font-face {
+  font-family:'Presentation Pixel SC';
+  src:url('../assets/fonts/fusion-pixel-12px-zh-hans.woff2') format('woff2');
+  font-weight:400;
+  font-display:swap;
+}
 @font-face {
   font-family: 'Presentation Serif SC';
   src: url('../assets/fonts/noto-serif-sc-subset.woff2') format('woff2');
@@ -19,6 +32,7 @@
 }
 
 :root {
+  font-synthesis:none;
   --paper: #f4f4f0;
   --paper-dim: #e2e4df;
   --ink: #20211f;
@@ -32,9 +46,9 @@
   --leaf: #267d78;
   --sky: #355ab1;
 
-  --font-display: 'Presentation Serif SC', 'Noto Serif SC', 'SimSun', serif;
-  --font-sans: 'Presentation Sans SC', 'Noto Sans SC', 'Source Han Sans SC', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'Presentation Mono', Consolas, 'SFMono-Regular', 'Menlo', monospace;
+  --font-display: 'Departure Mono', 'Presentation Pixel SC', 'Microsoft YaHei', monospace;
+  --font-sans: 'Departure Mono', 'Presentation Sans SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'Departure Mono', 'Presentation Pixel SC', Consolas, monospace;
 
   --canvas-w: 1920px;
   --canvas-h: 1080px;
