@@ -88,7 +88,7 @@
     let cameraFrom = 0, cameraTo = 0, cameraOffset = 0, cameraStart = 0;
     let mode = 'cover', pointer = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
     stage.addEventListener('pointermove', event => {
-      if (!active || reduced) return;
+      if (!active || reduced || mode === 'closing') return;
       const r = stage.getBoundingClientRect();
       pointer = { x: (event.clientX - r.left) / r.width - .5, y: (event.clientY - r.top) / r.height - .5 };
     });
@@ -114,10 +114,11 @@
         }
       }
       const centerX = (minX + maxX) / 2, centerY = (minY + maxY) / 2;
+      const opticalX = centerX - 12; // serif wordmark carries a little right-side visual weight
       const rand = random(904);
       const targets = [];
       for (let y = minY; y <= maxY; y += 4) for (let x = minX; x <= maxX; x += 4) {
-        if (pixels[(y * source.width + x) * 4 + 3] > 120) targets.push({ x: x - centerX, y: y - centerY });
+        if (pixels[(y * source.width + x) * 4 + 3] > 120) targets.push({ x: x - opticalX, y: y - centerY });
       }
       const colors = ['#ed9874', '#e9eeb9', '#0c567d', '#edb79c', '#425066', '#e4c6d0'];
       return targets.map((target, i) => ({

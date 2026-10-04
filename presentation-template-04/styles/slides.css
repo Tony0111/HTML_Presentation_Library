@@ -1,14 +1,17 @@
 /* Reading-plane page types (warm white). Spatial pages live in spatial-stage.js. */
 #slide { position: absolute; inset: 0; padding: calc(72px + var(--extra-y, 0px)) var(--pad-x) 96px; overflow: hidden; }
-.slide-brush-field { position: absolute; z-index: 0; inset: 0; pointer-events: none; overflow: hidden; opacity: .72; }
-.slide-brush { position: absolute; display: block; width: 42px; height: 460px; opacity: .14; transform: rotate(-2deg); filter: saturate(.9); }
-.slide-brush::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(89deg, currentColor 0 2px, transparent 2px 6px); mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 88%, transparent); }
-.slide-brush-1 { left: 2%; top: 18%; height: 500px; color: #ed9874; }
-.slide-brush-2 { left: 7%; top: 43%; height: 330px; color: #e9eeb9; transform: rotate(3deg); }
-.slide-brush-3 { right: 8%; top: 10%; height: 510px; color: #0c567d; transform: rotate(2deg); }
-.slide-brush-4 { right: 3%; top: 49%; height: 300px; color: #edb79c; transform: rotate(-3deg); }
-.slide-brush-5 { right: 15%; top: 26%; height: 410px; color: #425066; transform: rotate(-1deg); }
-.slide-brush-6 { left: 32%; bottom: -210px; height: 420px; color: #e4c6d0; transform: rotate(4deg); }
+.slide-brush-field { position: absolute; z-index: 0; inset: 0; pointer-events: none; overflow: hidden; opacity: .9; }
+.slide-brush { position: absolute; display: block; width: 54px; height: 460px; opacity: .22; transform: rotate(-2deg); filter: saturate(1.05); }
+.slide-brush::before, .slide-brush::after { content: ''; position: absolute; inset: 0; }
+.slide-brush::before { background: repeating-linear-gradient(89deg, currentColor 0 2px, transparent 2px 6px); mask-image: linear-gradient(175deg, transparent 0 5%, #000 12% 88%, transparent 97%); }
+.slide-brush::after { inset: 0 -12px; background: repeating-linear-gradient(93deg, currentColor 0 1px, transparent 1px 9px); opacity: .55; mask-image: linear-gradient(180deg, transparent 0 7%, #000 15% 84%, transparent 94%); }
+.slide-brush-1 { left: 1%; top: 13%; height: 590px; width: 66px; color: #ed9874; transform: rotate(-4deg); }
+.slide-brush-2 { left: 6%; top: 40%; height: 390px; width: 48px; color: #e9eeb9; transform: rotate(5deg); }
+.slide-brush-3 { right: 7%; top: 7%; height: 590px; width: 72px; color: #0c567d; transform: rotate(3deg); }
+.slide-brush-4 { right: 2%; top: 45%; height: 370px; width: 56px; color: #edb79c; transform: rotate(-5deg); }
+.slide-brush-5 { right: 14%; top: 19%; height: 480px; width: 60px; color: #425066; transform: rotate(-2deg); }
+.slide-brush-6 { left: 31%; bottom: -170px; height: 500px; width: 52px; color: #e4c6d0; transform: rotate(6deg); }
+.slide-brush-field::after { content: ''; position: absolute; left: 4%; right: 4%; bottom: 11%; height: 2px; background: linear-gradient(90deg, transparent, #ed9874 12%, #0c567d 37%, #e4c6d0 64%, #edb79c 84%, transparent); opacity: .42; }
 #slide > :not(.slide-brush-field) { position: relative; z-index: 1; }
 #slide > .slide-footer { position: absolute; z-index: 2; }
 .slide-eyebrow {
@@ -17,13 +20,14 @@
   color: var(--muted); padding-bottom: 24px; border-bottom: 1px solid var(--hair);
 }
 .slide-eyebrow .flag { color: var(--brick); letter-spacing: .1em; text-transform: none; }
-.slide-eyebrow::before { content: ''; display: block; width: 32px; height: 5px; margin-right: 10px; background: linear-gradient(90deg, #ed9874 0 17%, #e9eeb9 17% 34%, #0c567d 34% 51%, #edb79c 51% 68%, #425066 68% 84%, #e4c6d0 84%); opacity: .8; }
+.slide-eyebrow::before { content: ''; display: block; width: 54px; height: 7px; margin-right: 10px; background: linear-gradient(90deg, #ed9874 0 17%, #e9eeb9 17% 34%, #0c567d 34% 51%, #edb79c 51% 68%, #425066 68% 84%, #e4c6d0 84%); opacity: .9; box-shadow: 8px 3px 0 rgba(12,86,125,.14), -5px -2px 0 rgba(237,152,116,.12); }
 .slide-eyebrow { align-items: center; }
 #slide h1 {
   font: 600 84px/1.24 var(--font-display); letter-spacing: 0; color: var(--ink);
   margin: 44px 0 24px; max-width: 93%;
 }
-.slide-quote { font: 400 30px/1.55 var(--font-display); font-style: italic; color: var(--ink-soft); margin: 0 0 30px; max-width: 1360px; }
+.slide-quote { position: relative; font: 400 30px/1.55 var(--font-display); font-style: italic; color: var(--ink-soft); margin: 0 0 30px; max-width: 1360px; padding-left: 26px; }
+.slide-quote::before { content: ''; position: absolute; left: 0; top: .35em; bottom: .35em; width: 5px; background: linear-gradient(180deg, #ed9874, #0c567d 48%, #e4c6d0); opacity: .78; }
 .slide-body { margin-top: 10px; }
 .slide-footer {
   position: absolute; left: var(--pad-x); right: calc(var(--pad-x) + 4px); bottom: 46px;
