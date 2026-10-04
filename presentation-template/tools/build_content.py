@@ -22,7 +22,7 @@ TARGET = ROOT / 'data' / 'presentation.config.js'
 TYPES = {
     'cover', 'contents', 'section-divider', 'headline-points', 'statement',
     'split-media', 'chart-focus', 'process-flow', 'timeline', 'comparison',
-    'table-focus', 'video-focus', 'references', 'closing',
+    'table-focus', 'video-focus', 'references', 'closing', 'thanks',
 }
 
 

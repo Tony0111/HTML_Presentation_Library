@@ -12,7 +12,7 @@
   const NODE_TARGETS = [[300, 640], [700, 470], [1080, 300], [1350, 190], [1560, 110], [1720, 60]];
   const NODE_SCALES = [1.35, 1.0, 0.75, 0.6, 0.5, 0.42];
 
-  let renderer, scene, camera, config, opening;
+  let renderer, scene, camera, config, opening, thanks;
   const objects = [];
   let pathLine, markers = [], failed = false, ready = false;
   let current = { x: 0, y: 0, z: 0 }, target = { x: 0, y: 0, z: 0 };
@@ -129,6 +129,7 @@
     });
 
     opening = EditorialOpening.create(config, reduced);
+    thanks = ParticleThanks.create(reduced);
     ready = true;
     render(performance.now());
     loop();
@@ -178,6 +179,13 @@
 
   function show(name, options) {
     if (failed) return Promise.resolve(false);
+    if (name === 'thanks') {
+      opening.hide();
+      tween.active = false;
+      if (pendingResolve) { const done = pendingResolve; pendingResolve = null; done(false); }
+      return thanks.show();
+    }
+    thanks.hide();
     if (name === 'cover' || name === 'contents') {
       if (pendingResolve) { const done = pendingResolve; pendingResolve = null; done(false); }
       tween.active = false;
@@ -212,6 +220,11 @@
   }
 
   function render(now) {
+    if (thanks && thanks.active) {
+      thanks.update(now);
+      renderer.render(thanks.scene, thanks.camera);
+      return;
+    }
     if (opening && opening.active) {
       opening.update(now);
       renderer.render(opening.scene, opening.camera);
@@ -252,7 +265,7 @@
 
   window.SpatialStage = {
     init, show, finish,
-    hideOpening() { if (opening) opening.hide(); },
+    hideOpening() { if (opening) opening.hide(); if (thanks) thanks.hide(); },
     get ready() { return ready; },
     get failed() { return failed; },
     resize(width = W, height = H, scale = 1) {
@@ -261,6 +274,7 @@
       camera.fov = fovFor(height);
       camera.updateProjectionMatrix();
       if (opening) opening.resize(width, height);
+      if (thanks) thanks.resize(width, height, scale);
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
       renderer.setSize(width * scale, height * scale, false);
       render(performance.now());

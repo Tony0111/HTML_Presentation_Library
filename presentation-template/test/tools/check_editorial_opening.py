@@ -185,7 +185,7 @@ with sync_playwright() as p:
         original.goto((Path(baseline) / 'index.html').as_uri() + '?debug=1&reduced=1')
         original.wait_for_selector('#stage[data-ready="true"]')
         original.wait_for_function('!PRESENTATION.state.busy')
-        slides = page.evaluate("PRESENTATION.config.slides.slice(2).map(s => ({id:s.id, type:s.type}))")
+        slides = page.evaluate("PRESENTATION.config.slides.slice(2).filter(s => s.type !== 'thanks').map(s => ({id:s.id, type:s.type}))")
         for index, slide in enumerate(slides):
             slide_id = slide['id']
             go(page.evaluate("id => PRESENTATION.config.slides.findIndex(s => s.id === id)", slide_id))

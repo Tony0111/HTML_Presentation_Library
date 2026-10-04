@@ -100,6 +100,7 @@
     counterEl.textContent = pad(index + 1) + ' / ' + pad(config.slides.length);
     titleEl.textContent = config.meta.title || '';
     stage.dataset.slide = slide.id;
+    stage.dataset.pageType = slide.type;
     document.title = slide.title.join(' ') + ' — ' + (config.meta.title || 'presentation');
 
     if (Navigation.isSpatial(slide.type)) {

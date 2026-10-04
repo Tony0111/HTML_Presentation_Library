@@ -169,7 +169,8 @@
     const refLine = slide.refs.length ? slide.refs.map(r => `[${r.number}] ${escape(r.short)}`).join(' · ') : (config.meta.title || '');
     const isStatement = slide.type === 'statement';
     const h1 = isStatement ? '' : `<h1>${slide.title.map(inline).join('<br>')}</h1>`;
-    return `<header class="slide-eyebrow"><span>${escape(slide.meta.eyebrow || '')}</span><span class="flag">${escape(chapter ? chapter.number + ' / ' + chapter.title : slide.type)}</span></header>
+    return `<div class="reading-print" aria-hidden="true"><i></i><i></i><i></i></div>
+      <header class="slide-eyebrow"><span>${escape(slide.meta.eyebrow || '')}</span><span class="flag">${escape(chapter ? chapter.number + ' / ' + chapter.title : slide.type)}</span></header>
       ${h1}${body(slide, config)}
       <footer class="slide-footer"><span>${refLine}</span><span class="folio">${pad(index + 1)} / ${pad(total)}</span></footer>`;
   }

@@ -69,7 +69,9 @@
         <ol class="opening-chapters" style="--chapters:${chapters.length}">${chapters.map((c, i) => {
           const start = config.slides.findIndex(s => s.id === c.firstSlideId);
           const next = chapters[i + 1];
-          const end = next ? config.slides.findIndex(s => s.id === next.firstSlideId) : config.slides.length;
+          const closing = config.slides.findIndex(s => s.type === 'thanks');
+          const end = next ? config.slides.findIndex(s => s.id === next.firstSlideId)
+            : closing >= 0 ? closing : config.slides.length;
           return `<li data-chapter="${i}"><span class="opening-chapter-number">${esc(c.number)}</span><h2>${esc(c.title)}</h2>
             <span class="opening-chapter-en">${esc(c.english)}</span><span class="opening-chapter-pages">${String(start + 1).padStart(2, '0')} / ${String(end).padStart(2, '0')}</span></li>`;
         }).join('')}</ol></div>
