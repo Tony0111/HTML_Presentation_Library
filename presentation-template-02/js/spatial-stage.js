@@ -269,6 +269,7 @@
     active = true; overlay.hidden = false;
     overlay.dataset.mode = mode; overlay.dataset.reduced = String(reduced);
     document.getElementById('stage').dataset.opening = mode;
+    overlay.querySelector('.opening-footer').hidden = mode === 'closing';
     overlay.querySelector('.opening-footer-index').textContent = mode === 'cover' ? '01 / COVER'
       : mode === 'closing' ? pad(config.slides.length) + ' / THANKS' : '02 / CONTENTS';
     chapterButtons.forEach((button, i) => {

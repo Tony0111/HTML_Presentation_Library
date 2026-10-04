@@ -237,6 +237,7 @@ with sync_playwright() as p:
     page.wait_for_function('!PRESENTATION.state.busy')
     check('last page does not advance', page.evaluate('PRESENTATION.state.index === PRESENTATION.config.slides.length - 1'))
     check('last page is Thanks, not chapter directory', page.evaluate('PRESENTATION.config.slides.at(-1).type === "closing"') and page.locator('#stage').get_attribute('data-opening') == 'closing')
+    check('Thanks has no footer line, labels or page number', page.locator('.opening-footer').is_hidden())
     page.wait_for_function('ThanksParticles.inspect().morph === 1')
     check('Thanks reuses the single WebGL canvas', page.locator('#spatial canvas').count() == 1)
     check('Library effect uses 12000 particles', page.evaluate('ThanksParticles.inspect().count === 12000'))
@@ -299,6 +300,7 @@ with sync_playwright() as p:
             if (w, h) == (2560, 1080):
                 shot(page, name + '-wide')
             if index == 19:
+                check(f'Thanks has no footer at {w}x{h}', page.locator('.opening-footer').is_hidden())
                 page.wait_for_function('ThanksParticles.inspect().morph === 1')
                 check(f'Thanks word fits {w}x{h}', page.evaluate('ThanksParticles.inspect().textWidth < parseFloat(getComputedStyle(document.querySelector("#stage")).width) * 0.85'))
                 check(f'Thanks canvas has rendered particles {w}x{h}', page.evaluate('''() => {
@@ -343,6 +345,7 @@ with sync_playwright() as p:
     check('reduced motion reaches reading page', True)
     goto(reduced_page, 19)
     check('reduced motion shows completed Thanks without animation', reduced_page.evaluate('ThanksParticles.inspect().morph === 1 && ThanksParticles.inspect().time === 0'))
+    check('reduced motion Thanks has no footer', reduced_page.locator('.opening-footer').is_hidden())
     shot(reduced_page, 'thanks-reduced-before')
     reduced_page.mouse.move(1300, 450)
     reduced_page.wait_for_timeout(300)
@@ -365,6 +368,12 @@ with sync_playwright() as p:
     check('fallback chapter click reaches content', fallback.evaluate('PRESENTATION.state.index === 5'))
     goto(fallback, 19)
     check('WebGL failure retains visible Thanks text', fallback.locator('.opening-closing h1').is_visible() and fallback.locator('.opening-closing h1').inner_text() == 'Thanks')
+    check('fallback Thanks has no footer', fallback.locator('.opening-footer').is_hidden())
+    goto(fallback, 0)
+    check('returning to cover restores footer', fallback.locator('.opening-footer').is_visible())
+    goto(fallback, 1)
+    check('returning to contents restores footer', fallback.locator('.opening-footer').is_visible())
+    goto(fallback, 19)
     check('fallback Thanks uses matching orange text', fallback.locator('.opening-closing h1').evaluate('(el) => getComputedStyle(el).color === "rgb(185, 81, 37)"'))
     shot(fallback, 'thanks-fallback')
     fallback.close()
