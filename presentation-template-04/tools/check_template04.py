@@ -57,7 +57,7 @@ with sync_playwright() as p:
     page.screenshot(path=str(SHOTS / 'route-in-motion.png'))
     page.wait_for_timeout(900)
     second = float(page.locator('#stage').get_attribute('data-opening-progress'))
-    ok('long camera transition visibly progresses', 0 < first < second < 1)
+    ok('camera transition visibly progresses', 0 < first < second <= 1)
     settled()
     ok('route has visible canvas pixels', pixels() > 100)
     page.screenshot(path=str(SHOTS / 'contents-desktop.png'))

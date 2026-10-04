@@ -19,7 +19,10 @@
       const drift = (rand() - .5) * 8;
       g.beginPath();
       g.moveTo(x, top);
-      for (let y = top; y < bottom; y += 22) g.lineTo(x + drift * y / 1100 + Math.sin(y / 95 + seed) * 2.4, y);
+      for (let y = top; y < bottom; y += 22) {
+        const bend = Math.sin((y - top) / Math.max(180, bottom - top) * Math.PI) * (10 + rand() * 9);
+        g.lineTo(x + bend + drift * y / 1100 + Math.sin(y / 95 + seed) * 3.8, y);
+      }
       g.strokeStyle = color; g.lineWidth = 2.8 + rand() * 2;
       g.globalAlpha = .68 + rand() * .3; g.stroke();
     }
@@ -57,13 +60,16 @@
       // The last two are deliberately wider: one reaches the middle-lower field, the
       // final one starts at the top-right and ends before one third of the canvas.
       const layout = [
-        // The left side returns to a fuller field, but stays narrower and irregular.
-        [.00, 460, 430, 72], [.055, 170, 640, 78], [.11, 375, 280, 68],
-        [.165, 245, 560, 74], [.22, 515, 330, 70], [.285, 135, 690, 82],
-        [.35, 430, 250, 76], [.42, 215, 530, 82], [.50, 350, 410, 88],
+        // Behind the title, the narrower marks overlap slightly so the field has no
+        // white gaps. Their heights still vary enough to keep the edge irregular.
+        [.00, 460, 430, 96], [.032, 170, 640, 104], [.064, 375, 280, 90],
+        [.096, 245, 560, 100], [.128, 515, 330, 94], [.160, 135, 690, 108],
+        [.192, 430, 250, 96], [.224, 215, 530, 104], [.256, 350, 410, 98],
+        [.288, 100, 610, 106], [.320, 460, 320, 92], [.352, 185, 550, 104],
+        [.384, 390, 360, 98], [.416, 250, 480, 108], [.448, 80, 640, 112],
         // Width increases visibly as the composition moves into the right focus.
-        [.61, 155, 590, 118], [.70, 250, 350, 106], [.78, 72, 720, 142],
-        [.85, 135, 510, 132], [.91, 20, 760, 164],
+        [.57, 155, 590, 118], [.68, 250, 350, 106], [.77, 72, 720, 142],
+        [.84, 135, 510, 132], [.90, 20, 760, 164],
         [.955, -55, 315, 184], [.992, -105, 255, 196]
       ];
       return layout.map(([position, top, height, baseWidth], i) => ({
