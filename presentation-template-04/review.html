@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>内容审阅 · Presentation Template</title>
+<style>
+  :root{--paper:#f3efe6;--paper-dim:#e7e0d4;--ink:#161415;--muted:#6f6a63;--brick:#b8452e;--hair:#cfc8bd;
+    --sans:'Source Han Sans SC','Noto Sans SC','Microsoft YaHei',sans-serif;--display:Georgia,'Noto Serif SC','SimSun',serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.8 var(--sans)}
+  main{max-width:1120px;margin:0 auto;padding:56px 32px}
+  header{border-bottom:1px solid var(--hair);padding-bottom:24px}
+  h1{font:600 46px/1.2 var(--display);margin:0 0 10px}
+  .meta{color:var(--muted);font-size:15px}
+  nav{display:flex;gap:16px;margin-top:18px}
+  a{color:var(--brick)}
+  section{padding:26px 0;border-bottom:1px solid var(--hair)}
+  h2{font:600 26px/1.4 var(--display);margin:8px 0}
+  .id{font:12px/1 var(--sans);letter-spacing:.16em;color:var(--brick);text-transform:uppercase}
+  .type{font:12px/1 var(--sans);color:var(--muted);letter-spacing:.1em}
+  ul{padding-left:22px}
+  .quote{font-style:italic;color:var(--muted);border-left:3px solid var(--brick);padding-left:16px;margin:12px 0}
+  .asset{font:14px var(--sans);color:var(--muted)}
+  code{color:var(--brick);font-family:Consolas,monospace}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>内容审阅</h1>
+    <p class="meta">这份视图与演示入口读取同一份 <code>data/presentation.config.js</code> 运行快照。请直接告诉 AI 页面 ID 和修改意见，不需要编辑 JavaScript。</p>
+    <nav><a href="index.html">← 打开演示入口</a><a href="content/sample.md">查看 Markdown 主稿</a></nav>
+  </header>
+  <div id="pages"></div>
+</main>
+<script src="data/presentation.config.js"></script>
+<script>
+  const cfg = window.PRESENTATION_CONFIG;
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const el = document.getElementById('pages');
+  if (!cfg) { el.textContent = '缺少运行快照，请先运行 python tools/build_content.py。'; }
+  else {
+    el.innerHTML = '<p class="meta">共 ' + cfg.slides.length + ' 页 · ' + cfg.chapters.length + ' 章 · ' + (cfg.references.length) + ' 条来源。</p>' +
+      cfg.slides.map((s, i) => {
+        const chapter = (cfg.chapters.find(c => c.id === s.meta.chapter) || {});
+        const bullets = s.bullets.length ? '<ul>' + s.bullets.map(b => '<li>' + esc(b) + '</li>').join('') + '</ul>' : '';
+        const paras = s.paragraphs.map(p => '<p>' + esc(p) + '</p>').join('');
+        const quote = s.quote ? '<p class="quote">' + esc(s.quote) + '</p>' : '';
+        const asset = s.meta.asset ? '<p class="asset">资源：<code>' + esc(s.meta.asset) + '</code>' + (s.meta.caption ? ' · ' + esc(s.meta.caption) : '') + '</p>' : '';
+        const refs = s.refs && s.refs.length ? '<p class="asset">引用：' + s.refs.map(r => '[' + r.number + '] ' + esc(r.short)).join(' · ') + '</p>' : '';
+        return '<section><div class="id">' + esc(s.id) + ' · ' + String(i + 1).padStart(2, '0') + '</div>' +
+          '<div class="type">' + esc(s.type) + (chapter.title ? ' · ' + esc(chapter.number + ' ' + chapter.title) : '') + '</div>' +
+          '<h2>' + s.title.map(esc).join(' ') + '</h2>' + quote + paras + bullets + asset + refs + '</section>';
+      }).join('');
+  }
+</script>
+</body>
+</html>
