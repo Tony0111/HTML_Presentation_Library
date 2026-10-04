@@ -90,8 +90,7 @@ presentation-template-03/
 
 ## 文档
 
-- [AI-CONTENT-GUIDE.md](AI-CONTENT-GUIDE.md)：给其他 AI 的内容制作、章节组织、页型和审阅操作指南。
-- [REQUIREMENTS.md](REQUIREMENTS.md)：产品场景、交互和学术内容边界。
+- [AI-CONTENT-GUIDE.md](AI-CONTENT-GUIDE.md)：给其他 AI 的内容制作、章节组织、页型和审阅操作指南，并记录场景与内容底线。
 
 历史设计分镜、旧空间原型和实验截图已从交付目录移除；当前实现以本 README、AI 内容指南和正式入口测试为准。
 
