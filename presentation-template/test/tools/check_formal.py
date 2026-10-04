@@ -50,7 +50,7 @@ with sync_playwright() as p:
         page.wait_for_function("id => document.getElementById('stage').dataset.slide === id", arg=slide['id'], timeout=6000)
         page.wait_for_function('!PRESENTATION.state.busy')
         ok(f"{slide['id']} renders", page.evaluate("document.getElementById('error').hidden"))
-        if slide['type'] in ('cover', 'contents', 'section-divider', 'closing', 'thanks'):
+        if slide['type'] in ('cover', 'contents', 'thanks'):
             ok(f"{slide['id']} uses the spatial stage", page.evaluate("document.getElementById('slide').hidden"))
         else:
             ok(f"{slide['id']} shows a reading page", page.evaluate("!document.getElementById('slide').hidden"))

@@ -20,9 +20,9 @@ SOURCE = ROOT / 'content' / 'sample.md'
 TARGET = ROOT / 'data' / 'presentation.config.js'
 
 TYPES = {
-    'cover', 'contents', 'section-divider', 'headline-points', 'statement',
+    'cover', 'contents', 'headline-points', 'statement',
     'split-media', 'chart-focus', 'process-flow', 'timeline', 'comparison',
-    'table-focus', 'video-focus', 'references', 'closing', 'thanks',
+    'table-focus', 'video-focus', 'references', 'thanks',
 }
 
 

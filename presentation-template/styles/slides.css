@@ -1,4 +1,4 @@
-/* Reading-plane page types (warm white). Spatial pages live in spatial-stage.js. */
+/* Warm-white reading page types; stage scenes are rendered separately. */
 #slide { padding: calc(72px + var(--extra-y, 0px)) var(--pad-x) 96px; }
 #slide { --brick: #a65d4e; --brick-soft: #c39280; }
 .reading-print { position: absolute; inset: 24px 28px; pointer-events: none; }

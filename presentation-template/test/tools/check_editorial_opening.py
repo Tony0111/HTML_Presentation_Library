@@ -1,13 +1,6 @@
-"""Opening visuals, motion, offline behavior and optional frozen-page comparison.
-
-Set PRESENTATION_BASELINE to an extracted previous presentation-template folder
-to compare every unchanged slide pixel-for-pixel. Evidence is saved in temp.
-"""
-import os
+"""Current fold-sheet visuals, keyword motion, and offline/reduced behavior."""
 from pathlib import Path
 from tempfile import gettempdir
-from io import BytesIO
-from PIL import Image, ImageChops
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -178,54 +171,6 @@ with sync_playwright() as p:
       document.querySelector('.opening-title-accent').getAnimations({subtree:true}).length === 0
     '''))
 
-    baseline = os.environ.get('PRESENTATION_BASELINE')
-    if baseline:
-        page.set_viewport_size({'width': 1600, 'height': 900})
-        original = context.new_page()
-        original.goto((Path(baseline) / 'index.html').as_uri() + '?debug=1&reduced=1')
-        original.wait_for_selector('#stage[data-ready="true"]')
-        original.wait_for_function('!PRESENTATION.state.busy')
-        slides = page.evaluate("PRESENTATION.config.slides.slice(2).filter(s => s.type !== 'thanks').map(s => ({id:s.id, type:s.type}))")
-        for index, slide in enumerate(slides):
-            slide_id = slide['id']
-            go(page.evaluate("id => PRESENTATION.config.slides.findIndex(s => s.id === id)", slide_id))
-            original.evaluate("id => PRESENTATION.goto(PRESENTATION.config.slides.findIndex(s => s.id === id))", slide_id)
-            original.wait_for_function('!PRESENTATION.state.busy')
-            for view in (page, original):
-                view.evaluate("""() => {
-                  document.body.classList.remove('show-controls');
-                  // Removing divider pages intentionally changes the folio only.
-                  const folio = document.querySelector('.slide-footer .folio');
-                  if (folio) folio.style.visibility = 'hidden';
-                }""")
-                view.wait_for_timeout(400)
-            actual = Image.open(BytesIO(page.screenshot())).convert('RGB')
-            expected = Image.open(BytesIO(original.screenshot())).convert('RGB')
-            diff = ImageChops.difference(actual, expected)
-            if slide['type'] == 'video-focus':
-                # Native video controls are browser-painted and can differ by 1px
-                # between page instances; compare the stable content contract here.
-                signature = '''() => ({
-                  title: document.querySelector('#slide h1')?.textContent,
-                  source: document.querySelector('#slide video')?.getAttribute('src'),
-                  poster: document.querySelector('#slide video')?.getAttribute('poster'),
-                  caption: document.querySelector('#slide .video-figure figcaption')?.textContent,
-                  notes: document.querySelector('#slide .media-notes')?.textContent
-                })'''
-                ok('frozen slide 18 keeps the same video content contract', page.evaluate(signature) == original.evaluate(signature))
-            elif slide['type'] == 'closing':
-                # Separate WebGL contexts can round texture samples differently.
-                changed = sum(1 for pixel in diff.getdata() if max(pixel) > 0)
-                peak = max(high for _, high in diff.getextrema())
-                ok('frozen closing matches within WebGL sampling tolerance', changed <= 200 and peak <= 5)
-            else:
-                if diff.getbbox():
-                    actual.save(OUT / f'frozen-{index + 1:02d}-actual.png')
-                    expected.save(OUT / f'frozen-{index + 1:02d}-baseline.png')
-                    diff.save(OUT / f'frozen-{index + 1:02d}-diff.png')
-                    print('difference bounds:', diff.getbbox())
-                ok(f'frozen slide {slide_id} matches baseline apart from updated folio', not diff.getbbox())
-        original.close()
     ok('no JavaScript errors', not errors)
     ok('no remote resource requests', not remote)
     browser.close()

@@ -4,6 +4,8 @@
 
 本文是内容修改的执行契约。只改标题、章节数量、章节名称、正文或素材时，不需要修改渲染器。
 
+制作与交付顺序见 [CREATION-WORKFLOW.md](CREATION-WORKFLOW.md)；开发环境、技术栈与模块职责见 [TECH-STACK.md](TECH-STACK.md)。内容修改以本文为准，不依据 Git 中的旧规划恢复历史页型。
+
 ## 1. 必须遵守的边界
 
 - 唯一人工内容源是 `content/sample.md`。

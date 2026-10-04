@@ -1,4 +1,4 @@
-/* Bright opening isolated from the existing chapter and closing scenes. */
+/* Editorial fold-sheet cover and contents. Reading pages remain separate. */
 (function () {
   'use strict';
   const W = 1920, H = 1080, F = 1600;
