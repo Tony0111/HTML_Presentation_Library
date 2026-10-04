@@ -12,7 +12,7 @@
   const NODE_TARGETS = [[300, 640], [700, 470], [1080, 300], [1350, 190], [1560, 110], [1720, 60]];
   const NODE_SCALES = [1.35, 1.0, 0.75, 0.6, 0.5, 0.42];
 
-  let renderer, scene, camera, config, opening;
+  let renderer, scene, camera, config, opening, closing;
   const objects = [];
   let pathLine, markers = [], failed = false, ready = false;
   let current = { x: 0, y: 0, z: 0 }, target = { x: 0, y: 0, z: 0 };
@@ -104,6 +104,7 @@
     } catch (error) {
       failed = true;
       opening = EditorialOpening.create(config, true, false);
+      closing = ParticleClosing.create(config, true, false);
       ready = true;
       return false;
     }
@@ -134,11 +135,13 @@
     });
 
     opening = EditorialOpening.create(config, reduced);
+    closing = ParticleClosing.create(config, reduced);
     renderer.domElement.addEventListener('webglcontextlost', event => {
       event.preventDefault();
       failed = true;
       renderer.domElement.hidden = true;
       opening.setStatic();
+      closing.setStatic();
       finish();
       if (raf !== null) cancelAnimationFrame(raf);
       raf = null;
@@ -191,11 +194,13 @@
   }
 
   function show(name, options) {
+    if (name === 'closing') { opening.hide(); return closing.show(); }
+    closing.hide();
     if (failed) {
-      return name === 'cover' || name === 'contents'
+      return name === 'cover' || name === 'contents' || name === 'body'
         ? opening.show(name, options) : Promise.resolve(false);
     }
-    if (name === 'cover' || name === 'contents') {
+    if (name === 'cover' || name === 'contents' || name === 'body') {
       if (pendingResolve) { const done = pendingResolve; pendingResolve = null; done(false); }
       tween.active = false;
       return opening.show(name, options);
@@ -230,6 +235,11 @@
 
   function render(now) {
     if (failed) return;
+    if (closing && closing.active) {
+      closing.update(now);
+      renderer.render(closing.scene, closing.camera);
+      return;
+    }
     if (opening && opening.active) {
       opening.update(now);
       renderer.render(opening.scene, opening.camera);
@@ -276,6 +286,7 @@
     get openingReady() { return opening ? opening.ready : Promise.resolve(false); },
     resize(width = W, height = H, scale = 1) {
       if (opening) opening.resize(width, height);
+      if (closing) closing.resize(width, height);
       if (failed) return;
       if (!renderer || !camera) return;
       camera.aspect = width / height;

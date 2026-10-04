@@ -89,13 +89,15 @@
       el.dataset.mode = name; el.dataset.reduced = String(reduced); stage.dataset.opening = name;
       el.querySelector('.opening-cover').inert = name !== 'cover';
       el.querySelector('.opening-contents').inert = name !== 'contents';
+      el.querySelector('.opening-masthead').hidden = name === 'body';
+      el.querySelector('.opening-footer').hidden = name === 'body';
       el.querySelector('.opening-footer-index').textContent = name === 'cover' ? '01 / COVER' : '02 / CONTENTS';
       el.querySelectorAll('[data-chapter]').forEach((button, i) => {
         button.classList.toggle('is-selected', i === selected);
         button.setAttribute('aria-current', i === selected ? 'true' : 'false');
       });
-      settle(false); from = progress; to = name === 'contents' ? 1 : 0; start = performance.now();
-      animating = spatial && !reduced && Math.abs(to - from) > .001;
+      settle(false); from = progress; to = name === 'cover' ? 0 : 1; start = performance.now();
+      animating = name !== 'body' && spatial && !reduced && Math.abs(to - from) > .001;
       if (!animating) { progress = to; update(start); return Promise.resolve(true); }
       return new Promise(done => { resolve = done; });
     }
@@ -111,8 +113,9 @@
       if (!reduced) spin += dt * .12;
       smooth.x += (pointer.x - smooth.x) * .06; smooth.y += (pointer.y - smooth.y) * .06;
       camera.position.set(smooth.x * 44 * (1 - progress), -smooth.y * 36 * (1 - progress), F); camera.lookAt(0, 0, 0);
-      const cornerScale = chapters.length > 4 ? .18 : .22;
-      const bottom = chapters.length > 4 ? 78 : 90;
+      const smallCorner = el.dataset.mode === 'body' || chapters.length > 4;
+      const cornerScale = smallCorner ? .18 : .22;
+      const bottom = smallCorner ? 78 : 90;
       root.position.set(450 * (1 - progress) + (-logicalWidth / 2 + 176) * progress,
         -20 * (1 - progress) + (-logicalHeight / 2 + bottom) * progress, 0);
       root.rotation.set(.08, -.25 + spin + smooth.x * .08, 0);

@@ -4,14 +4,16 @@
 
 入口是 [index.html](index.html)，无需网络即可运行。封面按 `Enter`、空格或右方向键进入目录；目录中使用方向键、数字键或点击章节卡片进入内容。
 
-面向组会进展与学科学习汇报的离线 HTML 演示模板。交付为完整文件夹，不生成 `.pptx`。内置 19 页、4 章示例；合成数据和待补来源均有明确标记，不代表真实研究结果。
+面向组会进展与学科学习汇报的离线 HTML 演示模板。交付为完整文件夹，不生成 `.pptx`。内置 20 页、4 章示例；合成数据和待补来源均有明确标记，不代表真实研究结果。
 
 ## 当前状态
 
-正式入口 `index.html` 已实现一套 19 页、4 章的完整回归演示，覆盖首版正文与结构页型：
+正式入口 `index.html` 已实现一套 20 页、4 章的完整回归演示，覆盖首版正文与结构页型：
 
 - 封面和目录由本地 Three.js 地球舞台与可访问 DOM 文字共同渲染；
 - 要点、陈述、图文、图表、流程、表格、比较、时间线、视频、引用由稳定的 DOM 阅读页渲染；
+- 全部正文页左下角持续显示同一地球，页脚横线从地球右侧开始，保留真实引用但不重复演示标题；
+- 最后一页使用 Library 粒子球转文字效果聚合成 THANKS，文字保持停留；
 - 目录支持 3–8 章：3–4 章为单排，5–8 章为双排，不改变章节跳转契约；
 - WebGL 不可用、Three.js 缺失或运行中丢失 WebGL 时，自动保留静态封面、可选章节目录和正文导航；
 - 内容由 Markdown 主稿编译为运行快照；
@@ -35,7 +37,9 @@
 
 英文标题、编号与标签使用 Departure Mono 的真实像素字形，中文标题使用 Fusion Pixel 12px；不通过滤镜模拟像素。中文说明与长段落保留 Noto Sans SC，兼顾阅读。所有字体本地打包。
 
-每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。最后一章的参考资料页是演示末页，前进时保持停留。
+每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。参考资料后前进进入 THANKS 末页，继续前进保持停留。
+
+THANKS 复用 Library 的 `Let the particles speak. / sphere-particle` 采样与缓冲区插值思路：12,000 个粒子由球体在约 1.4 秒内聚合成像素文字，不自动恢复球体。仅在结尾运行，离场隐藏；减少动态模式直接显示粒子文字，WebGL 失败时保留普通可读文字。地球与粒子共享原 Three.js 渲染器，不新增 WebGL 上下文。
 
 ## 运行
 
@@ -71,6 +75,7 @@ presentation-template-03/
   js/navigation.js            导航意图（纯逻辑）
   js/slide-renderer.js        阅读页渲染
   js/editorial-opening.js     Library 地球、目录与静态回退
+  js/particle-closing.js      Library 粒子球 → THANKS
   js/spatial-stage.js         Three.js 空间舞台
   js/app.js                   初始化与统一输入
   tools/build_content.py      Markdown → 运行快照
@@ -96,12 +101,13 @@ presentation-template-03/
 ## 验证
 
 ```text
-python test/tools/check_formal.py              # 84 项：全部页型、视口、媒体、引用、离线
+python test/tools/check_formal.py              # 86 项：全部页型、视口、媒体、引用、离线
 python test/tools/check_keyboard.py            # 46 项：键盘、快速输入、全屏与焦点
 python test/tools/check_editorial_opening.py   # 40 项：地球旋转、视差、文字边界、减少动态
 python test/tools/check_chapter_transitions.py # 33 项：章节回目录、双向动画、缩放
 python test/tools/check_cubist.py              # 48 项：3–8 章容量、静态回退、WebGL 丢失
 python test/tools/check_planet.py              # 16 项：Library 一致性、像素字体、左下角位置、模型失败回退
+python test/tools/check_content_closing.py     # 正文地球、页脚、THANKS 动画、视口、回退
 ```
 
 从 `presentation-template-03/` 目录执行。测试需要 Python、Playwright、Pillow 与本地 Chrome 或 Playwright Chromium，仅用于开发；观看演示不需要。新截图输出到系统临时目录 `presentation-template-03-opening/` 和 `presentation-template-03-cubist/`，不写入其他 Agent 的工作区。历史实验仍保留，但不作为当前模板 3 的验收依据。
@@ -113,6 +119,7 @@ python test/tools/check_planet.py              # 16 项：Library 一致性、�
 - 地球基于 [Stylized planet](https://sketchfab.com/3d-models/stylized-planet-789725db86f547fc9163b00f302c3e70)，作者 [cmzw](https://sketchfab.com/cmzw)，CC BY 4.0；详见 `LICENSES/planet-license.txt`。
 - Departure Mono：Helena Zhang & Tobias Fried，MIT；详见 `LICENSES/departure-mono-LICENSE.txt`。
 - Fusion Pixel：SIL OFL；字体及来源字体许可见 `LICENSES/fusion-pixel/`。
+- 粒子效果改编自 [sphere_particle](https://github.com/develper21/sphere_particle)，develper21，MIT；详见 `LICENSES/sphere-particle-LICENSE.txt`。
 - 模型提取工具需要仓库的 Library 原文件，仅用于开发；观看演示不需要。
 
 ## 已知限制

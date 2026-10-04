@@ -13,7 +13,7 @@
 .slide-quote { font: 400 30px/1.55 var(--font-display); font-style: italic; color: var(--ink-soft); margin: 0 0 30px; max-width: 1360px; }
 .slide-body { margin-top: 10px; }
 .slide-footer {
-  position: absolute; left: var(--pad-x); right: var(--pad-x); bottom: 46px;
+  position: absolute; left: calc(var(--pad-x) + 160px); right: var(--pad-x); bottom: 46px;
   display: flex; justify-content: space-between; gap: 32px; align-items: baseline;
   border-top: 2px solid var(--hair); padding-top: 14px;
   font: 400 18px/1.4 var(--font-sans); color: var(--muted);

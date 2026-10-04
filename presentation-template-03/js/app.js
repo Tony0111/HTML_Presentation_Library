@@ -27,7 +27,7 @@
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
       || new URLSearchParams(location.search).get('reduced') === '1';
     if (reduced) {
-      if (entering) { SpatialStage.hideOpening(); setSpatialVisible(false); }
+      if (entering) { await SpatialStage.show('body'); setSpatialVisible(true); }
       else slideEl.hidden = true;
       return;
     }
@@ -49,7 +49,7 @@
     try {
       await Promise.all(pageAnimations.map(animation => animation.finished));
     } finally {
-      if (entering) { SpatialStage.hideOpening(); setSpatialVisible(false); }
+      if (entering) { await SpatialStage.show('body'); setSpatialVisible(true); }
       else slideEl.hidden = true;
       pageAnimations.forEach(animation => animation.cancel());
       pageAnimations = [];
@@ -115,8 +115,8 @@
       slideEl.hidden = true;
     } else {
       if (!entering) {
-        SpatialStage.hideOpening();
-        setSpatialVisible(false);
+        await SpatialStage.show('body');
+        setSpatialVisible(true);
       }
       slideEl.innerHTML = SlideRenderer.render(slide, config, index, config.slides.length);
       slideEl.hidden = false;

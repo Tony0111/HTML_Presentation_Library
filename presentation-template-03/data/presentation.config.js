@@ -652,6 +652,23 @@ window.PRESENTATION_CONFIG = {
       },
       "refs": [],
       "index": 18
+    },
+    {
+      "id": "S24",
+      "type": "closing",
+      "meta": {
+        "chapter": "ch4",
+        "subtitle": "感谢聆听。"
+      },
+      "title": [
+        "THANKS"
+      ],
+      "bullets": [],
+      "paragraphs": [],
+      "quote": "",
+      "blocks": {},
+      "refs": [],
+      "index": 19
     }
   ],
   "references": [

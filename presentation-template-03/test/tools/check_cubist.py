@@ -104,7 +104,7 @@ with sync_playwright() as p:
         key(page, 'Enter')
         ok(f'{name}: keyboard opens first chapter', page.evaluate('PRESENTATION.state.index') == 2)
         key(page, 'End')
-        ok(f'{name}: final reading page remains reachable', page.locator('.references-list').is_visible())
+        ok(f'{name}: final Thanks page remains reachable', page.locator('.closing-title').is_visible())
         page.screenshot(path=str(OUT / f'fallback-{name.split()[0]}.png'))
         page.close()
 

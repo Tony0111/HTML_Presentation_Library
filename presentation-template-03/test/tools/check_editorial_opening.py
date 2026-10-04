@@ -98,8 +98,8 @@ with sync_playwright() as p:
     ok('selected chapter is reflected in accessible DOM', page.locator('.opening-chapters [aria-current="true"]').get_attribute('data-chapter') == '1')
     ok('directory planet keeps rotating', first != canvas_pixels(page))
     go(3)
-    ok('opening leaves no overlay or palette on reading pages', page.evaluate(
-        "document.getElementById('editorial-opening').hidden && !document.getElementById('stage').dataset.opening"))
+    ok('reading pages retain only the corner planet', page.evaluate(
+        "document.getElementById('stage').dataset.opening === 'body' && document.querySelector('.opening-masthead').hidden && document.querySelector('.opening-footer').hidden"))
     load(True)
     first = canvas_pixels(page)
     page.wait_for_timeout(300)
