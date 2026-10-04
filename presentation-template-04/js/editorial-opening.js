@@ -99,15 +99,25 @@
     });
     function makeClosingParticles() {
       const source = document.createElement('canvas');
-      source.width = 960; source.height = 260;
+      source.width = 1280; source.height = 360;
       const sg = source.getContext('2d');
-      sg.fillStyle = '#fff'; sg.textAlign = 'center'; sg.textBaseline = 'middle';
-      sg.font = '700 184px Arial, sans-serif'; sg.fillText('THANKS', 480, 132);
+      sg.fillStyle = '#fff'; sg.textAlign = 'left'; sg.textBaseline = 'top';
+      // Use the bundled display face so the particle silhouette follows the deck typography.
+      sg.font = '600 218px "Presentation Serif SC", Georgia, serif';
+      sg.fillText('THANKS', 20, 30);
       const pixels = sg.getImageData(0, 0, source.width, source.height).data;
+      let minX = source.width, minY = source.height, maxX = 0, maxY = 0;
+      for (let y = 0; y < source.height; y++) for (let x = 0; x < source.width; x++) {
+        if (pixels[(y * source.width + x) * 4 + 3] > 120) {
+          minX = Math.min(minX, x); minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+        }
+      }
+      const centerX = (minX + maxX) / 2, centerY = (minY + maxY) / 2;
       const rand = random(904);
       const targets = [];
-      for (let y = 0; y < source.height; y += 5) for (let x = 0; x < source.width; x += 5) {
-        if (pixels[(y * source.width + x) * 4 + 3] > 120) targets.push({ x: x - 480, y: y - 130 });
+      for (let y = minY; y <= maxY; y += 4) for (let x = minX; x <= maxX; x += 4) {
+        if (pixels[(y * source.width + x) * 4 + 3] > 120) targets.push({ x: x - centerX, y: y - centerY });
       }
       const colors = ['#ed9874', '#e9eeb9', '#0c567d', '#edb79c', '#425066', '#e4c6d0'];
       return targets.map((target, i) => ({
