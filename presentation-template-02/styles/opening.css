@@ -1,6 +1,6 @@
 #stage[data-opening] { background: linear-gradient(125deg, #fff8ef 4%, #f8e8cf 48%, #f5c789 82%, #d96a37); }
 #stage[data-opening="cover"] { background: linear-gradient(120deg, #fff9f1, #f7c987 64%, #d65f33); }
-#stage[data-opening="contents"] {
+#stage[data-opening="contents"], #stage[data-opening="closing"] {
   background-image: var(--contour-texture), linear-gradient(25deg, #f2b47b40, transparent 28%),
     linear-gradient(125deg, #fcfdfb 32%, #eaf5f0 52%, #b6e0d7 82%, #60bdb5);
   background-size: 100% 100%; background-repeat: no-repeat;
@@ -55,6 +55,15 @@
 #editorial-opening[data-mode="cover"] .opening-contents,
 #editorial-opening[data-mode="contents"] .opening-cover { visibility: hidden; opacity: 0; }
 .opening-cover, .opening-contents { transition: opacity 250ms; }
+.opening-closing { position: absolute; inset: 0; display: grid; place-items: center; }
+.opening-closing h1 { margin: 0; font: 700 260px/1 Arial, sans-serif; color: #207f7b; }
+#editorial-opening:not([data-mode="closing"]) .opening-closing,
+#editorial-opening[data-mode="closing"] .opening-cover,
+#editorial-opening[data-mode="closing"] .opening-contents { visibility: hidden; }
+#stage:not([data-fallback="true"]) .opening-closing h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+#editorial-opening[data-mode="closing"] { color: #194c4d; }
+#editorial-opening[data-mode="closing"] .opening-masthead { border-color: #438880; }
+#editorial-opening[data-mode="closing"] .opening-footer { color: #386f6b; border-color: #43888050; }
 #stage[data-fallback="true"] .opening-chapters { position: absolute; top: calc(390px + var(--extra-y, 0px)); left: 160px; right: 160px; display: grid; grid-template-columns: repeat(var(--chapters), minmax(0, 1fr)); gap: 24px; }
 #stage[data-fallback="true"] .opening-chapters button {
   position: relative; inset: auto; width: 100%; height: 470px; color: var(--ink);

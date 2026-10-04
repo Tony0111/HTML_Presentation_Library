@@ -67,7 +67,7 @@ with sync_playwright() as p:
     ready(page)
     page.wait_for_timeout(500)
     check('cover starts and uses one WebGL canvas', page.locator('#spatial canvas').count() == 1)
-    check('19 slides and 4 chapters', page.evaluate('PRESENTATION.config.slides.length === 19 && PRESENTATION.config.chapters.length === 4'))
+    check('20 slides and 4 chapters', page.evaluate('PRESENTATION.config.slides.length === 20 && PRESENTATION.config.chapters.length === 4'))
     check('cover title has a continuous transform animation', page.evaluate('''() =>
       Array.from(document.querySelectorAll('.opening-cover h1 span')).every(span =>
         getComputedStyle(span).animationName === 'title-shift' && getComputedStyle(span).animationIterationCount === 'infinite'
@@ -174,7 +174,7 @@ with sync_playwright() as p:
     for index, slide in enumerate(slides):
         goto(page, index)
         check(slide['id'] + ' no runtime error', page.locator('#error').is_hidden())
-        if slide['type'] not in ('cover', 'contents'):
+        if slide['type'] not in ('cover', 'contents', 'closing'):
             check(slide['id'] + ' reading page present', page.locator('#slide').is_visible())
             check(slide['id'] + ' images loaded', page.evaluate('Array.from(document.querySelectorAll("#slide img")).every(i => i.complete && i.naturalWidth > 0)'))
             check(slide['id'] + ' body clears footer', page.evaluate('''() => {
@@ -184,7 +184,7 @@ with sync_playwright() as p:
             if slide['type'] == 'statement':
                 check(slide['id'] + ' subtitle rendered', page.locator('.statement-layout .slide-quote').count() == 1)
         shot(page, 'page-' + slide['id'])
-        if slide['type'] not in ('cover', 'contents'):
+        if slide['type'] not in ('cover', 'contents', 'closing'):
             palette = page.locator('#slide').get_attribute('data-palette')
             expected = 'cyan' if page.evaluate('PRESENTATION.state.chapterSelected % 2 === 0') else 'orange'
             check(slide['id'] + ' reading palette matches chapter screen', palette == expected)
@@ -232,10 +232,35 @@ with sync_playwright() as p:
     page.keyboard.press('ArrowRight')
     page.wait_for_function('!PRESENTATION.state.busy')
     check('last page does not advance', page.evaluate('PRESENTATION.state.index === PRESENTATION.config.slides.length - 1'))
+    check('last page is Thanks, not chapter directory', page.evaluate('PRESENTATION.config.slides.at(-1).type === "closing"') and page.locator('#stage').get_attribute('data-opening') == 'closing')
+    page.wait_for_function('ThanksParticles.inspect().morph === 1')
+    check('Thanks reuses the single WebGL canvas', page.locator('#spatial canvas').count() == 1)
+    check('Library effect uses 12000 particles', page.evaluate('ThanksParticles.inspect().count === 12000'))
+    shot(page, 'thanks-desktop')
+    page.mouse.move(1350, 280)
+    page.wait_for_timeout(400)
+    shot(page, 'thanks-pointer')
+    check('Thanks particles move and respond to pointer', sum(ImageStat.Stat(ImageChops.difference(Image.open(SHOTS / 'thanks-desktop.png'), Image.open(SHOTS / 'thanks-pointer.png'))).mean) > 0.1)
+    page.keyboard.press('ArrowLeft')
+    page.wait_for_function('!PRESENTATION.state.busy')
+    check('Thanks returns to references with left arrow', page.evaluate('PRESENTATION.config.slides[PRESENTATION.state.index].type === "references"'))
+    check('leaving Thanks stops animation frame', page.evaluate('!SpatialStage.inspect().framePending'))
+    page.keyboard.press('ArrowRight')
+    page.wait_for_function('!PRESENTATION.state.busy')
+    check('references advances to Thanks', page.locator('#stage').get_attribute('data-opening') == 'closing')
+    shot(page, 'thanks-sphere')
+    check('Thanks enters as a particle sphere', page.evaluate('ThanksParticles.inspect().morph < 0.5'))
+    page.wait_for_function('ThanksParticles.inspect().morph === 1')
+    shot(page, 'thanks-formed')
+    check('sphere visibly morphs into Thanks text', sum(ImageStat.Stat(ImageChops.difference(Image.open(SHOTS / 'thanks-sphere.png'), Image.open(SHOTS / 'thanks-formed.png'))).mean) > 1)
 
     for w, h in [(1920, 1080), (1440, 900), (2560, 1080), (390, 844), (844, 390)]:
         page.set_viewport_size({'width': w, 'height': h})
-        for index, name in [(0, 'cover'), (1, 'contents'), (2, 'points'), (5, 'points-orange')]:
+        page.wait_for_function('''() => {
+          const r = document.querySelector('#stage').getBoundingClientRect();
+          return Math.abs(r.width-innerWidth)<1 && Math.abs(r.height-innerHeight)<1;
+        }''')
+        for index, name in [(0, 'cover'), (1, 'contents'), (2, 'points'), (5, 'points-orange'), (19, 'thanks')]:
             goto(page, index)
             check(f'{name} fits {w}x{h}', page.evaluate('''() => {
               const r = document.querySelector('#stage').getBoundingClientRect();
@@ -255,6 +280,19 @@ with sync_playwright() as p:
                 shot(page, name + '-mobile')
             if (w, h) == (2560, 1080):
                 shot(page, name + '-wide')
+            if index == 19:
+                page.wait_for_function('ThanksParticles.inspect().morph === 1')
+                check(f'Thanks word fits {w}x{h}', page.evaluate('ThanksParticles.inspect().textWidth < parseFloat(getComputedStyle(document.querySelector("#stage")).width) * 0.85'))
+                check(f'Thanks canvas has rendered particles {w}x{h}', page.evaluate('''() => {
+                  const source = document.querySelector('#spatial canvas');
+                  const canvas = document.createElement('canvas'); canvas.width = 160; canvas.height = 90;
+                  const g = canvas.getContext('2d'); g.drawImage(source, 0, 0, 160, 90);
+                  const pixels = g.getImageData(0, 0, 160, 90).data;
+                  let visible = 0;
+                  for(let i=3;i<pixels.length;i+=4) if(pixels[i]>20) visible++;
+                  return visible > 100;
+                }'''))
+                shot(page, f'thanks-{w}x{h}')
 
     page.set_viewport_size({'width': 1600, 'height': 900})
     page.keyboard.press('f')
@@ -280,6 +318,13 @@ with sync_playwright() as p:
     reduced_page.keyboard.press('Enter')
     reduced_page.wait_for_function('PRESENTATION.state.index === 2 && !PRESENTATION.state.busy')
     check('reduced motion reaches reading page', True)
+    goto(reduced_page, 19)
+    check('reduced motion shows completed Thanks without animation', reduced_page.evaluate('ThanksParticles.inspect().morph === 1 && ThanksParticles.inspect().time === 0'))
+    shot(reduced_page, 'thanks-reduced-before')
+    reduced_page.mouse.move(1300, 450)
+    reduced_page.wait_for_timeout(300)
+    shot(reduced_page, 'thanks-reduced-after')
+    check('reduced motion Thanks stays static', ImageChops.difference(Image.open(SHOTS / 'thanks-reduced-before.png'), Image.open(SHOTS / 'thanks-reduced-after.png')).getbbox() is None)
     reduced_page.close()
 
     fallback = context.new_page()
@@ -295,6 +340,9 @@ with sync_playwright() as p:
     fallback.locator('[data-chapter="1"]').click()
     fallback.wait_for_function('!PRESENTATION.state.busy')
     check('fallback chapter click reaches content', fallback.evaluate('PRESENTATION.state.index === 5'))
+    goto(fallback, 19)
+    check('WebGL failure retains visible Thanks text', fallback.locator('.opening-closing h1').is_visible() and fallback.locator('.opening-closing h1').inner_text() == 'Thanks')
+    shot(fallback, 'thanks-fallback')
     fallback.close()
     check('no remote dependencies', not remote)
     check('no JavaScript errors', not errors)

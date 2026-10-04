@@ -8,6 +8,7 @@
   const ease = t => t * t * (3 - 2 * t);
   let renderer, host, config, overlay, coverScene, coverCamera, screenScene, camera;
   let coverMaterial, screenRoot, reduced, failed = false, active = false;
+  let closingScene, closingCamera;
   let mode = 'cover', selected = 0, raf = null, last = 0, gate = 0;
   let width = W, height = H, progress = 0, from = 0, to = 0, start = 0, resolve = null;
   let animating = false, hover = false, seen = false, carouselAngle = 0, carouselTarget = 0;
@@ -179,6 +180,7 @@
     overlay.setAttribute('aria-label', '封面与章节目录');
     const cover = config.slides.find(s => s.type === 'cover');
     const contents = config.slides.find(s => s.type === 'contents');
+    const closing = config.slides.find(s => s.type === 'closing');
     overlay.innerHTML = `
       <header class="opening-masthead"><span class="opening-brand">${esc(config.meta.display || config.meta.title)}</span></header>
       <div class="opening-cover">
@@ -197,6 +199,7 @@
             <span class="opening-chapter-en">${esc(c.english)}</span><span class="opening-chapter-arrow" aria-hidden="true">↗</span>
           </button></li>`).join('')}</ol>
       </div>
+      <div class="opening-closing"><h1>${esc(closing ? closing.title.join(' ') : 'Thanks')}</h1></div>
       <footer class="opening-footer"><span>${esc(config.meta.title)}<span class="opening-footer-separator">/</span>${esc(config.meta.author)}</span>
         <span class="opening-footer-index"></span></footer>`;
     document.getElementById('stage').appendChild(overlay);
@@ -231,13 +234,17 @@
       renderer.domElement.style.cssText = 'width:100%;height:100%;display:block';
       host.appendChild(renderer.domElement);
       createCover(); createScreens();
+      const closing = ThanksParticles.init();
+      closingScene = closing.scene; closingCamera = closing.camera;
       renderer.compile(coverScene, coverCamera);
       renderer.compile(screenScene, camera);
+      renderer.compile(closingScene, closingCamera);
     } catch (error) {
       failed = true;
       document.getElementById('stage').dataset.fallback = 'true';
     }
     addEventListener('pointermove', event => {
+      if (active && !reduced && mode === 'closing') ThanksParticles.move(event.clientX / innerWidth, 1 - event.clientY / innerHeight);
       if (!active || reduced || mode !== 'cover') return;
       hover = true; target.set(event.clientX / innerWidth, 1 - event.clientY / innerHeight);
       if (!seen) { pointer.copy(target); seen = true; }
@@ -253,7 +260,8 @@
   function show(name, options = {}) {
     settle(false);
     if (raf === null) last = 0;
-    mode = name === 'cover' ? 'cover' : 'contents';
+    mode = name === 'cover' ? 'cover' : name === 'closing' ? 'closing' : 'contents';
+    if (mode === 'closing' && !failed) ThanksParticles.show(reduced);
     selected = Math.max(0, Math.min(config.chapters.length - 1, options.chapter || 0));
     const step = Math.PI * 2 / Math.max(1, config.chapters.length);
     const requested = -selected * step;
@@ -262,14 +270,15 @@
     active = true; overlay.hidden = false;
     overlay.dataset.mode = mode; overlay.dataset.reduced = String(reduced);
     document.getElementById('stage').dataset.opening = mode;
-    overlay.querySelector('.opening-footer-index').textContent = mode === 'cover' ? '01 / COVER' : '02 / CONTENTS';
+    overlay.querySelector('.opening-footer-index').textContent = mode === 'cover' ? '01 / COVER'
+      : mode === 'closing' ? pad(config.slides.length) + ' / THANKS' : '02 / CONTENTS';
     chapterButtons.forEach((button, i) => {
       button.classList.toggle('is-selected', i === selected);
       if (i === selected) button.setAttribute('aria-current', 'true');
       else button.removeAttribute('aria-current');
     });
     from = progress; to = mode === 'contents' ? 1 : 0; start = performance.now();
-    animating = !reduced && !failed && Math.abs(from - to) > 0.001;
+    animating = mode !== 'closing' && !reduced && !failed && Math.abs(from - to) > 0.001;
     if (!animating) { progress = to; draw(start); loop(); return Promise.resolve(true); }
     loop();
     return new Promise(done => { resolve = done; });
@@ -320,6 +329,9 @@
     if (mode === 'cover') {
       coverMaterial.uniforms.gate.value = gate;
       renderer.render(coverScene, coverCamera);
+    } else if (mode === 'closing') {
+      ThanksParticles.update(now, dt);
+      renderer.render(closingScene, closingCamera);
     } else {
       updateScreens(dt);
       renderer.render(screenScene, camera);
@@ -332,7 +344,7 @@
       raf = null;
       if (!active || document.hidden) return;
       draw(now);
-      if (mode === 'cover' || animating || carouselAngle !== carouselTarget) raf = requestAnimationFrame(frame);
+      if (mode === 'cover' || (mode === 'closing' && !reduced) || animating || (mode === 'contents' && carouselAngle !== carouselTarget)) raf = requestAnimationFrame(frame);
       else last = 0;
     };
     raf = requestAnimationFrame(frame);
@@ -355,6 +367,7 @@
     camera.fov = 2 * Math.atan(h / 2 / F) * 180 / Math.PI;
     camera.updateProjectionMatrix();
     coverMaterial.uniforms.asp.value = w / h;
+    ThanksParticles.resize(w, h, scale, renderer.getPixelRatio());
     draw(performance.now());
     if (raf === null) last = 0;
   }
