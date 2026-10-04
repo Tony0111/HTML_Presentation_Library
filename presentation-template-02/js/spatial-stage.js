@@ -84,15 +84,14 @@
     const canvas = document.createElement('canvas');
     canvas.width = 1280; canvas.height = 720;
     const g = canvas.getContext('2d');
-    const colors = [['#e0f7f1', '#64c8be'], ['#236f70', '#12494e'], ['#ffe4bc', '#f1aa68'], ['#bceee7', '#3ca9a8']];
-    const palette = colors[index % colors.length];
-    const dark = index % 4 === 1;
-    const ink = dark ? '#effcf8' : '#174b4c';
-    const muted = dark ? '#b9e8df' : '#356a68';
+    const style = getComputedStyle(chapterButtons[index]);
+    const color = name => style.getPropertyValue(name).trim();
+    const ink = color('--ink'), muted = color('--muted');
     const grad = g.createLinearGradient(0, 0, canvas.width, canvas.height);
-    grad.addColorStop(0, palette[0]); grad.addColorStop(1, palette[1]);
+    [[0, '--palette-start'], [0.36, '--palette-mid'], [0.62, '--palette-main'],
+      [0.78, '--palette-blend'], [1, '--palette-end']].forEach(([stop, name]) => grad.addColorStop(stop, color(name)));
     g.fillStyle = grad; g.fillRect(0, 0, canvas.width, canvas.height);
-    g.strokeStyle = dark ? 'rgba(211,247,235,0.22)' : 'rgba(28,113,108,0.18)';
+    g.strokeStyle = 'rgba(28,113,108,0.18)';
     g.lineWidth = 1.3;
     for (let i = 0; i < 24; i++) {
       g.beginPath();
@@ -104,7 +103,7 @@
     }
     g.fillStyle = muted; g.font = '500 23px "Presentation Mono", monospace';
     g.fillText('CHAPTER / ' + chapter.number, 56, 74);
-    g.strokeStyle = dark ? '#71b9b1' : '#5da9a0';
+    g.strokeStyle = color('--primary-light');
     g.beginPath(); g.moveTo(56, 108); g.lineTo(1224, 108); g.stroke();
     g.fillStyle = ink; g.font = 'italic 230px Georgia, serif';
     g.fillText(chapter.number, 48, 324);
@@ -146,7 +145,7 @@
     config.chapters.forEach((chapter, i) => {
       const group = new THREE.Group(); screenRoot.add(group);
       group.scale.setScalar(PANEL_SCALE);
-      const front = new THREE.MeshStandardMaterial({ map: panelTexture(chapter, i), roughness: 0.53, metalness: 0.05 });
+      const front = new THREE.MeshBasicMaterial({ map: panelTexture(chapter, i) });
       const chassis = new THREE.Mesh(new THREE.BoxGeometry(PANEL_WIDTH, PANEL_HEIGHT, PANEL_DEPTH), [edgeMat, edgeMat, edgeMat, edgeMat, backMat, backMat]);
       chassis.castShadow = true; chassis.receiveShadow = true; group.add(chassis);
       const screen = new THREE.Mesh(new THREE.PlaneGeometry(PANEL_WIDTH, PANEL_HEIGHT), front);
@@ -187,7 +186,8 @@
     document.getElementById('stage').appendChild(overlay);
     if (window.lucide) lucide.createIcons();
     chapterButtons = Array.from(overlay.querySelectorAll('[data-chapter]'));
-    chapterButtons.forEach(button => {
+    chapterButtons.forEach((button, index) => {
+      button.dataset.palette = index % 2 === 0 ? 'cyan' : 'orange';
       const i = Number(button.dataset.chapter);
       button.addEventListener('focus', () => {
         if (button.matches(':focus-visible')) emit({ type: 'selectChapterTo', index: i });
@@ -269,10 +269,6 @@
     carouselAngle += (carouselTarget - carouselAngle) * turn;
     if (Math.abs(carouselTarget - carouselAngle) < 0.0001) carouselAngle = carouselTarget;
     screenRoot.rotation.y = carouselAngle;
-    panels.forEach((panel, i) => {
-      const amount = i === selected ? 0.16 : 0.01;
-      panel.front.emissive.setRGB(amount * 0.12, amount * 0.7, amount * 0.65);
-    });
     // The live 3D projections also provide aligned, accessible pointer targets.
     screenRoot.updateMatrixWorld(true); camera.updateMatrixWorld(true);
     chapterButtons.forEach((button, i) => {

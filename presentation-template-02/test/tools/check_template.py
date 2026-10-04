@@ -44,6 +44,13 @@ def variance(path):
     return sum(ImageStat.Stat(Image.open(path).convert('RGB')).stddev)
 
 
+def color_counts(image):
+    pixels = list(image.convert('RGB').getdata())
+    cyan = sum(g > r + 10 and b > r + 5 for r, g, b in pixels)
+    orange = sum(r > g + 20 and g > b + 15 for r, g, b in pixels)
+    return cyan, orange
+
+
 with sync_playwright() as p:
     options = {'headless': True, 'args': ['--enable-unsafe-swiftshader', '--use-angle=swiftshader', '--disable-background-networking']}
     if CHROME.exists():
@@ -144,6 +151,19 @@ with sync_playwright() as p:
     page.wait_for_function('!PRESENTATION.state.busy')
     check('temporary contents returns to same reading page', page.evaluate('PRESENTATION.config.slides[PRESENTATION.state.index].id === "S08"'))
     goto(page, 1)
+    for chapter in range(4):
+        page.keyboard.press(str(chapter + 1))
+        page.wait_for_function('!PRESENTATION.state.busy')
+        settled_ring(page)
+        palette = 'cyan' if chapter % 2 == 0 else 'orange'
+        check(f'chapter {chapter + 1} screen uses {palette} palette', page.locator('[data-chapter]').nth(chapter).get_attribute('data-palette') == palette)
+        shot(page, f'contents-chapter-{chapter + 1}')
+        bounds = page.locator('[data-chapter]').nth(chapter).bounding_box()
+        image = Image.open(SHOTS / f'contents-chapter-{chapter + 1}.png')
+        screen = image.crop((bounds['x'], bounds['y'], bounds['x'] + bounds['width'], bounds['y'] + bounds['height'])).resize((160, 90))
+        cyan, orange = color_counts(screen)
+        check(f'chapter {chapter + 1} screen visibly contains both colors', cyan > 100 and orange > 100)
+        check(f'chapter {chapter + 1} screen has correct dominant color', cyan > orange if palette == 'cyan' else orange > cyan)
     page.locator('[data-chapter="2"]').click()
     page.wait_for_function('!PRESENTATION.state.busy')
     check('screen click enters evidence chapter', page.evaluate('PRESENTATION.config.slides[PRESENTATION.state.index].id === "S13"'))
@@ -162,6 +182,21 @@ with sync_playwright() as p:
             if slide['type'] == 'statement':
                 check(slide['id'] + ' subtitle rendered', page.locator('.statement-layout .slide-quote').count() == 1)
         shot(page, 'page-' + slide['id'])
+        if slide['type'] not in ('cover', 'contents'):
+            palette = page.locator('#slide').get_attribute('data-palette')
+            expected = 'cyan' if page.evaluate('PRESENTATION.state.chapterSelected % 2 === 0') else 'orange'
+            check(slide['id'] + ' reading palette matches chapter screen', palette == expected)
+            check(slide['id'] + ' has a real two-color gradient', page.locator('#slide').evaluate('''(el) => {
+              const style = getComputedStyle(el);
+              const button = document.querySelectorAll('.opening-chapters [data-chapter]')[PRESENTATION.state.chapterSelected];
+              const screen = getComputedStyle(button);
+              return style.backgroundImage.includes('linear-gradient') &&
+                ['--palette-start', '--palette-main', '--palette-end'].every(name =>
+                  style.getPropertyValue(name).trim() === screen.getPropertyValue(name).trim());
+            }'''))
+            cyan, orange = color_counts(Image.open(SHOTS / ('page-' + slide['id'] + '.png')).resize((160, 90)))
+            check(slide['id'] + ' visibly includes cyan and orange', cyan > 100 and orange > 100)
+            check(slide['id'] + ' has correct dominant color', cyan > orange if palette == 'cyan' else orange > cyan)
 
     goto(page, 4)
     page.keyboard.press('ArrowRight')
@@ -188,7 +223,7 @@ with sync_playwright() as p:
 
     for w, h in [(1920, 1080), (1440, 900), (2560, 1080), (390, 844), (844, 390)]:
         page.set_viewport_size({'width': w, 'height': h})
-        for index, name in [(0, 'cover'), (1, 'contents'), (2, 'points')]:
+        for index, name in [(0, 'cover'), (1, 'contents'), (2, 'points'), (5, 'points-orange')]:
             goto(page, index)
             check(f'{name} fits {w}x{h}', page.evaluate('''() => {
               const r = document.querySelector('#stage').getBoundingClientRect();
