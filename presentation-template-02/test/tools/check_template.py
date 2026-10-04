@@ -75,6 +75,7 @@ with sync_playwright() as p:
     '''))
     check('cover does not show a template number marker', page.locator('.opening-mark').count() == 0)
     check('cover has no right-side jump button', page.locator('.opening-cover button').count() == 0)
+    check('spatial pages no longer use a ruled brand masthead', page.locator('.opening-masthead').count() == 0)
     # Freeze the intentional title animation while comparing lens-only pixels below.
     page.evaluate("document.querySelectorAll('.opening-cover h1 span').forEach(span => span.style.animation = 'none')")
     shot(page, 'cover-desktop')
@@ -116,6 +117,7 @@ with sync_playwright() as p:
     front = page.locator('[data-chapter]').nth(0).bounding_box()
     check('desktop screen clears footer', front['y'] + front['height'] < page.locator('.opening-footer').bounding_box()['y'])
     check('desktop screen width is below half the viewport', front['width'] < 800)
+    check('desktop screen moved toward canvas center', front['y'] + front['height'] / 2 < 530)
     page.mouse.move(front['x'] + front['width'] / 2, front['y'] + front['height'] / 2)
     page.keyboard.press('ArrowRight')
     page.wait_for_function('!PRESENTATION.state.busy')
@@ -160,6 +162,8 @@ with sync_playwright() as p:
         check(f'chapter {chapter + 1} screen uses {palette} palette', page.locator('[data-chapter]').nth(chapter).get_attribute('data-palette') == palette)
         shot(page, f'contents-chapter-{chapter + 1}')
         bounds = page.locator('[data-chapter]').nth(chapter).bounding_box()
+        heading = page.locator('.opening-contents-head').bounding_box()
+        check(f'chapter {chapter + 1} screen clears compact heading', bounds['y'] > heading['y'] + heading['height'] + 20)
         image = Image.open(SHOTS / f'contents-chapter-{chapter + 1}.png')
         screen = image.crop((bounds['x'], bounds['y'], bounds['x'] + bounds['width'], bounds['y'] + bounds['height'])).resize((160, 90))
         cyan, orange = color_counts(screen)
@@ -280,6 +284,7 @@ with sync_playwright() as p:
               return Math.abs(r.width-innerWidth)<1 && Math.abs(r.height-innerHeight)<1 && document.documentElement.scrollWidth<=innerWidth;
             }'''))
             if index == 1:
+                settled_ring(page)
                 check(f'active chapter target framed {w}x{h}', page.evaluate('''() => {
                   const b = document.querySelector(`[data-chapter="${PRESENTATION.state.chapterSelected}"]`);
                   const r = b && b.getBoundingClientRect();
@@ -304,6 +309,11 @@ with sync_playwright() as p:
                   let visible = 0;
                   for(let i=3;i<pixels.length;i+=4) if(pixels[i]>20) visible++;
                   return visible > 100;
+                }'''))
+                check(f'compact directory heading clears screen {w}x{h}', page.evaluate('''() => {
+                  const heading = document.querySelector('.opening-contents-head').getBoundingClientRect();
+                  const button = document.querySelectorAll('.opening-chapters [data-chapter]')[PRESENTATION.state.chapterSelected].getBoundingClientRect();
+                  return heading.top >= 0 && heading.bottom + 4 < button.top;
                 }'''))
                 shot(page, f'thanks-{w}x{h}')
 

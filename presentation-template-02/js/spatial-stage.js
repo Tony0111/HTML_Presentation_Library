@@ -182,7 +182,6 @@
     const contents = config.slides.find(s => s.type === 'contents');
     const closing = config.slides.find(s => s.type === 'closing');
     overlay.innerHTML = `
-      <header class="opening-masthead"><span class="opening-brand">${esc(config.meta.display || config.meta.title)}</span></header>
       <div class="opening-cover">
         <div class="opening-kicker">${esc(config.meta.kicker)}</div>
         <h1>${cover.title.map((line, i) => `<span${i === cover.title.length - 1 ? ' class="opening-title-accent"' : ''}>${esc(line)}</span>`).join('')}</h1>
@@ -290,7 +289,7 @@
     camera.position.set(0, 115, F);
     camera.lookAt(0, -20, 0);
     screenRoot.scale.setScalar(contentsScale);
-    screenRoot.position.set(0, -50, -80 * (1 - progress));
+    screenRoot.position.set(0, width / height < 0.8 ? -50 : 20, -80 * (1 - progress));
     const turn = 1 - Math.exp(-dt * 10);
     carouselAngle += (carouselTarget - carouselAngle) * turn;
     if (Math.abs(carouselTarget - carouselAngle) < 0.0001) carouselAngle = carouselTarget;
