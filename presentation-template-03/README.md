@@ -29,7 +29,7 @@
 | 审阅入口 | [review.html](review.html) |
 | 开发工作区 | `E:/Design-agent-template-03`，分支 `agent/template-03` |
 
-本 README 描述当前实现。继承的需求、设计方向与 P0–P6 文档记录旧编辑式方案，其中主题、页数和导航描述可能过时，不应据此覆盖模板 3 的现有方向。
+本 README 描述当前实现。旧的编辑式方案、P0–P6 执行计划与实验记录已从交付目录移除；主题、页数与导航以本 README、AI 内容指南和正式入口测试为准。
 
 ## 当前开场
 
@@ -90,6 +90,7 @@ presentation-template-03/
 
 ## 文档
 
+- [CREATION-WORKFLOW.md](CREATION-WORKFLOW.md)：从资料到交付的制作、检查、冻结与离线验收顺序。
 - [AI-CONTENT-GUIDE.md](AI-CONTENT-GUIDE.md)：给其他 AI 的内容制作、章节组织、页型和审阅操作指南，并记录场景与内容底线。
 
 历史设计分镜、旧空间原型和实验截图已从交付目录移除；当前实现以本 README、AI 内容指南和正式入口测试为准。
