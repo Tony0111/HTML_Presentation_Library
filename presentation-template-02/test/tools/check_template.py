@@ -1,5 +1,6 @@
 """Offline browser regression and visual evidence for Template 02."""
 from pathlib import Path
+from io import BytesIO
 import json
 from PIL import Image, ImageChops, ImageStat
 from playwright.sync_api import sync_playwright
@@ -162,7 +163,8 @@ with sync_playwright() as p:
         image = Image.open(SHOTS / f'contents-chapter-{chapter + 1}.png')
         screen = image.crop((bounds['x'], bounds['y'], bounds['x'] + bounds['width'], bounds['y'] + bounds['height'])).resize((160, 90))
         cyan, orange = color_counts(screen)
-        check(f'chapter {chapter + 1} screen visibly contains both colors', cyan > 100 and orange > 100)
+        check(f'chapter {chapter + 1} screen visibly contains both colors', cyan > 20 and orange > 20)
+        check(f'chapter {chapter + 1} screen starts near white', min(ImageStat.Stat(screen.crop((4, 4, 16, 7))).mean) > 235)
         check(f'chapter {chapter + 1} screen has correct dominant color', cyan > orange if palette == 'cyan' else orange > cyan)
     page.locator('[data-chapter="2"]').click()
     page.wait_for_function('!PRESENTATION.state.busy')
@@ -191,11 +193,21 @@ with sync_playwright() as p:
               const button = document.querySelectorAll('.opening-chapters [data-chapter]')[PRESENTATION.state.chapterSelected];
               const screen = getComputedStyle(button);
               return style.backgroundImage.includes('linear-gradient') &&
-                ['--palette-start', '--palette-main', '--palette-end'].every(name =>
+                ['--palette-start', '--palette-main', '--palette-glow'].every(name =>
                   style.getPropertyValue(name).trim() === screen.getPropertyValue(name).trim());
             }'''))
             cyan, orange = color_counts(Image.open(SHOTS / ('page-' + slide['id'] + '.png')).resize((160, 90)))
-            check(slide['id'] + ' visibly includes cyan and orange', cyan > 100 and orange > 100)
+            check(slide['id'] + ' visibly includes cyan and orange', cyan > 20 and orange > 20)
+            image = Image.open(SHOTS / ('page-' + slide['id'] + '.png')).convert('RGB')
+            check(slide['id'] + ' upper-left remains near white', min(ImageStat.Stat(image.crop((10, 10, 100, 35))).mean) > 235)
+            bottom = ImageStat.Stat(image.crop((1500, 850, 1580, 890))).mean
+            check(slide['id'] + ' lower-right carries chapter primary', bottom[1] > bottom[0] + 10 if palette == 'cyan' else bottom[0] > bottom[1] + 15)
+            check(slide['id'] + ' includes shared contour bitmap', page.locator('#slide').evaluate('(el) => getComputedStyle(el).backgroundImage.includes("data:image/png")'))
+            if index in (2, 5):
+                flat = Image.open(BytesIO(page.screenshot(style='#stage { --contour-texture: none !important; } .presentation-controls { visibility: hidden !important; }'))).convert('RGB')
+                difference = ImageChops.difference(image, flat)
+                check(slide['id'] + ' contour lines visibly render', sum(ImageStat.Stat(difference.crop((1050, 620, 1500, 800))).mean) > 0.2)
+                check(slide['id'] + ' contour lines leave title area clear', sum(ImageStat.Stat(difference.crop((80, 100, 600, 250))).mean) < 0.1)
             check(slide['id'] + ' has correct dominant color', cyan > orange if palette == 'cyan' else orange > cyan)
 
     goto(page, 4)

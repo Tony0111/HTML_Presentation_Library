@@ -24,6 +24,39 @@
   const esc = value => SlideRenderer.escape(value);
   const pad = n => String(n).padStart(2, '0');
 
+  function drawContours(g, w, h) {
+    g.save(); g.scale(w / W, h / H);
+    for (let i = -32; i < 112; i++) {
+      g.beginPath();
+      for (let y = -20; y <= 1100; y += 6) {
+        const bend = Math.sin(y / 400 - 0.72) * 150 + Math.sin(y / 180 + i * 0.032) * 50;
+        const x = 720 + i * 15 + bend + Math.sin(i * 0.038) * 74;
+        if (y === -20) g.moveTo(x, y); else g.lineTo(x, y);
+      }
+      const fade = clamp((i + 18) / 38);
+      g.strokeStyle = i % 5 === 0 ? `rgba(255,255,255,${0.52 * fade})` : `rgba(12,110,108,${0.27 * fade})`;
+      g.lineWidth = i % 5 === 0 ? 1.6 : 1.1; g.stroke();
+    }
+    g.restore();
+  }
+
+  function contourTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const g = canvas.getContext('2d');
+    drawContours(g, W, H);
+    // Fade the shared texture away from the text-heavy upper-left area.
+    g.globalCompositeOperation = 'destination-in';
+    const mask = g.createLinearGradient(0, 0, W, H);
+    mask.addColorStop(0, 'transparent'); mask.addColorStop(0.35, 'transparent');
+    mask.addColorStop(0.75, 'rgba(0,0,0,0.7)'); mask.addColorStop(1, '#000');
+    g.fillStyle = mask; g.fillRect(0, 0, W, H);
+    document.getElementById('stage').style.setProperty('--contour-texture', `url("${canvas.toDataURL('image/png')}")`);
+    return canvas;
+  }
+
+  let contours;
+
   function lineTexture() {
     const canvas = document.createElement('canvas');
     canvas.width = 1920; canvas.height = 1080;
@@ -37,18 +70,7 @@
     orange.addColorStop(0.55, 'rgba(255,169,82,0)');
     orange.addColorStop(1, 'rgba(249,153,65,0.84)');
     g.fillStyle = orange; g.fillRect(0, 0, 1920, 1080);
-    // Dense contour lines supply the structure that makes lens displacement visible.
-    for (let i = -32; i < 112; i++) {
-      g.beginPath();
-      for (let y = -20; y <= 1100; y += 6) {
-        const bend = Math.sin(y / 400 - 0.72) * 150 + Math.sin(y / 180 + i * 0.032) * 50;
-        const x = 720 + i * 15 + bend + Math.sin(i * 0.038) * 74;
-        if (y === -20) g.moveTo(x, y); else g.lineTo(x, y);
-      }
-      const fade = clamp((i + 18) / 38);
-      g.strokeStyle = i % 5 === 0 ? `rgba(255,255,255,${0.52 * fade})` : `rgba(12,110,108,${0.27 * fade})`;
-      g.lineWidth = i % 5 === 0 ? 1.6 : 1.1; g.stroke();
-    }
+    drawContours(g, W, H);
     const wash = g.createLinearGradient(0, 0, 1120, 0);
     wash.addColorStop(0, 'rgba(246,251,245,0.94)');
     wash.addColorStop(0.68, 'rgba(246,251,245,0.72)');
@@ -88,19 +110,13 @@
     const color = name => style.getPropertyValue(name).trim();
     const ink = color('--ink'), muted = color('--muted');
     const grad = g.createLinearGradient(0, 0, canvas.width, canvas.height);
-    [[0, '--palette-start'], [0.36, '--palette-mid'], [0.62, '--palette-main'],
-      [0.78, '--palette-blend'], [1, '--palette-end']].forEach(([stop, name]) => grad.addColorStop(stop, color(name)));
+    [[0, '--palette-start'], [0.32, '--palette-start'], [0.52, '--palette-mid'],
+      [0.82, '--palette-blend'], [1, '--palette-main']].forEach(([stop, name]) => grad.addColorStop(stop, color(name)));
     g.fillStyle = grad; g.fillRect(0, 0, canvas.width, canvas.height);
-    g.strokeStyle = 'rgba(28,113,108,0.18)';
-    g.lineWidth = 1.3;
-    for (let i = 0; i < 24; i++) {
-      g.beginPath();
-      for (let x = -10; x <= 1290; x += 8) {
-        const y = 366 + i * 11 + Math.sin(x / 250 + index * 0.6) * 54;
-        if (x === -10) g.moveTo(x, y); else g.lineTo(x, y);
-      }
-      g.stroke();
-    }
+    const accent = g.createLinearGradient(0, canvas.height, canvas.width * 0.45, 0);
+    accent.addColorStop(0, color('--palette-glow')); accent.addColorStop(0.4, 'transparent');
+    g.fillStyle = accent; g.fillRect(0, 0, canvas.width, canvas.height);
+    g.drawImage(contours, 0, 0, canvas.width, canvas.height);
     g.fillStyle = muted; g.font = '500 23px "Presentation Mono", monospace';
     g.fillText('CHAPTER / ' + chapter.number, 56, 74);
     g.strokeStyle = color('--primary-light');
@@ -205,6 +221,7 @@
     host = el; config = cfg;
     reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).get('reduced') === '1';
     createOverlay();
+    contours = contourTexture();
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
       renderer.outputColorSpace = THREE.SRGBColorSpace;

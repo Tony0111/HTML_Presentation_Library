@@ -2,26 +2,27 @@
 html, body { background: #fff4e4; }
 #stage { background: #fff4e4; }
 #slide, .opening-chapters button {
-  --palette-start: #dbf4ef; --palette-mid: #a6dfd6; --palette-main: #69c6bd;
-  --palette-blend: #cbe2c2; --palette-end: #f2b47b;
+  --palette-start: #fcfdfb; --palette-mid: #eaf5f0; --palette-main: #60bdb5;
+  --palette-blend: #b6e0d7; --palette-glow: #f2b47b99;
   --ink: #173f40; --ink-soft: #2d5c59; --muted: #386861; --hair: #407c7566;
   --accent: #aa431f; --accent-light: #ee9454; --primary: #237d78; --primary-light: #75c8bd;
-  --surface: #eefbf5de; --surface-tint: #b9e7ddc9; --opposite-tint: #ffd5adc9;
+  --surface: #fffffff0; --surface-tint: #e1f2ecdf; --opposite-tint: #ffe9d2df;
   --surface-edge: #78b9ad66; --shadow: #174b4c18; --paper: #f1faf6;
   --paper-dim: #a3d9ce; --brick: var(--accent);
 }
 #slide[data-palette="orange"], .opening-chapters button[data-palette="orange"] {
-  --palette-start: #ffe3c4; --palette-mid: #f4bf8a; --palette-main: #eea566;
-  --palette-blend: #d7dabc; --palette-end: #78c8be;
+  --palette-start: #fdfcf9; --palette-mid: #fbf1e5; --palette-main: #edaa70;
+  --palette-blend: #f5d6b1; --palette-glow: #78c8be99;
   --ink: #4a3023; --ink-soft: #674431; --muted: #72513d; --hair: #95634466;
   --accent: #16635f; --accent-light: #55b2a6; --primary: #a34a22; --primary-light: #eda064;
-  --surface: #fff5e7de; --surface-tint: #f6cc9dc9; --opposite-tint: #9edbd1c9;
+  --surface: #fffffff0; --surface-tint: #fff0dfdf; --opposite-tint: #d7eee8df;
   --surface-edge: #d49d6866; --shadow: #79422218; --paper: #fff7ed; --paper-dim: #edc59c;
 }
 #slide {
   color: var(--ink);
-  background: linear-gradient(125deg, var(--palette-start), var(--palette-mid) 36%,
-    var(--palette-main) 62%, var(--palette-blend) 78%, var(--palette-end));
+  background-image: var(--contour-texture), linear-gradient(25deg, var(--palette-glow), transparent 28%),
+    linear-gradient(125deg, var(--palette-start) 32%, var(--palette-mid) 52%, var(--palette-blend) 82%, var(--palette-main));
+  background-size: 100% 100%; background-repeat: no-repeat;
 }
 #slide *, .presentation-controls * { letter-spacing: 0; }
 #slide h1 { font-size: 78px; margin: 36px 0 24px; }
