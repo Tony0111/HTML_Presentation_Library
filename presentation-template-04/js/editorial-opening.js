@@ -57,10 +57,14 @@
       // The last two are deliberately wider: one reaches the middle-lower field, the
       // final one starts at the top-right and ends before one third of the canvas.
       const layout = [
-        [.02, 610, 270, 108], [.13, 230, 410, 94], [.25, 475, 210, 112],
-        [.49, 315, 340, 106], [.62, 170, 540, 120], [.70, 265, 310, 112],
-        [.77, 85, 690, 128], [.84, 150, 470, 122], [.895, 32, 720, 146],
-        [.945, -55, 310, 158], [.987, -100, 255, 166]
+        // The left side returns to a fuller field, but stays narrower and irregular.
+        [.00, 460, 430, 72], [.055, 170, 640, 78], [.11, 375, 280, 68],
+        [.165, 245, 560, 74], [.22, 515, 330, 70], [.285, 135, 690, 82],
+        [.35, 430, 250, 76], [.42, 215, 530, 82], [.50, 350, 410, 88],
+        // Width increases visibly as the composition moves into the right focus.
+        [.61, 155, 590, 118], [.70, 250, 350, 106], [.78, 72, 720, 142],
+        [.85, 135, 510, 132], [.91, 20, 760, 164],
+        [.955, -55, 315, 184], [.992, -105, 255, 196]
       ];
       return layout.map(([position, top, height, baseWidth], i) => ({
         x: position * fieldWidth, y: top + (rand() - .5) * 34,
