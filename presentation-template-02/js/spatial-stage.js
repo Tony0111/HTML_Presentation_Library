@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   const W = 1920, H = 1080, F = 1600;
+  const PANEL_WIDTH = 720, PANEL_HEIGHT = 405, PANEL_DEPTH = 22;
   const clamp = n => Math.max(0, Math.min(1, n));
   const ease = t => t * t * (3 - 2 * t);
   let renderer, host, config, overlay, coverScene, coverCamera, screenScene, camera;
@@ -72,22 +73,22 @@
 
   function panelTexture(chapter, index) {
     const canvas = document.createElement('canvas');
-    canvas.width = 740; canvas.height = 1130;
+    canvas.width = 1280; canvas.height = 720;
     const g = canvas.getContext('2d');
     const colors = [['#fff0d5', '#ef954d'], ['#8b3f2a', '#52231e'], ['#ffd39d', '#dd6934'], ['#f7b166', '#c65331']];
     const palette = colors[index % colors.length];
     const dark = index % 4 === 1;
     const ink = dark ? '#fff3df' : '#5a2d21';
     const muted = dark ? '#f0bb8d' : '#965439';
-    const grad = g.createLinearGradient(0, 0, 740, 1130);
+    const grad = g.createLinearGradient(0, 0, canvas.width, canvas.height);
     grad.addColorStop(0, palette[0]); grad.addColorStop(1, palette[1]);
-    g.fillStyle = grad; g.fillRect(0, 0, 740, 1130);
+    g.fillStyle = grad; g.fillRect(0, 0, canvas.width, canvas.height);
     g.strokeStyle = dark ? 'rgba(255,232,202,0.22)' : 'rgba(131,65,38,0.18)';
     g.lineWidth = 1.3;
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < 24; i++) {
       g.beginPath();
-      for (let x = -10; x <= 750; x += 8) {
-        const y = 440 + i * 13 + Math.sin(x / 230 + index * 0.6) * 82;
+      for (let x = -10; x <= 1290; x += 8) {
+        const y = 366 + i * 11 + Math.sin(x / 250 + index * 0.6) * 54;
         if (x === -10) g.moveTo(x, y); else g.lineTo(x, y);
       }
       g.stroke();
@@ -95,20 +96,20 @@
     g.fillStyle = muted; g.font = '500 23px "Presentation Mono", monospace';
     g.fillText('CHAPTER / ' + chapter.number, 56, 74);
     g.strokeStyle = dark ? '#d99063' : '#c77a51';
-    g.beginPath(); g.moveTo(56, 108); g.lineTo(684, 108); g.stroke();
-    g.fillStyle = ink; g.font = 'italic 262px Georgia, serif';
-    g.fillText(chapter.number, 40, 378);
+    g.beginPath(); g.moveTo(56, 108); g.lineTo(1224, 108); g.stroke();
+    g.fillStyle = ink; g.font = 'italic 230px Georgia, serif';
+    g.fillText(chapter.number, 48, 324);
     g.font = '600 84px "Presentation Serif SC", serif';
-    g.fillText(chapter.title, 54, 850, 620);
+    g.fillText(chapter.title, 56, 510, 900);
     g.fillStyle = muted; g.font = '500 25px "Presentation Sans SC", sans-serif';
-    g.fillText(chapter.english, 56, 912, 620);
-    g.beginPath(); g.moveTo(56, 1000); g.lineTo(684, 1000); g.stroke();
+    g.fillText(chapter.english, 58, 566, 900);
+    g.beginPath(); g.moveTo(56, 628); g.lineTo(1224, 628); g.stroke();
     const begin = config.slides.findIndex(s => s.id === chapter.firstSlideId);
     const next = config.chapters[index + 1];
     const end = next ? config.slides.findIndex(s => s.id === next.firstSlideId) : config.slides.length;
     g.font = '22px "Presentation Mono", monospace';
-    g.fillText('P. ' + pad(begin + 1) + ' / ' + pad(end), 56, 1057);
-    g.font = '38px Georgia, serif'; g.fillText('↗', 642, 1057);
+    g.fillText('P. ' + pad(begin + 1) + ' / ' + pad(end), 56, 684);
+    g.font = '38px Georgia, serif'; g.fillText('↗', 1174, 684);
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
@@ -132,14 +133,14 @@
     const bezelMat = new THREE.MeshStandardMaterial({ color: '#4d2a24', roughness: 0.32, metalness: 0.7 });
     const backMat = new THREE.MeshStandardMaterial({ color: '#9b5336', roughness: 0.52, metalness: 0.22 });
     const count = Math.max(1, config.chapters.length);
-    const ringRadius = 660;
+    const ringRadius = 760;
     config.chapters.forEach((chapter, i) => {
       const group = new THREE.Group(); screenRoot.add(group);
       const front = new THREE.MeshStandardMaterial({ map: panelTexture(chapter, i), roughness: 0.53, metalness: 0.05 });
-      const chassis = new THREE.Mesh(new THREE.BoxGeometry(390, 590, 22), [bezelMat, bezelMat, bezelMat, bezelMat, bezelMat, backMat]);
+      const chassis = new THREE.Mesh(new THREE.BoxGeometry(PANEL_WIDTH + 40, PANEL_HEIGHT + 40, PANEL_DEPTH), [bezelMat, bezelMat, bezelMat, bezelMat, bezelMat, backMat]);
       chassis.castShadow = true; chassis.receiveShadow = true; group.add(chassis);
-      const screen = new THREE.Mesh(new THREE.PlaneGeometry(356, 536), front);
-      screen.position.z = 12; screen.castShadow = true; group.add(screen);
+      const screen = new THREE.Mesh(new THREE.PlaneGeometry(PANEL_WIDTH, PANEL_HEIGHT), front);
+      screen.position.z = PANEL_DEPTH / 2 + 1; screen.castShadow = true; group.add(screen);
       const theta = i / count * Math.PI * 2;
       group.position.set(Math.sin(theta) * ringRadius, Math.cos(theta * 2) * 18, Math.cos(theta) * ringRadius);
       group.rotation.y = theta;
@@ -266,8 +267,8 @@
       if (!panels[i]) return;
       const panel = panels[i].group;
       screenRoot.updateMatrixWorld(true); camera.updateMatrixWorld(true);
-      const corners = [[-185, -282], [185, -282], [-185, 282], [185, 282]].map(([x, y]) => {
-        const point = panel.localToWorld(new THREE.Vector3(x, y, 12)).project(camera);
+      const corners = [[-PANEL_WIDTH / 2, -PANEL_HEIGHT / 2], [PANEL_WIDTH / 2, -PANEL_HEIGHT / 2], [-PANEL_WIDTH / 2, PANEL_HEIGHT / 2], [PANEL_WIDTH / 2, PANEL_HEIGHT / 2]].map(([x, y]) => {
+        const point = panel.localToWorld(new THREE.Vector3(x, y, PANEL_DEPTH / 2 + 1)).project(camera);
         return { x: (point.x + 1) / 2 * width, y: (1 - point.y) / 2 * height };
       });
       const minX = Math.min(...corners.map(p => p.x)), maxX = Math.max(...corners.map(p => p.x));
