@@ -1,7 +1,7 @@
 /* Brush textures are cached; route projection moves canvas lines and DOM labels together. */
 (function () {
   'use strict';
-  const W = 1920, H = 1080, DURATION = 3200;
+  const W = 1920, H = 1080, DURATION = 2200;
   const COLORS = ['#ed9874', '#e9eeb9', '#0c567d', '#edb79c', '#425066', '#e4c6d0'];
   const clamp = n => Math.max(0, Math.min(1, n));
   const ease = t => t * t * (3 - 2 * t);
@@ -53,17 +53,20 @@
     const textures = COLORS.map((color, i) => brushTexture(color, i + 41));
     function makeBrushes(fieldWidth) {
       const rand = random(404);
-      const count = Math.ceil(fieldWidth / 70) + 1;
-      return Array.from({ length: count }, (_, i) => {
-        const t = i / (count - 1);
-        // The last mark crosses the top-right corner; uneven ends rise toward it.
-        const top = 250 - t * 300 + rand() * 74;
-        return {
-          x: i * fieldWidth / (count - 1), y: i === count - 1 ? -34 : top,
-          w: 82 + rand() * 40, h: 680 - t * 330 + rand() * 120,
-          tilt: (rand() - .5) * .06, t, texture: textures[i % textures.length]
-        };
-      });
+      // Sparse left marks, then a compact asymmetric cluster concentrated on the right.
+      // The last two are deliberately wider: one reaches the middle-lower field, the
+      // final one starts at the top-right and ends before one third of the canvas.
+      const layout = [
+        [.02, 610, 270, 108], [.13, 230, 410, 94], [.25, 475, 210, 112],
+        [.49, 315, 340, 106], [.62, 170, 540, 120], [.70, 265, 310, 112],
+        [.77, 85, 690, 128], [.84, 150, 470, 122], [.895, 32, 720, 146],
+        [.945, -55, 310, 158], [.987, -100, 255, 166]
+      ];
+      return layout.map(([position, top, height, baseWidth], i) => ({
+        x: position * fieldWidth, y: top + (rand() - .5) * 34,
+        w: baseWidth + rand() * 16, h: height + rand() * 70,
+        tilt: (rand() - .5) * .07, t: position, texture: textures[i % textures.length]
+      }));
     }
     let brushes = makeBrushes(W);
     const items = [...el.querySelectorAll('[data-chapter]')];
@@ -141,8 +144,8 @@
           const q = project(point(j / 160));
           if (j === 0) route.moveTo(q.x, q.y); else route.lineTo(q.x, q.y);
         }
-        g.save(); g.translate(0, 23); g.strokeStyle = 'rgba(63,79,74,.08)'; g.lineWidth = 14; g.stroke(route); g.restore();
-        g.strokeStyle = '#c7d3ce'; g.lineWidth = 8; g.lineCap = 'round'; g.stroke(route);
+        g.save(); g.translate(0, 23); g.strokeStyle = 'rgba(66,80,102,.12)'; g.lineWidth = 14; g.stroke(route); g.restore();
+        g.strokeStyle = COLORS[4]; g.lineWidth = 8; g.lineCap = 'round'; g.stroke(route);
         // Each chapter contributes its own quiet color to the continuous route.
         for (let i = 0; i < chapters.length; i++) {
           g.beginPath();
@@ -151,7 +154,7 @@
             const q = project(point(a + (b - a) * j / 35));
             if (!j) g.moveTo(q.x, q.y); else g.lineTo(q.x, q.y);
           }
-          g.strokeStyle = COLORS[(i * 2 + 1) % COLORS.length]; g.lineWidth = 5; g.stroke();
+          g.strokeStyle = [COLORS[0], COLORS[2], COLORS[4], COLORS[5]][i % 4]; g.lineWidth = 6; g.stroke();
         }
         items.forEach((item, i) => {
           const t = chapters.length > 1 ? .09 + i / (chapters.length - 1) * .81 : .5, q = project(point(t));
