@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Markdown 审阅 · 单一内容源</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f3efe6;color:#282526;font:17px/1.8 'Noto Sans SC','Microsoft YaHei',sans-serif}main{max-width:1080px;margin:auto;padding:48px 32px}a{color:#a63b27}h1{font:normal 50px 'Noto Serif SC','SimSun',serif}header{border-bottom:1px solid #bfb4a6;padding-bottom:24px}nav{display:flex;gap:16px}button{cursor:pointer;background:#2a2525;color:#f3efe6;border:0;padding:12px 18px}section{padding:28px 0;border-bottom:1px solid #bfb4a6}h2{font-size:25px}small{font-size:14px;color:#7a5141}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:15px/1.9 Consolas,'Microsoft YaHei',monospace;padding:24px;background:#e9e2d7}ul{padding-left:25px}code{color:#934330}summary{cursor:pointer}#raw-source[hidden]{display:none}strong{font-weight:600}</style></head><body><main>
+<header><nav><a href="index.html">← 实验室</a><a href="sample.html">打开样稿 ↗</a><button id="toggle">显示原始 Markdown</button></nav><h1>只维护一份内容。</h1><p>这里与演示读取同一个 <code>content/slides.js</code> 中的 Markdown。请直接告诉 AI 页面 ID 和修改意见；你不需要编辑 JavaScript。</p></header>
+<pre id="raw-source" hidden></pre><div id="pages"></div>
+<script src="content/slides.js"></script><script src="shared/content-model.js"></script><script>
+try {
+ const model=ContentModel.parse(window.SLIDES_MD),E=ContentModel.escape;
+ document.getElementById('raw-source').textContent=window.SLIDES_MD.trim();
+ document.getElementById('pages').innerHTML=model.slides.map(s=>`<section><small>${E(s.id)} / ${E(s.type)}</small><h2>${s.title.map(E).join(' ')}</h2>${s.quote?`<p>${model.inline(s.quote)}</p>`:''}<ul>${s.bullets.map(b=>`<li>${model.inline(b)}</li>`).join('')}</ul>${s.paragraphs.map(p=>`<p>${model.inline(p)}</p>`).join('')}${s.meta.asset?`<p>资源：<code>${E(s.meta.asset)}</code></p>`:''}${Object.keys(s.blocks).length?`<details><summary>查看结构化内容 / 来源</summary><pre>${E(JSON.stringify(s.blocks,null,2))}</pre></details>`:''}<a href="sample.html?slide=${encodeURIComponent(s.id)}">预览此页 →</a></section>`).join('');
+ document.getElementById('toggle').onclick=()=>{const p=document.getElementById('raw-source');p.hidden=!p.hidden;};
+} catch(error) {document.getElementById('pages').textContent='主稿校验失败：'+error.message;}
+</script></main></body></html>

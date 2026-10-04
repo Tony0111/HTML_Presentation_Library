@@ -1,0 +1,161 @@
+{
+  "errors": [],
+  "remote_requests": [],
+  "checks": [
+    {
+      "name": "dom/index.html renderer initialized",
+      "passed": true
+    },
+    {
+      "name": "dom/index.html renderer initialized",
+      "passed": true
+    },
+    {
+      "name": "dom/index.html renderer initialized",
+      "passed": true
+    },
+    {
+      "name": "three/index.html renderer initialized",
+      "passed": true
+    },
+    {
+      "name": "three/index.html renderer initialized",
+      "passed": true
+    },
+    {
+      "name": "three/index.html renderer initialized",
+      "passed": true
+    },
+    {
+      "name": "S01 no outer scrollbar",
+      "passed": true
+    },
+    {
+      "name": "S02 no outer scrollbar",
+      "passed": true
+    },
+    {
+      "name": "S03 no outer scrollbar",
+      "passed": true
+    },
+    {
+      "name": "S03 content above footer",
+      "passed": true
+    },
+    {
+      "name": "S04 no outer scrollbar",
+      "passed": true
+    },
+    {
+      "name": "S04 content above footer",
+      "passed": true
+    },
+    {
+      "name": "interactive Plotly ready",
+      "passed": true
+    },
+    {
+      "name": "S05 no outer scrollbar",
+      "passed": true
+    },
+    {
+      "name": "S05 content above footer",
+      "passed": true
+    },
+    {
+      "name": "S06 no outer scrollbar",
+      "passed": true
+    },
+    {
+      "name": "S06 content above footer",
+      "passed": true
+    },
+    {
+      "name": "S07 no outer scrollbar",
+      "passed": true
+    },
+    {
+      "name": "S07 content above footer",
+      "passed": true
+    },
+    {
+      "name": "fixed canvas fits 1920x1080",
+      "passed": true
+    },
+    {
+      "name": "fixed canvas fits 2560x1440",
+      "passed": true
+    },
+    {
+      "name": "fixed canvas fits 1440x900",
+      "passed": true
+    },
+    {
+      "name": "return directory remembers page",
+      "passed": true
+    },
+    {
+      "name": "same chapter resumes exact page",
+      "passed": true
+    },
+    {
+      "name": "iframe keyboard forwards next",
+      "passed": true
+    },
+    {
+      "name": "different chapter jumps to first page",
+      "passed": true
+    },
+    {
+      "name": "dom/index.html reduced clears title world",
+      "passed": true
+    },
+    {
+      "name": "dom/index.html reduced camera stops",
+      "passed": true
+    },
+    {
+      "name": "three/index.html reduced clears title world",
+      "passed": true
+    },
+    {
+      "name": "three/index.html reduced camera stops",
+      "passed": true
+    },
+    {
+      "name": "comparison buttons synchronize",
+      "passed": true
+    },
+    {
+      "name": "comparison back button synchronizes",
+      "passed": true
+    },
+    {
+      "name": "review derives same seven slides",
+      "passed": true
+    },
+    {
+      "name": "no JavaScript errors",
+      "passed": true
+    },
+    {
+      "name": "no remote requests",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "dom-verified-p0.png",
+    "dom-verified-p0.35.png",
+    "dom-verified-p1.png",
+    "three-verified-p0.png",
+    "three-verified-p0.35.png",
+    "three-verified-p1.png",
+    "sample-S01.png",
+    "sample-S02.png",
+    "sample-S03.png",
+    "sample-S04.png",
+    "sample-S05.png",
+    "sample-S06.png",
+    "sample-S07.png"
+  ]
+}
