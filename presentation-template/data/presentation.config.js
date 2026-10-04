@@ -50,7 +50,7 @@ window.PRESENTATION_CONFIG = {
       },
       "title": [
         "让判断",
-        "可见。"
+        "可见"
       ],
       "bullets": [],
       "paragraphs": [],
@@ -652,6 +652,20 @@ window.PRESENTATION_CONFIG = {
       },
       "refs": [],
       "index": 18
+    },
+    {
+      "id": "S24",
+      "type": "thanks",
+      "meta": {},
+      "title": [
+        "Thanks"
+      ],
+      "bullets": [],
+      "paragraphs": [],
+      "quote": "",
+      "blocks": {},
+      "refs": [],
+      "index": 19
     }
   ],
   "references": [

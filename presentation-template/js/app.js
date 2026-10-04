@@ -79,11 +79,6 @@
     spatialEl.style.pointerEvents = 'none';
   }
 
-  function sceneFor(slide) {
-    if (slide.type === 'section-divider') return 'divider';
-    return slide.type;
-  }
-
   async function renderSlide(index) {
     const slide = config.slides[index];
     if (!slide) return;
@@ -100,16 +95,13 @@
     counterEl.textContent = pad(index + 1) + ' / ' + pad(config.slides.length);
     titleEl.textContent = config.meta.title || '';
     stage.dataset.slide = slide.id;
+    stage.dataset.pageType = slide.type;
     document.title = slide.title.join(' ') + ' — ' + (config.meta.title || 'presentation');
 
     if (Navigation.isSpatial(slide.type)) {
       slideEl.hidden = !returning;
       setSpatialVisible(true);
-      const options = slide.type === 'section-divider'
-        ? { chapter: state.chapterSelected }
-        : slide.type === 'closing' ? { subtitle: slide.subtitle, note: slide.meta.note }
-        : { chapter: state.chapterSelected };
-      const sceneReady = SpatialStage.show(sceneFor(slide), options);
+      const sceneReady = SpatialStage.show(slide.type, { chapter: state.chapterSelected });
       if (returning) SpatialStage.finish();
       await Promise.all([sceneReady, returning ? transitionReading(false, Math.max(0, previousChapter)) : Promise.resolve()]);
       slideEl.hidden = true;

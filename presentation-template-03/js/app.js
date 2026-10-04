@@ -15,7 +15,7 @@
   }
 
   if (!config || !config.slides || !config.slides.length) { fail('缺少 data/presentation.config.js。请先运行 python tools/build_content.py。'); return; }
-  if (config.theme !== 'paper-cut-pixel') { fail('未知主题：' + config.theme + '。本模板只支持 paper-cut-pixel。'); return; }
+  if (config.theme !== 'cubist-spatial') { fail('未知主题：' + config.theme + '。本模板只支持 cubist-spatial。'); return; }
 
   SlideRenderer.setReferences(config.references);
   const pad = n => String(n).padStart(2, '0');
@@ -27,7 +27,7 @@
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
       || new URLSearchParams(location.search).get('reduced') === '1';
     if (reduced) {
-      if (entering) { SpatialStage.hideOpening(); setSpatialVisible(false); }
+      if (entering) { await SpatialStage.show('body'); setSpatialVisible(true); }
       else slideEl.hidden = true;
       return;
     }
@@ -40,7 +40,8 @@
     slideEl.style.zIndex = '4';
     const openingEl = document.getElementById('editorial-opening');
     pageAnimations = [slideEl.animate(entering ? [folded, flat] : [flat, folded], options)];
-    for (const layer of [spatialEl, openingEl]) {
+    // Keep the canvas and fallback poster fixed; only directory labels participate.
+    for (const layer of openingEl.querySelectorAll('.opening-masthead, .opening-contents, .opening-footer')) {
       if (!layer) continue;
       const near = { opacity: 0, transform: 'scale(1.14)' };
       const distant = { opacity: 1, transform: 'scale(1)' };
@@ -49,7 +50,7 @@
     try {
       await Promise.all(pageAnimations.map(animation => animation.finished));
     } finally {
-      if (entering) { SpatialStage.hideOpening(); setSpatialVisible(false); }
+      if (entering) { await SpatialStage.show('body'); setSpatialVisible(true); }
       else slideEl.hidden = true;
       pageAnimations.forEach(animation => animation.cancel());
       pageAnimations = [];
@@ -115,8 +116,8 @@
       slideEl.hidden = true;
     } else {
       if (!entering) {
-        SpatialStage.hideOpening();
-        setSpatialVisible(false);
+        await SpatialStage.show('body');
+        setSpatialVisible(true);
       }
       slideEl.innerHTML = SlideRenderer.render(slide, config, index, config.slides.length);
       slideEl.hidden = false;
@@ -280,18 +281,15 @@
     if (document.fonts && document.fonts.load) {
       try {
         await Promise.all([
-          document.fonts.load('600 150px "Presentation Serif SC"'),
+          document.fonts.load('400 144px "Presentation Pixel SC"'),
+          document.fonts.load('400 22px "Departure Mono"'),
           document.fonts.load('500 30px "Presentation Sans SC"'),
           document.fonts.load('400 20px "Presentation Mono"'),
         ]);
       } catch (error) { /* fall back to system fonts */ }
     }
-    const ok = SpatialStage.init(spatialEl, config);
-    if (!ok) {
-      // Static fallback: keep the first reading page reachable instead of a blank stage.
-      slideEl.innerHTML = '<header class="slide-eyebrow"><span>STATIC FALLBACK</span></header><h1>' + SlideRenderer.escape(config.meta.title) + '</h1>';
-      slideEl.hidden = false;
-    }
+    SpatialStage.init(spatialEl, config);
+    await SpatialStage.openingReady;
     fit();
     initialized = true;
     renderSlide(0).catch(error => fail(error && error.message)).finally(completeDispatch);

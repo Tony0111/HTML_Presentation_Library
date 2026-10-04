@@ -3,10 +3,10 @@
   'use strict';
   const FORWARD = ['ArrowRight', 'ArrowDown', ' ', 'PageDown'];
   const COVER_FORWARD = ['ArrowRight', 'ArrowDown', ' ', 'Enter'];
-  const SPATIAL = new Set(['cover', 'contents', 'section-divider', 'closing']);
+  const SPATIAL = new Set(['cover', 'contents', 'thanks']);
 
   function firstContentIndex(config) {
-    return config.slides.findIndex(s => !SPATIAL.has(s.type) || s.type === 'section-divider');
+    return config.slides.findIndex(s => !SPATIAL.has(s.type));
   }
 
   function chapterIndexOfSlide(config, index) {
@@ -14,7 +14,7 @@
     const chapters = config.chapters || [];
     const found = chapters.findIndex(c => c.id === chapter);
     const type = config.slides[index] && config.slides[index].type;
-    return found < 0 && (type === 'references' || type === 'closing') ? chapters.length - 1 : found;
+    return found < 0 && (type === 'references' || type === 'thanks') ? chapters.length - 1 : found;
   }
 
   function intent(key, state, config) {

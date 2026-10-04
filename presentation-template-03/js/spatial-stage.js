@@ -12,7 +12,7 @@
   const NODE_TARGETS = [[300, 640], [700, 470], [1080, 300], [1350, 190], [1560, 110], [1720, 60]];
   const NODE_SCALES = [1.35, 1.0, 0.75, 0.6, 0.5, 0.42];
 
-  let renderer, scene, camera, config, opening;
+  let renderer, scene, camera, config, opening, closing;
   const objects = [];
   let pathLine, markers = [], failed = false, ready = false;
   let current = { x: 0, y: 0, z: 0 }, target = { x: 0, y: 0, z: 0 };
@@ -101,7 +101,13 @@
       el.appendChild(renderer.domElement);
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(fovFor(), W / H, 1, 12000);
-    } catch (error) { failed = true; return false; }
+    } catch (error) {
+      failed = true;
+      opening = EditorialOpening.create(config, true, false);
+      closing = ParticleClosing.create(config, true, false);
+      ready = true;
+      return false;
+    }
 
     const meta = config.meta;
     addObject({ id: 'kicker', text: meta.kicker || '', size: 22, weight: 500, font: sansFont, world: { x: -300, y: -300, z: 1250 } });
@@ -129,6 +135,17 @@
     });
 
     opening = EditorialOpening.create(config, reduced);
+    closing = ParticleClosing.create(config, reduced);
+    renderer.domElement.addEventListener('webglcontextlost', event => {
+      event.preventDefault();
+      failed = true;
+      renderer.domElement.hidden = true;
+      opening.setStatic();
+      closing.setStatic();
+      finish();
+      if (raf !== null) cancelAnimationFrame(raf);
+      raf = null;
+    });
     ready = true;
     render(performance.now());
     loop();
@@ -177,8 +194,13 @@
   }
 
   function show(name, options) {
-    if (failed) return Promise.resolve(false);
-    if (name === 'cover' || name === 'contents') {
+    if (name === 'closing') { opening.hide(); return closing.show(); }
+    closing.hide();
+    if (failed) {
+      return name === 'cover' || name === 'contents' || name === 'body'
+        ? opening.show(name, options) : Promise.resolve(false);
+    }
+    if (name === 'cover' || name === 'contents' || name === 'body') {
       if (pendingResolve) { const done = pendingResolve; pendingResolve = null; done(false); }
       tween.active = false;
       return opening.show(name, options);
@@ -212,6 +234,12 @@
   }
 
   function render(now) {
+    if (failed) return;
+    if (closing && closing.active) {
+      closing.update(now);
+      renderer.render(closing.scene, closing.camera);
+      return;
+    }
     if (opening && opening.active) {
       opening.update(now);
       renderer.render(opening.scene, opening.camera);
@@ -241,7 +269,7 @@
 
   function loop() {
     raf = null;
-    if (document.hidden) return;
+    if (document.hidden || failed) return;
     render(performance.now());
     raf = requestAnimationFrame(loop);
   }
@@ -255,12 +283,15 @@
     hideOpening() { if (opening) opening.hide(); },
     get ready() { return ready; },
     get failed() { return failed; },
+    get openingReady() { return opening ? opening.ready : Promise.resolve(false); },
     resize(width = W, height = H, scale = 1) {
+      if (opening) opening.resize(width, height);
+      if (closing) closing.resize(width, height);
+      if (failed) return;
       if (!renderer || !camera) return;
       camera.aspect = width / height;
       camera.fov = fovFor(height);
       camera.updateProjectionMatrix();
-      if (opening) opening.resize(width, height);
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
       renderer.setSize(width * scale, height * scale, false);
       render(performance.now());
