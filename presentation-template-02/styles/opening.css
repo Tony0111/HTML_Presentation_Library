@@ -56,7 +56,7 @@
 #editorial-opening[data-mode="contents"] .opening-cover { visibility: hidden; opacity: 0; }
 .opening-cover, .opening-contents { transition: opacity 250ms; }
 .opening-closing { position: absolute; inset: 0; display: grid; place-items: center; }
-.opening-closing h1 { margin: 0; font: 700 260px/1 Arial, sans-serif; color: #207f7b; }
+.opening-closing h1 { margin: 0; font: 700 260px/1 Arial, sans-serif; color: #b95125; }
 #editorial-opening:not([data-mode="closing"]) .opening-closing,
 #editorial-opening[data-mode="closing"] .opening-cover,
 #editorial-opening[data-mode="closing"] .opening-contents { visibility: hidden; }

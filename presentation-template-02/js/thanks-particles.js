@@ -26,7 +26,8 @@
     const factor = textWidth / (maxX - minX), centerY = (minY + maxY) / 2;
     const sphere = new Float32Array(COUNT * 3), text = new Float32Array(COUNT * 3);
     const colors = new Float32Array(COUNT * 3);
-    const cyan = new THREE.Color('#207f7b'), orange = new THREE.Color('#d27636');
+    const deepOrange = new THREE.Color('#b95125'), warmOrange = new THREE.Color('#db823c');
+    const color = new THREE.Color();
     for (let i = 0; i < COUNT; i++) {
       const phi = Math.acos(-1 + 2 * i / COUNT), theta = Math.sqrt(COUNT * Math.PI) * phi;
       sphere.set([300 * Math.cos(theta) * Math.sin(phi), 300 * Math.sin(theta) * Math.sin(phi), 300 * Math.cos(phi)], i * 3);
@@ -34,7 +35,7 @@
       const x = (sample[0] - (minX + maxX) / 2) * factor;
       text.set([x + Math.sin(i * 2.37) * factor * 0.45,
         (sample[1] - centerY) * factor + Math.cos(i * 1.93) * factor * 0.45, Math.sin(i * 1.7) * 2], i * 3);
-      const color = x > textWidth * 0.28 ? orange : cyan;
+      color.copy(deepOrange).lerp(warmOrange, (x / textWidth + 0.5) * 0.8);
       colors.set([color.r, color.g, color.b], i * 3);
     }
     const geometry = new THREE.BufferGeometry();

@@ -236,6 +236,19 @@ with sync_playwright() as p:
     page.wait_for_function('ThanksParticles.inspect().morph === 1')
     check('Thanks reuses the single WebGL canvas', page.locator('#spatial canvas').count() == 1)
     check('Library effect uses 12000 particles', page.evaluate('ThanksParticles.inspect().count === 12000'))
+    check('Thanks particles are orange against cyan background', page.evaluate('''() => {
+      const source = document.querySelector('#spatial canvas');
+      const canvas = document.createElement('canvas'); canvas.width = source.width; canvas.height = source.height;
+      const g = canvas.getContext('2d'); g.drawImage(source, 0, 0);
+      const pixels = g.getImageData(0, 0, canvas.width, canvas.height).data;
+      let visible = 0, orange = 0;
+      for(let i=0;i<pixels.length;i+=4) {
+        if(pixels[i+3]<100) continue;
+        visible++;
+        if(pixels[i]>pixels[i+1]+20 && pixels[i+1]>pixels[i+2]+15) orange++;
+      }
+      return visible > 1000 && orange / visible > 0.95;
+    }'''))
     shot(page, 'thanks-desktop')
     page.mouse.move(1350, 280)
     page.wait_for_timeout(400)
@@ -342,6 +355,7 @@ with sync_playwright() as p:
     check('fallback chapter click reaches content', fallback.evaluate('PRESENTATION.state.index === 5'))
     goto(fallback, 19)
     check('WebGL failure retains visible Thanks text', fallback.locator('.opening-closing h1').is_visible() and fallback.locator('.opening-closing h1').inner_text() == 'Thanks')
+    check('fallback Thanks uses matching orange text', fallback.locator('.opening-closing h1').evaluate('(el) => getComputedStyle(el).color === "rgb(185, 81, 37)"'))
     shot(fallback, 'thanks-fallback')
     fallback.close()
     check('no remote dependencies', not remote)
