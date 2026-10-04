@@ -99,12 +99,11 @@
     });
     function makeClosingParticles() {
       const source = document.createElement('canvas');
-      source.width = 1280; source.height = 360;
+      source.width = 1600; source.height = 500;
       const sg = source.getContext('2d');
       sg.fillStyle = '#fff'; sg.textAlign = 'left'; sg.textBaseline = 'top';
-      // Use the bundled display face so the particle silhouette follows the deck typography.
-      sg.font = '600 218px "Presentation Serif SC", Georgia, serif';
-      sg.fillText('THANKS', 20, 30);
+      sg.font = '600 292px "Presentation Serif SC", Georgia, serif';
+      sg.fillText('THANKS', 26, 70);
       const pixels = sg.getImageData(0, 0, source.width, source.height).data;
       let minX = source.width, minY = source.height, maxX = 0, maxY = 0;
       for (let y = 0; y < source.height; y++) for (let x = 0; x < source.width; x++) {
@@ -114,19 +113,30 @@
         }
       }
       const centerX = (minX + maxX) / 2, centerY = (minY + maxY) / 2;
-      const opticalX = centerX - 12; // serif wordmark carries a little right-side visual weight
       const rand = random(904);
-      const targets = [];
-      for (let y = minY; y <= maxY; y += 4) for (let x = minX; x <= maxX; x += 4) {
-        if (pixels[(y * source.width + x) * 4 + 3] > 120) targets.push({ x: x - opticalX, y: y - centerY });
-      }
       const colors = ['#ed9874', '#e9eeb9', '#0c567d', '#edb79c', '#425066', '#e4c6d0'];
-      return targets.map((target, i) => ({
-        x: (rand() - .5) * 1800, y: (rand() - .5) * 900,
-        tx: target.x, ty: target.y, size: .8 + rand() * 2.4,
-        color: colors[i % colors.length], phase: rand() * Math.PI * 2,
-        drift: 4 + rand() * 12
-      }));
+      const particles = [];
+      for (let y = minY; y <= maxY; y += 3) for (let x = minX; x <= maxX; x += 3) {
+        if (pixels[(y * source.width + x) * 4 + 3] <= 120) continue;
+        const angle = rand() * Math.PI * 2, radius = 250 + rand() * 850;
+        particles.push({
+          x: Math.cos(angle) * radius + (rand() - .5) * 500,
+          y: Math.sin(angle) * radius * .58 + (rand() - .5) * 240,
+          tx: x - centerX, ty: y - centerY, size: 1.15 + rand() * 2.5,
+          color: colors[Math.floor(rand() * colors.length)], phase: rand() * Math.PI * 2,
+          drift: 3 + rand() * 13, depth: rand(), text: true
+        });
+      }
+      for (let i = 0; i < 1500; i++) {
+        const angle = rand() * Math.PI * 2, radius = 500 + rand() * 760;
+        particles.push({
+          x: Math.cos(angle) * radius, y: Math.sin(angle) * radius * .52,
+          tx: Math.cos(angle) * (520 + rand() * 300), ty: Math.sin(angle) * (340 + rand() * 180),
+          size: .55 + rand() * 1.8, color: colors[Math.floor(rand() * colors.length)],
+          phase: rand() * Math.PI * 2, drift: 12 + rand() * 28, depth: rand(), text: false
+        });
+      }
+      return particles;
     }
     function settle(value = true) { if (resolve) { const done = resolve; resolve = null; done(value); } }
     function show(name, options = {}) {
@@ -218,26 +228,33 @@
     }
     function updateClosing(now, g) {
       if (!g) return;
-      const t = reduced ? 1 : clamp((now - closingStart) / 1500);
+      const t = reduced ? 1 : clamp((now - closingStart) / 2200);
       const settleAmount = ease(t);
-      const extraX = (width - W) / 2, extraY = (height - H) / 2;
-      smooth.x += (pointer.x - smooth.x) * .045; smooth.y += (pointer.y - smooth.y) * .045;
       g.clearRect(0, 0, width, height);
-      g.fillStyle = '#15202a'; g.fillRect(0, 0, width, height);
-      const glow = g.createRadialGradient(width * .52, height * .48, 30, width * .52, height * .48, width * .58);
-      glow.addColorStop(0, 'rgba(66,80,102,.48)'); glow.addColorStop(.5, 'rgba(12,86,125,.18)'); glow.addColorStop(1, 'rgba(21,32,42,0)');
+      g.fillStyle = '#101c27'; g.fillRect(0, 0, width, height);
+      const glow = g.createRadialGradient(width * .5, height * .48, 20, width * .5, height * .48, width * .62);
+      glow.addColorStop(0, 'rgba(66,80,102,.58)'); glow.addColorStop(.42, 'rgba(12,86,125,.22)'); glow.addColorStop(1, 'rgba(16,28,39,0)');
       g.fillStyle = glow; g.fillRect(0, 0, width, height);
-      const px = width / 2 + smooth.x * width * .22, py = height / 2 + smooth.y * height * .22;
+      const time = now * .001;
+      g.globalCompositeOperation = 'lighter';
       for (const particle of closingParticles) {
-        const wave = reduced ? 0 : Math.sin(now * .0014 + particle.phase) * particle.drift;
-        let x = width / 2 + particle.x * (1 - settleAmount) + (particle.tx + wave) * settleAmount;
-        let y = height / 2 + particle.y * (1 - settleAmount) + particle.ty * settleAmount;
-        const dx = x - px, dy = y - py, distance = Math.hypot(dx, dy);
-        if (!reduced && distance < 120) { const force = (120 - distance) / 120 * 34; x += dx / (distance || 1) * force; y += dy / (distance || 1) * force; }
-        g.globalAlpha = .45 + settleAmount * .5; g.fillStyle = particle.color;
-        g.beginPath(); g.arc(extraX + x, extraY + y, particle.size, 0, Math.PI * 2); g.fill();
+        const waveX = Math.sin(time * (.65 + particle.depth * .35) + particle.phase) * particle.drift;
+        const waveY = Math.cos(time * (.52 + particle.depth * .28) + particle.phase * 1.7) * particle.drift * .55;
+        const x = width / 2 + particle.x * (1 - settleAmount) + (particle.tx + waveX) * settleAmount;
+        const y = height / 2 + particle.y * (1 - settleAmount) + (particle.ty + waveY) * settleAmount;
+        const radius = particle.size * (.72 + particle.depth * .55);
+        const alpha = particle.text ? .34 + settleAmount * .58 : .12 + (1 - settleAmount) * .3;
+        if (particle.text && t > .04) {
+          g.globalAlpha = alpha * .24; g.strokeStyle = particle.color; g.lineWidth = Math.max(.45, radius * .55);
+          g.beginPath(); g.moveTo(x - waveX * .9, y - waveY * .9); g.lineTo(x, y); g.stroke();
+        }
+        g.globalAlpha = alpha; g.fillStyle = particle.color;
+        g.beginPath(); g.arc(x, y, radius, 0, Math.PI * 2); g.fill();
+        if (particle.text && radius > 1.5) {
+          g.globalAlpha = alpha * .18; g.beginPath(); g.arc(x, y, radius * 2.8, 0, Math.PI * 2); g.fill();
+        }
       }
-      g.globalAlpha = 1;
+      g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
       stage.dataset.openingProgress = t.toFixed(3);
     }
     return { show, update,
