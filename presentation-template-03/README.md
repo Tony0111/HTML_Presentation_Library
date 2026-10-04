@@ -1,0 +1,112 @@
+# Presentation Template 03
+
+剪纸叙事演示模板。封面以分层纸雕、像素化标题和不规则裁边建立开场；进入目录时，纸层展开为可直接选择的章节卡片。正文沿用 1 号模板的阅读结构，仅替换色彩、编号、边线与纸片细节，适合需要鲜明开场但仍以内容阅读为主的汇报。
+
+入口是 [index.html](index.html)，无需网络即可运行。封面按 `Enter`、空格或右方向键进入目录；目录中使用方向键、数字键或点击章节卡片进入内容。
+
+面向组会进展与学科学习汇报的离线 HTML 演示模板。首版视觉方向已确认：极简编辑式空间叙事、暖白正文、墨黑舞台、砖红强调；封面进入目录需要连续的空间纵深。目标通过有限页型和 Markdown 内容工作流降低制作门槛。
+
+## 当前状态
+
+正式入口 `index.html` 已实现一套 19 页、4 章的完整回归演示，覆盖首版正文与结构页型：
+
+- 封面和目录由亮色编辑式 Three.js 空间舞台渲染，旧黑色结束页已移除；
+- 要点、陈述、图文、图表、流程、表格、比较、时间线、视频、引用由暖白阅读页渲染；
+- 内容由 Markdown 主稿编译为运行快照；
+- 字体以子集 WOFF2 随目录携带，离线可用。
+
+| 项目 | 说明 |
+| --- | --- |
+| 渲染器 | 本地 Three.js（见 [design/DECISIONS.md](design/DECISIONS.md) D-06） |
+| 内容源 | [content/sample.md](content/sample.md) |
+| 编译 | `python tools/build_content.py` |
+| 字体子集 | `python tools/subset_fonts.py` |
+| 运行快照 | [data/presentation.config.js](data/presentation.config.js) |
+| 审阅入口 | [review.html](review.html) |
+| 执行进度 | P0–P6 已完成 |
+
+执行依据与逐阶段状态见 [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)。
+
+## 当前开场
+
+封面和目录已改为亮色编辑风：暖白底、砖红与暖白交替的折页、衬线主标题与印刷式章节编号。Three.js 折页会从封面的叠合构图连续展开为目录，支持轻微纸面起伏和指针视差；选章保持即时响应。减少动态模式下使用静止画面。
+
+参考 Library 中的 STLShaper Forms 参数化形体、Hover Card Row 立体抬升与字体层级思路，使用现有本地 Three.js 自行实现，不加载外部素材。封面折页按固定前后层次叠放，展开时先分开再收拢深度，避免穿模。旧路线图式章节扉页与黑色结束页已移除，正文内容保持原样，页码随总页数更新。
+
+每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。最后一章的参考资料页是演示末页，前进时保持停留。
+
+## 运行
+
+双击 `index.html`。演示画布会自适应并铺满当前窗口，支持 16:9、16:10、超宽屏及竖屏；文字与图表保持等比显示，不拉伸、不裁切。演示前按 `F` 进入浏览器原生全屏，退出全屏或调整窗口时会自动重新适配。
+
+## 键盘
+
+| 按键 | 操作 |
+| --- | --- |
+| `Enter` / `Space` / `→` / `↓` | 封面进入目录 |
+| `Enter` / `Space` | 目录进入所选章；临时目录未改选时回原页 |
+| `Space` / `→` / `↓` / `PageDown` | 章内下一页；章末返回目录并预选下一章；演示末页停留 |
+| `←` / `→` | 目录中选章；正文中翻前后页 |
+| `PageUp` | 正文上一页 |
+| `↑` / `Backspace` | 正文打开临时目录；目录取消并回原页或封面 |
+| `Home` / `End` | 目录选首章 / 末章；正文跳首张正文 / 最后一张内容页 |
+| `1`–`8` | 目录选对应章节，不存在则不响应 |
+| `P` / `M` | 视频播放暂停 / 静音 |
+| `F` / `Escape` | 切换浏览器原生全屏 / 仅退出全屏 |
+
+长按不连续翻页；转场期间至多保留一个待处理动作，后续导航可提前完成转场；原地选章立即响应。输入框及按钮的原生键盘操作不会重复触发翻页。
+
+## 目录结构（当前实现）
+
+```text
+presentation-template/
+  index.html                  正式演示入口
+  review.html                 内容审阅入口
+  content/sample.md           唯一人工内容主稿
+  data/presentation.config.js 主稿生成的运行快照
+  assets/charts/              已完成图表材料
+  styles/                     tokens / base / slides / opening
+  js/navigation.js            导航意图（纯逻辑）
+  js/slide-renderer.js        阅读页渲染
+  js/editorial-opening.js     亮色编辑式封面与目录
+  js/spatial-stage.js         Three.js 空间舞台
+  js/app.js                   初始化与统一输入
+  tools/build_content.py      Markdown → 运行快照
+  design/                     样稿、分镜与决策记录
+  test/                       实验、基线与证据
+  vendor/three.min.js         本地 Three.js
+  LICENSES/                   第三方许可
+```
+
+## 文档
+
+- [DESIGN-DIRECTION.md](DESIGN-DIRECTION.md)：首版视觉与页面方向。
+- [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)：分阶段执行计划与验收条件。
+- [REQUIREMENTS.md](REQUIREMENTS.md)：产品场景、交互和学术内容需求。
+- [CREATION-WORKFLOW.md](CREATION-WORKFLOW.md)：内容制作与离线打包流程。
+- [TECHNICAL-ARCHITECTURE.md](TECHNICAL-ARCHITECTURE.md)：旧原型方案，仅作历史参考。
+- [design/DECISIONS.md](design/DECISIONS.md)：已确认与待确认的设计决策。
+
+## 验证
+
+```text
+python test/tools/check_formal.py             # 正式入口：19 页、全部页型、视口、减少动态、媒体、引用、离线
+python test/tools/check_keyboard.py           # 键盘契约、快速输入、返回目录、全屏与媒体焦点
+python test/tools/check_editorial_opening.py  # 亮色封面/目录、立体运动、响应式、静态回退
+python test/tools/check_chapter_transitions.py # 章节回目录、双向动画、快速反向操作与缩放
+python test/opening/tools/verify.py           # 历史开场空间研究：纵深、选章、失败回退、投影一致
+python test/tools/check.py           # 旧实验基线，仍保留
+```
+
+测试需要 Playwright 与本地 Chrome，仅用于开发；观看演示不需要。`test/opening/shots/` 与 `test/baseline/` 保存设计确认证据。
+
+## 离线与资源
+
+页面不使用 CDN、远程字体、远程素材或网络 API。字体子集、Three.js 与许可证随目录携带（`assets/fonts/`、`vendor/`、`LICENSES/`）。整个文件夹可复制到没有开发环境的电脑直接打开。
+
+## 已知限制
+
+- 目录为空间路径形式，首版固定；不提供多主题切换。
+- 内容主稿使用受限 Markdown 方言；新增页型需要改渲染代码，不能仅靠内容。
+- 视频与图表为预制本地材料；播放阶段不生成图表、不做统计计算。
+- `test/` 下的历史实验与截图仍保留，会增大交付体积；它们不参与运行时。

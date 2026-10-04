@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="示例视频封面：墨黑背景上的砖红过程线">
+  <rect width="1280" height="720" fill="#131112"/>
+  <g stroke="#b8452e" stroke-width="3" fill="none">
+    <path d="M180 500 L420 500 L560 360 L760 360 L900 240 L1100 240"/>
+  </g>
+  <g fill="#b8452e">
+    <circle cx="180" cy="500" r="10"/><circle cx="560" cy="360" r="10"/><circle cx="900" cy="240" r="10"/>
+  </g>
+  <g font-family="Georgia, 'Noto Serif SC', serif" fill="#f3efe6">
+    <text x="180" y="200" font-size="72" font-weight="600">真实过程</text>
+    <text x="180" y="270" font-size="30" font-style="italic" fill="#d89780">LOCAL MEDIA / USER-TRIGGERED</text>
+  </g>
+  <g font-family="'Source Han Sans SC','Microsoft YaHei',sans-serif" font-size="24" fill="#c8bdb2">
+    <text x="180" y="620">合成演示视频 · 不自动播放、不自动发声</text>
+  </g>
+</svg>

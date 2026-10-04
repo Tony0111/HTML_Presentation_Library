@@ -1,0 +1,44 @@
+/* Template 03: tactile paper-cut layers with pixel-display type. */
+@font-face {
+  font-family: 'Presentation Serif SC';
+  src: url('../assets/fonts/noto-serif-sc-subset.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Presentation Sans SC';
+  src: url('../assets/fonts/noto-sans-sc-subset.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Presentation Mono';
+  src: url('../assets/fonts/dejavu-sans-mono-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --paper: #f9f0d8;
+  --paper-dim: #ecd9b7;
+  --ink: #213657;
+  --ink-stage: #223356;
+  --ink-soft: #4c5b72;
+  --muted: #6d6a68;
+  --hair: #cba977;
+  --brick: #c84936;
+  --brick-soft: #e97956;
+  --sun: #f5b544;
+  --leaf: #4f8a6b;
+  --sky: #79b8c7;
+
+  --font-display: 'Presentation Mono', 'Noto Sans SC', 'Microsoft YaHei', monospace;
+  --font-sans: 'Presentation Sans SC', 'Noto Sans SC', 'Source Han Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'Presentation Mono', Consolas, 'SFMono-Regular', 'Menlo', monospace;
+
+  --canvas-w: 1920px;
+  --canvas-h: 1080px;
+  --pad-x: 120px;
+  --pad-y: 80px;
+  --grid-gap: 32px;
+}

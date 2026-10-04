@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Opening study — Three.js</title>
+<style>
+  html,body{margin:0;height:100%;background:#0d0c0d;overflow:hidden}
+  #stage{position:fixed;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:
+    radial-gradient(1200px 800px at 26% 30%, rgba(200,69,44,.10), transparent 62%),
+    radial-gradient(1000px 800px at 80% 78%, rgba(243,239,230,.05), transparent 60%),
+    linear-gradient(180deg,#191718 0%,#131112 58%,#0c0b0c 100%)}
+  #world{position:absolute;inset:0}
+  #path{position:absolute;inset:0;overflow:visible}
+  #hud{position:fixed;left:12px;bottom:10px;z-index:9;font:12px/1.5 Consolas,monospace;color:rgba(243,239,230,.5);white-space:pre;pointer-events:none}
+  #opening-error{position:fixed;left:24px;right:24px;bottom:44px;z-index:12;background:#37231f;color:#f3efe6;font:16px/1.6 'Microsoft YaHei',sans-serif;padding:12px 16px}
+  #fallback{position:fixed;inset:0;z-index:8;color:#f3efe6;font-family:'Microsoft YaHei',sans-serif;padding:8vh 10vw}
+  #fallback h1{font:600 64px/1.2 Georgia,'Noto Serif SC','SimSun',serif;margin:0 0 20px}
+  #fallback ol{font-size:24px;line-height:1.8}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world"></div>
+  <svg id="path" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+  <div id="fallback" hidden>
+    <h1>让判断可见。</h1>
+    <ol>
+      <li>01 问题 / THE QUESTION</li>
+      <li>02 方法 / THE METHOD</li>
+      <li>03 证据 / THE EVIDENCE</li>
+      <li>04 收束 / THE CLOSE</li>
+    </ol>
+    <p>空间渲染不可用时的静态目录；键盘导航仍然有效。</p>
+  </div>
+</div>
+<div id="opening-error" role="alert" hidden></div>
+<div id="hud"></div>
+<script src="../../../vendor/three.min.js"></script>
+<script src="../shared/storyboard.js"></script>
+<script src="opener.js"></script>
+<script src="../shared/driver.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Opening study — renderer comparison</title>
+<style>
+  :root{--ink:#131112;--paper:#f3efe6;--brick:#c8452c}
+  *{box-sizing:border-box}
+  body{margin:0;background:#0c0b0c;color:var(--paper);font:15px/1.6 'Microsoft YaHei',sans-serif}
+  header{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:14px 20px;border-bottom:1px solid #3a3535}
+  h1{font:600 20px/1.2 Georgia,'Noto Serif SC',serif;margin:0;margin-right:auto}
+  label{display:flex;align-items:center;gap:8px;font-size:13px;color:#c8c2b8}
+  input[type=range]{width:320px}
+  button{background:var(--brick);color:#fff;border:0;padding:8px 14px;font:inherit;cursor:pointer}
+  button.ghost{background:#2a2727;border:1px solid #4a4444}
+  main{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
+  figure{margin:0}
+  figcaption{padding:6px 4px;font-size:12px;letter-spacing:.14em;color:#b9b2a7;text-transform:uppercase}
+  .frame{position:relative;width:100%;aspect-ratio:16/9;background:#0d0c0d;border:1px solid #332f2f;overflow:hidden}
+  iframe{position:absolute;left:0;top:0;width:1920px;height:1080px;border:0;transform-origin:0 0}
+  #progress-value{color:var(--brick);font-variant-numeric:tabular-nums}
+  .note{padding:4px 20px 20px;font-size:12px;color:#8f887e}
+</style>
+</head>
+<body>
+<header>
+  <h1>Opening: cover → contents</h1>
+  <label>进度 <input id="progress" type="range" min="0" max="1" step="0.01" value="0"><span id="progress-value">0.00</span></label>
+  <button id="play" class="ghost">重放开场</button>
+  <button id="state-cover" class="ghost">封面</button>
+  <button id="state-contents" class="ghost">目录终态</button>
+</header>
+<main>
+  <figure>
+    <figcaption>DOM / CSS 3D</figcaption>
+    <div class="frame"><iframe id="dom" src="dom/index.html?embed=1&amp;reduced=1"></iframe></div>
+  </figure>
+  <figure>
+    <figcaption>Three.js / WebGL</figcaption>
+    <div class="frame"><iframe id="three" src="three/index.html?embed=1&amp;reduced=1"></iframe></div>
+  </figure>
+</main>
+<p class="note">两个入口共享同一套内容、投影、阅读路径与键盘状态；唯一差异是渲染器。拖动进度查看 0 / 0.25 / 0.5 / 0.75 / 1 的构图。</p>
+<script>
+  const dom = document.getElementById('dom');
+  const three = document.getElementById('three');
+  const range = document.getElementById('progress');
+  const value = document.getElementById('progress-value');
+  const frames = [dom, three];
+
+  function scaleFrames() {
+    for (const f of frames) {
+      const box = f.parentElement.getBoundingClientRect();
+      f.style.transform = `scale(${box.width / 1920})`;
+    }
+  }
+  function broadcast(p, selected) {
+    for (const f of frames) f.contentWindow?.postMessage({ type: 'opening-set', p: Number(p), selected: selected || 0 }, '*');
+    value.textContent = Number(p).toFixed(2);
+  }
+  range.addEventListener('input', () => broadcast(range.value));
+  document.getElementById('play').onclick = () => {
+    for (const f of frames) f.contentWindow?.postMessage({ type: 'opening-stack' }, '*');
+    range.value = 0; broadcast(0);
+    setTimeout(() => broadcast(1), 40);
+  };
+  document.getElementById('state-cover').onclick = () => { range.value = 0; broadcast(0); };
+  document.getElementById('state-contents').onclick = () => { range.value = 1; broadcast(1); };
+  addEventListener('resize', scaleFrames);
+  addEventListener('load', () => { scaleFrames(); broadcast(0); });
+</script>
+</body>
+</html>
