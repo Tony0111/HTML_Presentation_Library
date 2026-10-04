@@ -14,7 +14,9 @@
 
 ## 内容制作
 
-编辑 [content/sample.md](content/sample.md)，然后在项目根目录运行：
+完整说明见 [内容制作指南](EDITING-GUIDE.md)：增减章节、增删页面、各页型填写示例、素材替换、引用规则及使用限制。
+
+编辑 [content/sample.md](content/sample.md)，然后在本模板文件夹内运行：
 
 ```text
 python tools/build_content.py
@@ -31,12 +33,16 @@ python tools/build_content.py
 ```text
 presentation-template-02/
   index.html
+  EDITING-GUIDE.md          增减章节、增删页面与各页型填写说明
   content/sample.md
   data/presentation.config.js
-  js/spatial-stage.js       封面液体镜头 + 目录立体屏风
-  js/slide-renderer.js      正文页渲染
-  styles/opening.css        封面与目录界面
-  styles/theme.css          青橙渐变与立体卡片主题
+  js/                       导航、正文渲染、封面与目录、Thanks 粒子
+  styles/                   版式、主题与空间页面样式
   assets/                   字体、图表、视频
-  vendor/three.min.js
+  vendor/                   本地 Three.js 与 Lucide
+  tools/build_content.py    由 content/sample.md 生成运行数据
+  test/tools/check_template.py  浏览器回归检查
+  LICENSES/                 第三方字体与库的许可
 ```
+
+完整的内容字段、章节规则与限制见 [内容制作指南](EDITING-GUIDE.md)。
