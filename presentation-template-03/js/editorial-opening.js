@@ -113,13 +113,10 @@
       if (!reduced) spin += dt * .12;
       smooth.x += (pointer.x - smooth.x) * .06; smooth.y += (pointer.y - smooth.y) * .06;
       camera.position.set(smooth.x * 44 * (1 - progress), -smooth.y * 36 * (1 - progress), F); camera.lookAt(0, 0, 0);
-      const smallCorner = el.dataset.mode === 'body' || chapters.length > 4;
-      const cornerScale = smallCorner ? .18 : .22;
-      const bottom = smallCorner ? 78 : 90;
-      root.position.set(450 * (1 - progress) + (-logicalWidth / 2 + 176) * progress,
-        -20 * (1 - progress) + (-logicalHeight / 2 + bottom) * progress, 0);
-      root.rotation.set(.08, -.25 + spin + smooth.x * .08, 0);
-      root.scale.setScalar(1.1 * (1 - progress) + cornerScale * progress);
+      root.position.set(450 * (1 - progress) + (-logicalWidth / 2 + 132) * progress,
+        -20 * (1 - progress) + (-logicalHeight / 2 + 78) * progress, 0);
+      root.rotation.set(.08, -.25 + spin + smooth.x * .08 * (1 - progress), 0);
+      root.scale.setScalar(1.1 * (1 - progress) + .18 * progress);
       if (stars) { stars.rotation.y = -spin * .6; stars.scale.setScalar(1 - progress * .4); }
     }
     return { scene, camera, show, update, ready,

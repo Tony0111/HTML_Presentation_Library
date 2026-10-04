@@ -253,4 +253,3 @@
 ## S24 | closing
 @chapter: ch4
 # THANKS
-@subtitle: 感谢聆听。

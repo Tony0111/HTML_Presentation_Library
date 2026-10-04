@@ -33,13 +33,13 @@
 
 ## 当前开场
 
-封面右侧使用 cmzw 的 Stylized planet 原模型，保留地球和云层贴图，配轻量星点与缓慢旋转；封面比例放大 10%，模型、贴图均随目录携带。进入目录时，地球缩小并固定在左下角持续旋转，不随选章或鼠标移动；左下角的重复标题已移除。5–8 章时进一步缩小，避免遮挡第二排目录。支持封面指针视差、点击选章和键盘选章。减少动态模式关闭旋转和视差；模型加载失败或 WebGL 不可用时显示同一模型生成的本地静态海报。
+封面右侧使用 cmzw 的 Stylized planet 原模型，保留地球和云层贴图，配轻量星点与缓慢旋转；封面比例放大 10%，模型、贴图均随目录携带。进入目录时，地球缩小并固定在左下角持续旋转，中心距左边 132 个设计像素。目录和正文使用相同大小与位置，不随选章或鼠标移动；转场只动画文字与阅读页，不淡出、缩放或遮挡地球。支持封面指针视差、点击选章和键盘选章。减少动态模式关闭旋转和视差；模型加载失败或 WebGL 不可用时显示同一模型生成的本地静态海报。
 
 英文标题、编号与标签使用 Departure Mono 的真实像素字形，中文标题使用 Fusion Pixel 12px；不通过滤镜模拟像素。中文说明与长段落保留 Noto Sans SC，兼顾阅读。所有字体本地打包。
 
 每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。参考资料后前进进入 THANKS 末页，继续前进保持停留。
 
-THANKS 复用 Library 的 `Let the particles speak. / sphere-particle` 采样与缓冲区插值思路：12,000 个粒子由球体在约 1.4 秒内聚合成像素文字，不自动恢复球体。仅在结尾运行，离场隐藏；减少动态模式直接显示粒子文字，WebGL 失败时保留普通可读文字。地球与粒子共享原 Three.js 渲染器，不新增 WebGL 上下文。
+THANKS 复用 Library 的 `Let the particles speak. / sphere-particle` 采样与缓冲区插值思路：12,000 个粒子由球体在约 1.4 秒内聚合成像素文字，不自动恢复球体。结尾只显示 THANKS，不显示副标题、标点、页码或工具栏；键盘导航仍可用。仅在结尾运行，离场隐藏；减少动态模式直接显示粒子文字，WebGL 失败时保留普通可读文字。地球与粒子共享原 Three.js 渲染器，不新增 WebGL 上下文。
 
 ## 运行
 
@@ -108,6 +108,7 @@ python test/tools/check_chapter_transitions.py # 33 项：章节回目录、双�
 python test/tools/check_cubist.py              # 48 项：3–8 章容量、静态回退、WebGL 丢失
 python test/tools/check_planet.py              # 16 项：Library 一致性、像素字体、左下角位置、模型失败回退
 python test/tools/check_content_closing.py     # 正文地球、页脚、THANKS 动画、视口、回退
+python test/tools/check_planet_continuity.py   # 目录与正文转场逐帧：地球位置、可见性、静态海报
 ```
 
 从 `presentation-template-03/` 目录执行。测试需要 Python、Playwright、Pillow 与本地 Chrome 或 Playwright Chromium，仅用于开发；观看演示不需要。新截图输出到系统临时目录 `presentation-template-03-opening/` 和 `presentation-template-03-cubist/`，不写入其他 Agent 的工作区。历史实验仍保留，但不作为当前模板 3 的验收依据。

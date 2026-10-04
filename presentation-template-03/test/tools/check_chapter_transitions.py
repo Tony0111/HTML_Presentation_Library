@@ -47,8 +47,8 @@ with sync_playwright() as p:
         page.keyboard.press(key_value)
         ok(name + ' starts', page.evaluate('!!document.getElementById("stage").dataset.transition'))
         page.evaluate('''() => {
-          for (const id of ['slide', 'spatial', 'editorial-opening']) {
-            for (const animation of document.getElementById(id).getAnimations()) {
+          for (const layer of document.querySelectorAll('#slide, .opening-masthead, .opening-contents, .opening-footer')) {
+            for (const animation of layer.getAnimations()) {
               animation.pause(); animation.currentTime = 230;
             }
           }
@@ -67,8 +67,8 @@ with sync_playwright() as p:
           return style.transform.startsWith('matrix3d') && Number(style.opacity) > 0 && Number(style.opacity) < 1;
         }'''))
         page.evaluate('''() => {
-          for (const id of ['slide', 'spatial', 'editorial-opening']) {
-            document.getElementById(id).getAnimations().forEach(a => a.finish());
+          for (const layer of document.querySelectorAll('#slide, .opening-masthead, .opening-contents, .opening-footer')) {
+            layer.getAnimations().forEach(a => a.finish());
           }
         }''')
         settled()

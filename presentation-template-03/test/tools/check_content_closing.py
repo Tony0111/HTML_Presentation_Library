@@ -91,10 +91,11 @@ with sync_playwright() as p:
         ok(f'Thanks particles are visible and centered {w}x{h}', len(visible)>minimum
            and abs(sum(x for x,y in visible)/len(visible)-160)<30
            and abs(sum(y for x,y in visible)/len(visible)-90)<20)
-        ok(f'Thanks subtitle fits {w}x{h}', page.evaluate('''() => {
-          const r=document.querySelector('.closing-subtitle').getBoundingClientRect();
-          return r.left>=0 && r.right<=innerWidth && r.bottom<=innerHeight;
-        }'''))
+        ok(f'Thanks contains no subtitle or page number {w}x{h}', page.evaluate('''() =>
+          document.getElementById('particle-closing').textContent.trim()==='THANKS'
+          && !document.querySelector('.closing-subtitle, .closing-folio')
+          && !document.querySelector('.presentation-controls').checkVisibility()
+        '''))
         first = pixels(); page.wait_for_timeout(150)
         ok(f'reduced-motion Thanks is stable {w}x{h}', first == pixels())
         page.screenshot(path=str(OUT / f'thanks-{w}x{h}.png'))

@@ -1,6 +1,6 @@
 /* Pixel typography and the original Library planet share an unframed stage. */
 #stage[data-opening] { background:var(--paper); }
-#editorial-opening { position:absolute; inset:0; z-index:3; overflow:hidden; color:var(--ink); pointer-events:none; font-family:var(--font-sans); }
+#editorial-opening { position:absolute; inset:0; z-index:6; overflow:hidden; color:var(--ink); pointer-events:none; font-family:var(--font-sans); }
 .opening-masthead { position:absolute; top:54px; left:96px; right:96px; height:60px; display:flex; align-items:center; gap:28px; border-bottom:2px solid var(--ink); }
 .opening-brand { min-width:0; font:600 20px/1.4 var(--font-mono); }
 .opening-edition { margin-left:auto; color:var(--muted); font:16px/1.4 var(--font-mono); flex-shrink:0; }
@@ -52,9 +52,8 @@
 #editorial-opening[data-mode="body"] .opening-cover,
 #editorial-opening[data-mode="body"] .opening-contents { display:none; }
 .opening-cover,.opening-contents { transition:opacity 380ms ease,transform 620ms cubic-bezier(.2,.9,.25,1),visibility 0s linear; }
-#editorial-opening[data-mode="contents"] .planet-poster { left:-324px; top:auto; bottom:-410px; transform:scale(.22); }
-#editorial-opening[data-mode="contents"][data-dense="true"] .planet-poster { bottom:-422px; transform:scale(.18); }
-#editorial-opening[data-mode="body"] .planet-poster { left:-324px; top:auto; bottom:-422px; transform:scale(.18); }
+#editorial-opening[data-mode="contents"] .planet-poster,
+#editorial-opening[data-mode="body"] .planet-poster { left:-368px; top:auto; bottom:-422px; transform:scale(.18); }
 body:has(#stage[data-opening]) .presentation-controls { background:rgba(244,244,240,.96); border-color:var(--ink); color:var(--ink); }
 body:has(#stage[data-opening]) .presentation-controls button:hover { background:var(--sun); color:var(--ink); }
 @media (prefers-reduced-motion:reduce) { .opening-cover,.opening-contents,.opening-chapters button { transition:none; } }
@@ -64,5 +63,4 @@ body:has(#stage[data-opening]) .presentation-controls button:hover { background:
 #particle-closing { position:absolute; inset:0; z-index:3; color:var(--ink); pointer-events:none; text-align:center; }
 .closing-title { position:absolute; top:calc(50% - 170px); left:120px; right:120px; margin:0; font:400 220px/1.3 var(--font-display); }
 #particle-closing[data-spatial="true"] .closing-title { opacity:0; }
-.closing-subtitle { position:absolute; top:calc(50% + 185px); left:120px; right:120px; margin:0; font:400 28px/1.5 var(--font-sans); }
-.closing-folio { position:absolute; right:104px; bottom:34px; font:400 15px/1.4 var(--font-mono); }
+body:has(#stage[data-closing]) .presentation-controls { display:none; }

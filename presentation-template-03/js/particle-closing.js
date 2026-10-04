@@ -7,9 +7,7 @@
     const title = slide ? slide.title.join(' ') : 'THANKS';
     const el = document.createElement('section');
     el.id = 'particle-closing'; el.hidden = true;
-    el.innerHTML = `<h1 class="closing-title">${SlideRenderer.escape(title)}</h1>
-      <p class="closing-subtitle">${SlideRenderer.escape(slide?.meta.subtitle || '')}</p>
-      <span class="closing-folio">${String(config.slides.length).padStart(2, '0')} / ${String(config.slides.length).padStart(2, '0')}</span>`;
+    el.innerHTML = `<h1 class="closing-title">${SlideRenderer.escape(title)}</h1>`;
     document.getElementById('stage').appendChild(el);
     let scene = null, camera = null, particles = null;
     let active = false, start = 0, width = 1920, height = 1080;

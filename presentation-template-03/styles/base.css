@@ -12,7 +12,8 @@ body { font-family: var(--font-sans); color: var(--paper); -webkit-font-smoothin
 }
 #spatial, #spatial canvas { position: absolute; inset: 0; display: block; }
 #spatial { z-index: 1; }
-#stage[data-opening="body"] #spatial { z-index:3; }
+#stage[data-opening="body"] #spatial,
+#stage[data-opening="contents"] #spatial { z-index:5; }
 #slide { position: absolute; inset: 0; z-index: 2; background: var(--paper); color: var(--ink); }
 #slide[hidden] { display: none; }
 

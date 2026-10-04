@@ -40,7 +40,8 @@
     slideEl.style.zIndex = '4';
     const openingEl = document.getElementById('editorial-opening');
     pageAnimations = [slideEl.animate(entering ? [folded, flat] : [flat, folded], options)];
-    for (const layer of [spatialEl, openingEl]) {
+    // Keep the canvas and fallback poster fixed; only directory labels participate.
+    for (const layer of openingEl.querySelectorAll('.opening-masthead, .opening-contents, .opening-footer')) {
       if (!layer) continue;
       const near = { opacity: 0, transform: 'scale(1.14)' };
       const distant = { opacity: 1, transform: 'scale(1)' };

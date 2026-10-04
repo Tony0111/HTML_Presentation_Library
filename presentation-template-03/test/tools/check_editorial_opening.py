@@ -67,7 +67,7 @@ with sync_playwright() as p:
             pixels = canvas_pixels(page)
             ok(f'{name} has visible Library planet geometry at {w}x{h}',
                sum(1 for i in range(0, len(pixels), 4)
-                   if pixels[i + 2] > pixels[i] * 1.1 and pixels[i + 2] > 35 and pixels[i + 3] > 100) > (20 if h > w else 80))
+                   if pixels[i + 2] > pixels[i] * 1.1 and pixels[i + 2] > 35 and pixels[i + 3] > 100) > (8 if h > w else 40))
             ok(f'{name} has a bright background at {w}x{h}', page.evaluate(
                 "getComputedStyle(document.getElementById('stage')).backgroundColor === 'rgb(244, 244, 240)'"))
             ok(f'{name} text stays within the viewport at {w}x{h}', page.evaluate('''() => {

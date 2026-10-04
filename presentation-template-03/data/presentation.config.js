@@ -657,8 +657,7 @@ window.PRESENTATION_CONFIG = {
       "id": "S24",
       "type": "closing",
       "meta": {
-        "chapter": "ch4",
-        "subtitle": "感谢聆听。"
+        "chapter": "ch4"
       },
       "title": [
         "THANKS"
