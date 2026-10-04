@@ -29,6 +29,7 @@ SOURCES = [
 TEXT_FILES = [
     'data/presentation.config.js', 'content/sample.md', 'index.html', 'review.html',
     'js/app.js', 'js/navigation.js', 'js/slide-renderer.js', 'js/spatial-stage.js', 'js/media.js',
+    'js/editorial-opening.js', 'js/particle-thanks.js',
     'styles/tokens.css', 'styles/base.css', 'styles/slides.css',
 ]
 

@@ -20,9 +20,9 @@ SOURCE = ROOT / 'content' / 'sample.md'
 TARGET = ROOT / 'data' / 'presentation.config.js'
 
 TYPES = {
-    'cover', 'contents', 'section-divider', 'headline-points', 'statement',
+    'cover', 'contents', 'headline-points', 'statement',
     'split-media', 'chart-focus', 'process-flow', 'timeline', 'comparison',
-    'table-focus', 'video-focus', 'references', 'closing',
+    'table-focus', 'video-focus', 'references', 'thanks',
 }
 
 
@@ -105,11 +105,18 @@ def parse(source: str) -> dict:
 
     chapters: list[dict] = []
     cited: list[dict] = []
+    previous_chapter: str | None = None
     for index, slide in enumerate(slides):
         if not slide['title']:
             fail(slide['id'] + ' has no title')
         slide['index'] = index
         chapter_id = slide['meta'].get('chapter')
+        if chapter_id and chapter_id != previous_chapter:
+            if any(c['id'] == chapter_id for c in chapters):
+                fail(f'{slide["id"]}: chapter {chapter_id} reappears after another chapter; keep each chapter contiguous')
+            if not slide['meta'].get('chapterTitle') or not slide['meta'].get('chapterEnglish'):
+                fail(f'{slide["id"]}: first page of {chapter_id} needs @chapterTitle and @chapterEnglish')
+            previous_chapter = chapter_id
         if chapter_id and not any(c['id'] == chapter_id for c in chapters):
             chapters.append({
                 'id': chapter_id,
@@ -140,8 +147,11 @@ def parse(source: str) -> dict:
                 if edge['from'] not in node_ids or edge['to'] not in node_ids:
                     fail(slide['id'] + ' has an invalid edge')
 
+    if not 1 <= len(chapters) <= 8:
+        fail('this template supports 1-8 chapters')
     for number, chapter in enumerate(chapters, start=1):
-        chapter.setdefault('number', str(number).zfill(2))
+        if chapter['number'] != str(number).zfill(2):
+            fail(f'{chapter["id"]}: remove @chapterNumber or use sequential number {number:02d}')
 
     return {'meta': deck, 'theme': deck['theme'], 'chapters': chapters,
             'slides': slides, 'references': cited}
