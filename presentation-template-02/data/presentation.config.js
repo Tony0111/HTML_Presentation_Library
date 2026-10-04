@@ -652,6 +652,20 @@ window.PRESENTATION_CONFIG = {
       },
       "refs": [],
       "index": 18
+    },
+    {
+      "id": "S24",
+      "type": "closing",
+      "meta": {},
+      "title": [
+        "Thanks"
+      ],
+      "bullets": [],
+      "paragraphs": [],
+      "quote": "",
+      "blocks": {},
+      "refs": [],
+      "index": 19
     }
   ],
   "references": [

@@ -116,6 +116,7 @@
       await Promise.all([sceneReady, returning ? transitionReading(false, Math.max(0, previousChapter)) : Promise.resolve()]);
       slideEl.hidden = true;
     } else {
+      slideEl.dataset.palette = chapterIndex >= 0 && chapterIndex % 2 === 1 ? 'orange' : 'cyan';
       if (!entering) {
         SpatialStage.hideOpening();
         setSpatialVisible(false);
