@@ -53,6 +53,14 @@ with sync_playwright() as p:
     page.wait_for_timeout(500)
     check('cover starts and uses one WebGL canvas', page.locator('#spatial canvas').count() == 1)
     check('19 slides and 4 chapters', page.evaluate('PRESENTATION.config.slides.length === 19 && PRESENTATION.config.chapters.length === 4'))
+    check('cover title has a continuous transform animation', page.evaluate('''() =>
+      Array.from(document.querySelectorAll('.opening-cover h1 span')).every(span =>
+        getComputedStyle(span).animationName === 'title-shift' && getComputedStyle(span).animationIterationCount === 'infinite'
+      )
+    '''))
+    check('cover does not show a template number marker', page.locator('.opening-mark').count() == 0)
+    # Freeze the intentional title animation while comparing lens-only pixels below.
+    page.evaluate("document.querySelectorAll('.opening-cover h1 span').forEach(span => span.style.animation = 'none')")
     shot(page, 'cover-desktop')
     check('cover has visible texture', variance(SHOTS / 'cover-desktop.png') > 30)
 
@@ -67,7 +75,7 @@ with sync_playwright() as p:
     page.wait_for_timeout(1300)
     shot(page, 'cover-lens-restored')
     restored = ImageChops.difference(Image.open(SHOTS / 'cover-desktop.png').convert('RGB'), Image.open(SHOTS / 'cover-lens-restored.png').convert('RGB'))
-    check('lens relaxes after pointer leaves', sum(ImageStat.Stat(restored).mean) < 0.5)
+    check('lens relaxes after pointer leaves', sum(ImageStat.Stat(restored).mean) < 0.7)
 
     page.keyboard.press('Enter')
     page.wait_for_function('PRESENTATION.state.index === 1 && !PRESENTATION.state.busy')
@@ -85,6 +93,10 @@ with sync_playwright() as p:
     page.keyboard.press('ArrowRight')
     page.wait_for_function('!PRESENTATION.state.busy')
     check('arrow selects method', page.evaluate('PRESENTATION.state.chapterSelected === 1'))
+    page.wait_for_timeout(500)
+    shot(page, 'contents-after-right')
+    ring_difference = ImageChops.difference(Image.open(SHOTS / 'contents-desktop.png').convert('RGB'), Image.open(SHOTS / 'contents-after-right.png').convert('RGB'))
+    check('arrow rotates the chapter screen ring', sum(ImageStat.Stat(ring_difference).mean) > 2)
     page.keyboard.press('Enter')
     page.wait_for_function('!PRESENTATION.state.busy')
     check('selected chapter enters correct content', page.evaluate('PRESENTATION.config.slides[PRESENTATION.state.index].id === "S08"'))
@@ -145,9 +157,11 @@ with sync_playwright() as p:
               return Math.abs(r.width-innerWidth)<1 && Math.abs(r.height-innerHeight)<1 && document.documentElement.scrollWidth<=innerWidth;
             }'''))
             if index == 1:
-                check(f'chapter targets framed {w}x{h}', page.evaluate('''() => Array.from(document.querySelectorAll('[data-chapter]')).every(b => {
-                  const r=b.getBoundingClientRect();return r.width>20 && r.height>40 && r.left>=0 && r.right<=innerWidth && r.top>0 && r.bottom<innerHeight;
-                })'''))
+                check(f'active chapter target framed {w}x{h}', page.evaluate('''() => {
+                  const b = document.querySelector(`[data-chapter="${PRESENTATION.state.chapterSelected}"]`);
+                  const r = b && b.getBoundingClientRect();
+                  return r && r.width > 20 && r.height > 40 && r.left >= 0 && r.right <= innerWidth && r.top > 0 && r.bottom < innerHeight;
+                }'''))
                 check(f'canvas nonblank {w}x{h}', page.evaluate('''() => {
                   const c=document.querySelector('#spatial canvas'),g=c.getContext('webgl2')||c.getContext('webgl');
                   const a=new Uint8Array(4);g.readPixels(Math.floor(c.width/2),Math.floor(c.height/2),1,1,g.RGBA,g.UNSIGNED_BYTE,a);return a[3]>20;

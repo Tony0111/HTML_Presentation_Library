@@ -3,9 +3,9 @@ window.PRESENTATION_CONFIG = {
     "title": "让判断可见",
     "display": "MAKE IT VISIBLE",
     "theme": "cyan-orange-spatial",
-    "kicker": "PERSPECTIVES / STUDY 02",
+    "kicker": "PERSPECTIVES / STUDY",
     "author": "演示模板 · 示例内容",
-    "meta": "TEMPLATE 02 · 2026",
+    "meta": "2026",
     "subtitle": "从问题出发，让证据回应，让判断可见。"
   },
   "theme": "cyan-orange-spatial",
@@ -44,9 +44,9 @@ window.PRESENTATION_CONFIG = {
       "id": "S01",
       "type": "cover",
       "meta": {
-        "kicker": "PERSPECTIVES / STUDY 02",
+        "kicker": "PERSPECTIVES / STUDY",
         "subtitle": "从问题出发，让证据回应，让判断可见。",
-        "meta": "TEMPLATE 02 · 2026"
+        "meta": "2026"
       },
       "title": [
         "让判断",
