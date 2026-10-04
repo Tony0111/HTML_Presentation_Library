@@ -34,9 +34,8 @@
 1. 本文件 `AI-CONTENT-GUIDE.md`
 2. `content/sample.md`：当前语法和完整示例
 3. `REQUIREMENTS.md`：场景、学术准确性和交互边界
-4. `CREATION-WORKFLOW.md`：总体制作流程
-5. `review.html`：生成后用于内容审阅
-6. `js/slide-renderer.js`：只在需要确认字段时阅读，不要随意修改
+4. `review.html`：生成后用于内容审阅
+5. `js/slide-renderer.js`：只在需要确认字段时阅读，不要随意修改
 
 如果用户只提供零散材料，先建立内容提纲和缺口清单；不要为了填满页面编造数据、文献、研究结论或时间线。
 
@@ -471,7 +470,7 @@ python test/tools/check_content_closing.py
 python test/tools/check_planet_continuity.py
 ```
 
-如果只改普通文本，至少运行 `check_formal.py` 和 `check_keyboard.py`；如果改章节或页序，再运行 `check_cubist.py`；如果改正文页脚、地球或结尾，再运行 `check_content_closing.py` 和 `check_planet_continuity.py`。
+如果只改普通文本，至少运行 `check_formal.py` 和 `check_keyboard.py`；如果改章节或页序，再运行 `check_cubist.py`；如果改正文页脚、地球或结尾，再运行 `check_content_closing.py` 和 `check_planet_continuity.py`。测试脚本位于 `test/tools/`，测试截图只写入系统临时目录。
 
 ## 8. 给 AI 的交付报告格式
 

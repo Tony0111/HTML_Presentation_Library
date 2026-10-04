@@ -21,7 +21,7 @@
 
 | 项目 | 说明 |
 | --- | --- |
-| 渲染器 | 本地 Three.js（见 [design/DECISIONS.md](design/DECISIONS.md) D-06） |
+| 渲染器 | 本地 Three.js + GLTFLoader；地球和粒子共用一个 WebGL 舞台 |
 | 内容源 | [content/sample.md](content/sample.md) |
 | 编译 | `python tools/build_content.py` |
 | 字体子集 | `python tools/subset_fonts.py` |
@@ -81,8 +81,7 @@ presentation-template-03/
   tools/build_content.py      Markdown → 运行快照
   tools/extract_library_planet.cjs 原始 Library 地球 → 离线资源快照
   tools/capture_planet_poster.py   本地模型 → 静态回退海报
-  design/                     样稿、分镜与决策记录
-  test/                       实验、基线与证据
+  test/tools/                当前正式入口回归测试
   vendor/three.min.js         本地 Three.js
   vendor/GLTFLoader.js        同版本 glTF 加载器，适配经典脚本
   assets/models/             地球资源快照与海报
@@ -92,12 +91,9 @@ presentation-template-03/
 ## 文档
 
 - [AI-CONTENT-GUIDE.md](AI-CONTENT-GUIDE.md)：给其他 AI 的内容制作、章节组织、页型和审阅操作指南。
-- [DESIGN-DIRECTION.md](DESIGN-DIRECTION.md)：首版视觉与页面方向。
-- [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)：分阶段执行计划与验收条件。
-- [REQUIREMENTS.md](REQUIREMENTS.md)：产品场景、交互和学术内容需求。
-- [CREATION-WORKFLOW.md](CREATION-WORKFLOW.md)：内容制作与离线打包流程。
-- [TECHNICAL-ARCHITECTURE.md](TECHNICAL-ARCHITECTURE.md)：旧原型方案，仅作历史参考。
-- [design/DECISIONS.md](design/DECISIONS.md)：已确认与待确认的设计决策。
+- [REQUIREMENTS.md](REQUIREMENTS.md)：产品场景、交互和学术内容边界。
+
+历史设计分镜、旧空间原型和实验截图已从交付目录移除；当前实现以本 README、AI 内容指南和正式入口测试为准。
 
 ## 验证
 
@@ -112,7 +108,7 @@ python test/tools/check_content_closing.py     # 正文地球、页脚、THANKS 
 python test/tools/check_planet_continuity.py   # 目录与正文转场逐帧：地球位置、可见性、静态海报
 ```
 
-从 `presentation-template-03/` 目录执行。测试需要 Python、Playwright、Pillow 与本地 Chrome 或 Playwright Chromium，仅用于开发；观看演示不需要。新截图输出到系统临时目录 `presentation-template-03-opening/` 和 `presentation-template-03-cubist/`，不写入其他 Agent 的工作区。历史实验仍保留，但不作为当前模板 3 的验收依据。
+从 `presentation-template-03/` 目录执行。测试需要 Python、Playwright、Pillow 与本地 Chrome 或 Playwright Chromium，仅用于开发；观看演示不需要。新截图输出到系统临时目录，不写入交付目录或其他 Agent 的工作区。
 
 ## 离线与资源
 
@@ -130,4 +126,4 @@ python test/tools/check_planet_continuity.py   # 目录与正文转场逐帧：�
 - 竖屏保留与桌面相同的等比演示画布，文字会较小；正式演讲仍建议横屏或全屏。
 - 内容主稿使用受限 Markdown 方言；新增页型需要改渲染代码，不能仅靠内容。
 - 视频与图表为预制本地材料；播放阶段不生成图表、不做统计计算。
-- `test/` 下的历史实验与截图仍保留，会增大交付体积；它们不参与运行时。
+- `test/tools/` 只包含当前正式入口的回归脚本；测试截图输出到系统临时目录，不进入交付目录。
