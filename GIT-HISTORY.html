@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111111">
+<title>Git 提交图谱 · Design</title>
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #111111;
+    --paper: #f2f0eb;
+    --surface: #fbfaf7;
+    --surface-strong: #ffffff;
+    --muted: #79766f;
+    --line: rgba(17, 17, 17, 0.14);
+    --line-strong: rgba(17, 17, 17, 0.25);
+    --accent: #ff603c;
+    --blue: #7fa9d8;
+    --violet: #8f7bff;
+    --green: #6fae86;
+    --serif: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+    --mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --shadow: 0 16px 48px rgba(17, 17, 17, 0.1);
+    --radius: 8px;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #f2f0eb;
+    --paper: #111111;
+    --surface: #191919;
+    --surface-strong: #222222;
+    --muted: #a4a19b;
+    --line: rgba(242, 240, 235, 0.14);
+    --line-strong: rgba(242, 240, 235, 0.28);
+    --accent: #ff7657;
+    --blue: #9cc1e7;
+    --violet: #a99aff;
+    --green: #9ac6a7;
+    --shadow: 0 18px 54px rgba(0, 0, 0, 0.32);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 240ms ease, color 240ms ease;
+  }
+  ::selection { background: var(--accent); color: #111; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  code, kbd { font-family: var(--mono); }
+
+  .shell { width: min(100% - 40px, 1360px); margin: 0 auto; }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(16px);
+  }
+  .topbar-inner {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .wordmark-mark {
+    width: 24px; height: 24px;
+    display: grid; place-items: center;
+    color: #111; background: var(--accent);
+    border-radius: 50%;
+    font-family: var(--serif); font-size: 15px; font-weight: 700; letter-spacing: 0;
+  }
+  .top-path { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .top-actions { display: flex; gap: 8px; }
+  .ghost-button {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: transparent;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+  }
+  .ghost-button:hover, .ghost-button:focus-visible {
+    border-color: var(--line-strong);
+    background: var(--surface);
+  }
+  .ghost-button.icon { width: 34px; padding: 0; height: 34px; display: grid; place-items: center; }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 56px 0 8px; }
+  .eyebrow {
+    margin: 0 0 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 {
+    margin: 0 0 14px;
+    font-size: clamp(34px, 5.4vw, 62px);
+    line-height: .98;
+    letter-spacing: -.03em;
+    font-weight: 700;
+  }
+  h1 em {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: -.01em;
+  }
+  .lede { margin: 0 0 26px; max-width: 62ch; color: var(--muted); font-size: 15px; }
+  .lede code { font-size: 12.5px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 5px; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+    gap: 10px;
+    margin-bottom: 26px;
+  }
+  .stat-card {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 14px 16px 12px;
+  }
+  .stat-value { font-size: 26px; line-height: 1.1; letter-spacing: -.02em; font-weight: 650; }
+  .stat-label {
+    margin-top: 6px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- panels ---------- */
+  .panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .panel {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+  .panel h2 {
+    margin: 0 0 16px;
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .bars { display: flex; align-items: flex-end; gap: 10px; min-height: 96px; }
+  .bar-item { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 34px; }
+  .bar-track { width: 100%; height: 62px; display: flex; align-items: flex-end; }
+  .bar-fill {
+    width: 100%;
+    border-radius: 4px 4px 2px 2px;
+    background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 55%, transparent));
+    min-height: 3px;
+  }
+  .bar-count { font-family: var(--mono); font-size: 11px; color: var(--ink); }
+  .bar-label { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+
+  .ref-groups { display: grid; gap: 16px; }
+  .ref-group-label {
+    margin: 0 0 8px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ref-list { display: grid; gap: 6px; }
+  .ref-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 13px; }
+  .ref-name { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+  .ref-name code { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ref-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; background: var(--muted); }
+  .ref-row .ref-target { font-family: var(--mono); font-size: 11px; color: var(--muted); flex: 0 0 auto; }
+
+  /* ---------- graph ---------- */
+  .graph-card {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .graph-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .graph-toolbar h2 {
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 11.5px; color: var(--muted); }
+  .legend-item { display: inline-flex; align-items: center; gap: 7px; }
+  .legend-swatch { width: 11px; height: 11px; border-radius: 50%; background: var(--muted); }
+  .legend-swatch.merge { background: none; border: 1.5px solid var(--accent); }
+  .legend-swatch.tag { background: none; border: 1.5px dashed var(--violet); }
+  .legend-swatch.head { background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent); }
+
+  .graph-scroll { overflow-x: auto; }
+  .graph-body { position: relative; min-width: 760px; }
+  .lane-layer { position: absolute; top: 0; left: var(--graph-gutter); pointer-events: none; }
+  .lane-layer svg { display: block; }
+  .lane-layer .edge { fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .lane-layer .through { stroke-opacity: .42; }
+  .lane-layer svg.focus .edge { opacity: .14; transition: opacity 160ms ease; }
+  .lane-layer svg.focus .edge.lit { opacity: 1; stroke-width: 2.4; }
+  .lane-layer .node circle { transition: transform 160ms ease; transform-origin: center; }
+  .lane-layer .node.hot circle.core { transform: scale(1.35); }
+  .lane-layer .halo { fill: none; stroke: #ff603c; stroke-width: 1.5; opacity: .9; animation: halo 2.4s ease-out infinite; transform-origin: center; }
+  @keyframes halo {
+    0% { transform: scale(.85); opacity: .85; }
+    70% { transform: scale(2.05); opacity: 0; }
+    100% { transform: scale(2.05); opacity: 0; }
+  }
+
+  .rows { position: relative; z-index: 2; }
+  .row {
+    display: flex;
+    align-items: center;
+    height: var(--row);
+    border-radius: 6px;
+    outline: none;
+    transition: background-color 140ms ease;
+  }
+  .row + .row { box-shadow: inset 0 1px 0 var(--line); }
+  .row:hover, .row:focus-visible { background: color-mix(in srgb, var(--ink) 4.5%, transparent); }
+  .cell-date {
+    flex: 0 0 var(--graph-gutter);
+    width: var(--graph-gutter);
+    padding-right: 14px;
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .cell-lanes { flex: 0 0 var(--graph-lanes); width: var(--graph-lanes); }
+  .cell-info { flex: 1 1 auto; min-width: 0; padding-left: 14px; padding-right: 18px; }
+  .row-line1 { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .subject {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chips { display: inline-flex; flex-wrap: nowrap; gap: 5px; flex: 0 0 auto; overflow: hidden; }
+  .chip {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    line-height: 1.7;
+    padding: 0 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .chip.head { background: var(--ink); color: var(--paper); border-color: transparent; }
+  .chip.branch { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 42%, transparent); }
+  .chip.tag { color: var(--violet); border-color: color-mix(in srgb, var(--violet) 42%, transparent); }
+  .chip.remote { color: var(--blue); border-color: color-mix(in srgb, var(--blue) 42%, transparent); }
+  .chip.more { color: var(--muted); }
+  .row-line2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 3px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .row-line2 .hash { color: var(--ink); }
+  .row-line2 .merge-flag { color: var(--accent); letter-spacing: .06em; }
+  .row-line2 .diffstat { margin-left: auto; padding-right: 2px; }
+  .ins { color: var(--green); }
+  .del { color: var(--accent); }
+  .parents { opacity: .85; }
+
+  .graph-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    justify-content: space-between;
+    padding: 16px 2px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  footer.page-foot { padding: 34px 0 60px; color: var(--muted); font-size: 12px; }
+  footer.page-foot code { color: var(--ink); }
+  @media (max-width: 620px) {
+    .hero { padding-top: 40px; }
+    .top-path { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <span class="wordmark"><span class="wordmark-mark">g</span> Git History</span>
+      <span class="top-path" id="repoPath"></span>
+      <span class="top-actions">
+        <button class="ghost-button" id="exportSvg" type="button">导出 SVG</button>
+        <button class="ghost-button icon" id="themeToggle" type="button" title="切换深色 / 浅色 (T)" aria-label="切换主题">◐</button>
+      </span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow" id="eyebrow">Repository · Git commit graph</p>
+      <h1>提交图谱 <em>commit graph</em></h1>
+      <p class="lede" id="lede"></p>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section class="panels">
+      <div class="panel">
+        <h2>提交活跃度 · commits per day</h2>
+        <div class="bars" id="activity"></div>
+      </div>
+      <div class="panel">
+        <h2>引用 · refs</h2>
+        <div class="ref-groups" id="refGroups"></div>
+      </div>
+    </section>
+
+    <section class="graph-card">
+      <div class="graph-toolbar">
+        <h2>提交图 · commit graph</h2>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-swatch"></span>普通提交</span>
+          <span class="legend-item"><span class="legend-swatch merge"></span>合并提交</span>
+          <span class="legend-item"><span class="legend-swatch tag"></span>标签</span>
+          <span class="legend-item"><span class="legend-swatch head"></span>HEAD</span>
+        </div>
+      </div>
+      <div class="graph-scroll">
+        <div class="graph-body" id="graphBody">
+          <div class="lane-layer" id="laneLayer"></div>
+          <div class="rows" id="rows"></div>
+        </div>
+      </div>
+      <div class="graph-foot" id="graphFoot"></div>
+    </section>
+
+    <footer class="page-foot">
+      <p>本页由 <code id="footCommand"></code> 的真实输出生成，只读取仓库历史，不修改任何文件。</p>
+    </footer>
+  </main>
+
+  <script id="commit-data" type="application/json">{
+  "repo": "Design",
+  "path": "E:/Design",
+  "command": "git log --all --graph --decorate --oneline",
+  "generatedAt": "2026-10-04T07:51:22.510Z",
+  "head": "main",
+  "commits": [
+    {
+      "h": "7b63011",
+      "parents": [
+        "54f39b9"
+      ],
+      "date": "2026-10-04",
+      "time": "15:47",
+      "subject": "feat: redesign template 03 in cubist style",
+      "refs": [
+        {
+          "name": "agent/template-03",
+          "kind": "branch"
+        }
+      ],
+      "merge": false,
+      "stats": {
+        "files": 15,
+        "ins": 393,
+        "del": 124
+      }
+    },
+    {
+      "h": "f1efb1a",
+      "parents": [
+        "54f39b9"
+      ],
+      "date": "2026-10-04",
+      "time": "15:39",
+      "subject": "Add presentation template 04",
+      "refs": [
+        {
+          "name": "agent/template-04",
+          "kind": "branch"
+        }
+      ],
+      "merge": false,
+      "stats": {
+        "files": 33,
+        "ins": 3138,
+        "del": 0
+      }
+    },
+    {
+      "h": "d33c2fe",
+      "parents": [
+        "ac07fff"
+      ],
+      "date": "2026-10-04",
+      "time": "15:37",
+      "subject": "Refine template 02 cyan-orange contents styling",
+      "refs": [
+        {
+          "name": "agent/template-02",
+          "kind": "branch"
+        }
+      ],
+      "merge": false,
+      "stats": {
+        "files": 3,
+        "ins": 32,
+        "del": 23
+      }
+    },
+    {
+      "h": "ac07fff",
+      "parents": [
+        "54f39b9"
+      ],
+      "date": "2026-10-04",
+      "time": "15:19",
+      "subject": "Fix template 02 contents carousel stability",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 2,
+        "ins": 80,
+        "del": 26
+      }
+    },
+    {
+      "h": "76173ba",
+      "parents": [
+        "ef9be5d"
+      ],
+      "date": "2026-10-04",
+      "time": "15:35",
+      "subject": "Animate cover keywords and restore alternating chapter palette",
+      "refs": [
+        {
+          "name": "agent/template-01",
+          "kind": "branch"
+        }
+      ],
+      "merge": false,
+      "stats": {
+        "files": 4,
+        "ins": 130,
+        "del": 25
+      }
+    },
+    {
+      "h": "ef9be5d",
+      "parents": [
+        "54f39b9"
+      ],
+      "date": "2026-10-04",
+      "time": "15:17",
+      "subject": "Refine editorial opening print treatment",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 4,
+        "ins": 141,
+        "del": 28
+      }
+    },
+    {
+      "h": "54f39b9",
+      "parents": [
+        "06351a7",
+        "1a9552e"
+      ],
+      "date": "2026-10-04",
+      "time": "12:27",
+      "subject": "Remove cover template and watermark numbers",
+      "refs": [
+        {
+          "name": "main",
+          "kind": "head"
+        },
+        {
+          "name": "v1.2.0",
+          "kind": "tag"
+        },
+        {
+          "name": "origin/HEAD",
+          "kind": "remote"
+        },
+        {
+          "name": "origin/main",
+          "kind": "remote"
+        }
+      ],
+      "merge": true,
+      "stats": null
+    },
+    {
+      "h": "1a9552e",
+      "parents": [
+        "3211d9d",
+        "f45c174"
+      ],
+      "date": "2026-10-04",
+      "time": "12:08",
+      "subject": "Merge remote-tracking branch 'origin/main' into fix/remove-cover-template-number",
+      "refs": [],
+      "merge": true,
+      "stats": null
+    },
+    {
+      "h": "3211d9d",
+      "parents": [
+        "ebc634e"
+      ],
+      "date": "2026-10-04",
+      "time": "11:46",
+      "subject": "fix: remove cover watermark number",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 1,
+        "ins": 1,
+        "del": 1
+      }
+    },
+    {
+      "h": "06351a7",
+      "parents": [
+        "f45c174",
+        "b62f30d"
+      ],
+      "date": "2026-10-04",
+      "time": "12:22",
+      "subject": "Template 02 refresh, horizontal chapter screens, cleaner git ignores",
+      "refs": [],
+      "merge": true,
+      "stats": null
+    },
+    {
+      "h": "b62f30d",
+      "parents": [
+        "ab654f6"
+      ],
+      "date": "2026-10-04",
+      "time": "12:19",
+      "subject": "Stop tracking template 1 test screenshots",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 72,
+        "ins": 3,
+        "del": 161
+      }
+    },
+    {
+      "h": "ab654f6",
+      "parents": [
+        "2f4ad5b"
+      ],
+      "date": "2026-10-04",
+      "time": "12:16",
+      "subject": "Stop tracking generated test screenshots and linked worktrees",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 37,
+        "ins": 6,
+        "del": 506
+      }
+    },
+    {
+      "h": "2f4ad5b",
+      "parents": [
+        "7beaf69",
+        "f45c174"
+      ],
+      "date": "2026-10-04",
+      "time": "12:01",
+      "subject": "Merge remote-tracking branch 'origin/main' into feat/template-02-warm-ring-directory",
+      "refs": [],
+      "merge": true,
+      "stats": null
+    },
+    {
+      "h": "f45c174",
+      "parents": [
+        "ed5c315",
+        "54d3cf1"
+      ],
+      "date": "2026-10-04",
+      "time": "11:47",
+      "subject": "Merge pull request #2 from Tony0111/feature/presentation-template-03",
+      "refs": [],
+      "merge": true,
+      "stats": null
+    },
+    {
+      "h": "7beaf69",
+      "parents": [
+        "6353f9f"
+      ],
+      "date": "2026-10-04",
+      "time": "11:54",
+      "subject": "feat: use horizontal chapter screens",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 1,
+        "ins": 21,
+        "del": 20
+      }
+    },
+    {
+      "h": "6353f9f",
+      "parents": [
+        "ebc634e"
+      ],
+      "date": "2026-10-04",
+      "time": "11:43",
+      "subject": "feat: refresh template 02 spatial presentation",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 7,
+        "ins": 124,
+        "del": 119
+      }
+    },
+    {
+      "h": "ebc634e",
+      "parents": [
+        "54d3cf1"
+      ],
+      "date": "2026-10-04",
+      "time": "11:37",
+      "subject": "fix: remove cover template number",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 1,
+        "ins": 1,
+        "del": 2
+      }
+    },
+    {
+      "h": "54d3cf1",
+      "parents": [
+        "e61badd"
+      ],
+      "date": "2026-10-04",
+      "time": "11:36",
+      "subject": "模板3的初始版本",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 150,
+        "ins": 13407,
+        "del": 0
+      }
+    },
+    {
+      "h": "e61badd",
+      "parents": [
+        "ed5c315"
+      ],
+      "date": "2026-10-04",
+      "time": "10:54",
+      "subject": "Add presentation-template-02 (cyan-orange spatial theme)",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 68,
+        "ins": 3542,
+        "del": 0
+      }
+    },
+    {
+      "h": "ed5c315",
+      "parents": [
+        "2657119",
+        "812bdea"
+      ],
+      "date": "2026-10-04",
+      "time": "02:36",
+      "subject": "v1.1.0: adaptive layout, faster keyboard, editorial opening, chapter transitions",
+      "refs": [
+        {
+          "name": "v1.1.0",
+          "kind": "tag"
+        }
+      ],
+      "merge": true,
+      "stats": null
+    },
+    {
+      "h": "812bdea",
+      "parents": [
+        "4816c02"
+      ],
+      "date": "2026-10-04",
+      "time": "02:33",
+      "subject": "End on references, add chapter-return and bidirectional transitions",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 8,
+        "ins": 246,
+        "del": 71
+      }
+    },
+    {
+      "h": "4816c02",
+      "parents": [
+        "647102f"
+      ],
+      "date": "2026-10-04",
+      "time": "02:06",
+      "subject": "Fix opening sheet stacking, alternate chapter colours, drop divider pages",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 8,
+        "ins": 98,
+        "del": 185
+      }
+    },
+    {
+      "h": "647102f",
+      "parents": [
+        "cdce986"
+      ],
+      "date": "2026-10-04",
+      "time": "01:21",
+      "subject": "Refactor cover and contents into a light editorial opening",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 8,
+        "ins": 431,
+        "del": 5
+      }
+    },
+    {
+      "h": "cdce986",
+      "parents": [
+        "a031b2d"
+      ],
+      "date": "2026-10-04",
+      "time": "00:39",
+      "subject": "Make keyboard navigation respond immediately",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 5,
+        "ins": 263,
+        "del": 38
+      }
+    },
+    {
+      "h": "a031b2d",
+      "parents": [
+        "2657119"
+      ],
+      "date": "2026-10-04",
+      "time": "00:17",
+      "subject": "Make the presentation canvas fill the viewport (adaptive fullscreen)",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 6,
+        "ins": 71,
+        "del": 19
+      }
+    },
+    {
+      "h": "2657119",
+      "parents": [
+        "a1c5b6b"
+      ],
+      "date": "2026-10-03",
+      "time": "23:56",
+      "subject": "Freeze presentation-template v1 (Three.js, 24-page deck)",
+      "refs": [
+        {
+          "name": "presentation-template-v1",
+          "kind": "tag"
+        },
+        {
+          "name": "v1.0.0",
+          "kind": "tag"
+        }
+      ],
+      "merge": false,
+      "stats": {
+        "files": 165,
+        "ins": 5053,
+        "del": 1339
+      }
+    },
+    {
+      "h": "a1c5b6b",
+      "parents": [
+        "1884ba7"
+      ],
+      "date": "2026-10-03",
+      "time": "00:33",
+      "subject": "Add Anime.js library and offline motion/hologram/card rebuilds",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 207,
+        "ins": 74573,
+        "del": 6
+      }
+    },
+    {
+      "h": "1884ba7",
+      "parents": [
+        "4adf524"
+      ],
+      "date": "2026-10-02",
+      "time": "13:49",
+      "subject": "Add Shery.js study notes and liquid lens background for slides",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 9,
+        "ins": 1352,
+        "del": 1
+      }
+    },
+    {
+      "h": "4adf524",
+      "parents": [],
+      "date": "2026-09-07",
+      "time": "17:12",
+      "subject": "Organize HTML presentation library",
+      "refs": [],
+      "merge": false,
+      "stats": {
+        "files": 44,
+        "ins": 4421,
+        "del": 0
+      }
+    }
+  ]
+}</script>
+  <script>
+  (function () {
+    'use strict';
+
+    var DATA = JSON.parse(document.getElementById('commit-data').textContent);
+    var COMMITS = DATA.commits;
+    var ROW = 62;
+    var LANE = 22;
+    var GUTTER = 92;
+    var NODE_R = 5.5;
+    var LANE_COLORS = ['#ff603c', '#7fa9d8', '#8f7bff', '#6fae86', '#d9a441', '#d478a5'];
+
+    var body = document.getElementById('graphBody');
+    var root = document.documentElement;
+    root.style.setProperty('--row', ROW + 'px');
+    root.style.setProperty('--graph-gutter', GUTTER + 'px');
+
+    document.getElementById('repoPath').textContent = DATA.path;
+    document.getElementById('eyebrow').textContent = 'Repository · ' + DATA.repo + ' · git log --all';
+
+    var esc = function (value) {
+      return String(value).replace(/[&<>"]/g, function (ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
+      });
+    };
+
+    /* ---------- lane layout (same idea as git log --graph) ---------- */
+    function buildRows(commits) {
+      var lanes = [];
+      return commits.map(function (commit) {
+        var col = lanes.indexOf(commit.h);
+        if (col === -1) {
+          col = lanes.indexOf(null);
+          if (col === -1) { lanes.push(commit.h); col = lanes.length - 1; }
+          else { lanes[col] = commit.h; }
+        }
+        var before = lanes.slice();
+        if (!commit.parents.length) {
+          lanes[col] = null;
+        } else {
+          var first = commit.parents[0];
+          var takenElsewhere = lanes.some(function (h, i) { return i !== col && h === first; });
+          lanes[col] = takenElsewhere ? null : first;
+          for (var i = 1; i < commit.parents.length; i++) {
+            var parent = commit.parents[i];
+            if (lanes.indexOf(parent) !== -1) continue;
+            lanes.splice(col + 1, 0, parent);
+          }
+        }
+        return { commit: commit, col: col, before: before, after: lanes.slice() };
+      });
+    }
+
+    var ROWS = buildRows(COMMITS);
+    var rowOf = {};
+    ROWS.forEach(function (row, index) { rowOf[row.commit.h] = index; });
+
+    var maxLane = 1;
+    ROWS.forEach(function (row) {
+      maxLane = Math.max(maxLane, row.col + 1, row.before.length, row.after.length);
+    });
+    var LANES_W = maxLane * LANE + LANE;
+    root.style.setProperty('--graph-lanes', LANES_W + 'px');
+
+    var laneColor = function (index) { return LANE_COLORS[index % LANE_COLORS.length]; };
+    var x = function (lane) { return LANE * lane + LANE; };
+    var y = function (index) { return index * ROW + ROW / 2; };
+
+    function edgePath(x1, y1, x2, y2) {
+      if (Math.abs(x2 - x1) < 0.5) return 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2;
+      var mid = y1 + ROW / 2;
+      var dir = x2 > x1 ? 1 : -1;
+      var r = Math.min(7, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2);
+      return 'M' + x1 + ',' + y1 +
+        'L' + x1 + ',' + (mid - r) +
+        'Q' + x1 + ',' + mid + ' ' + (x1 + dir * r) + ',' + mid +
+        'L' + (x2 - dir * r) + ',' + mid +
+        'Q' + x2 + ',' + mid + ' ' + x2 + ',' + (mid + r) +
+        'L' + x2 + ',' + y2;
+    }
+
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('id', 'graphSvg');
+    svg.setAttribute('width', LANES_W);
+    svg.setAttribute('height', ROWS.length * ROW);
+
+    // vertical lane lines that run through each row
+    ROWS.forEach(function (row, index) {
+      var center = y(index);
+      for (var lane = 0; lane < maxLane; lane++) {
+        var hasBefore = !!row.before[lane];
+        var hasAfter = !!row.after[lane];
+        if (!hasBefore && !hasAfter) continue;
+        var path = document.createElementNS(NS, 'path');
+        path.setAttribute('class', 'edge through');
+        path.setAttribute('stroke', laneColor(lane));
+        path.setAttribute('d', edgePath(
+          x(lane), hasBefore ? center - ROW / 2 : center,
+          x(lane), hasAfter ? center + ROW / 2 : center
+        ));
+        path.setAttribute('data-lane', String(lane));
+        if (hasBefore && row.before[lane]) path.setAttribute('data-from', row.before[lane]);
+        if (hasAfter && row.after[lane]) path.setAttribute('data-to', row.after[lane]);
+        svg.appendChild(path);
+      }
+    });
+
+    // commit -> parent edges (merges curve into the other lane)
+    ROWS.forEach(function (row, index) {
+      row.commit.parents.forEach(function (parent, order) {
+        if (rowOf[parent] === undefined) return;
+        var pIndex = rowOf[parent];
+        var pCol = ROWS[pIndex].col;
+        if (order === 0 && pCol === row.col) return; // straight line already drawn
+        var path = document.createElementNS(NS, 'path');
+        path.setAttribute('class', 'edge');
+        path.setAttribute('stroke', laneColor(row.col));
+        path.setAttribute('d', edgePath(x(row.col), y(index), x(pCol), y(pIndex)));
+        path.setAttribute('data-from', row.commit.h);
+        path.setAttribute('data-to', parent);
+        svg.appendChild(path);
+      });
+    });
+
+    // nodes
+    ROWS.forEach(function (row, index) {
+      var commit = row.commit;
+      var color = laneColor(row.col);
+      var group = document.createElementNS(NS, 'g');
+      group.setAttribute('class', 'node');
+      group.setAttribute('data-hash', commit.h);
+
+      var isHead = commit.refs.some(function (ref) { return ref.kind === 'head'; });
+      var isTagged = commit.refs.some(function (ref) { return ref.kind === 'tag'; });
+
+      if (commit.merge) {
+        var ring = document.createElementNS(NS, 'circle');
+        ring.setAttribute('cx', x(row.col));
+        ring.setAttribute('cy', y(index));
+        ring.setAttribute('r', NODE_R + 3.5);
+        ring.setAttribute('fill', 'none');
+        ring.setAttribute('stroke', color);
+        ring.setAttribute('stroke-opacity', '0.35');
+        ring.setAttribute('stroke-width', '1.2');
+        group.appendChild(ring);
+      }
+      if (isTagged) {
+        var tagRing = document.createElementNS(NS, 'circle');
+        tagRing.setAttribute('cx', x(row.col));
+        tagRing.setAttribute('cy', y(index));
+        tagRing.setAttribute('r', NODE_R + 6.5);
+        tagRing.setAttribute('fill', 'none');
+        tagRing.setAttribute('stroke', '#8f7bff');
+        tagRing.setAttribute('stroke-opacity', '0.6');
+        tagRing.setAttribute('stroke-width', '1.3');
+        tagRing.setAttribute('stroke-dasharray', '1.5 3');
+        group.appendChild(tagRing);
+      }
+
+      var core = document.createElementNS(NS, 'circle');
+      core.setAttribute('class', 'core');
+      core.setAttribute('cx', x(row.col));
+      core.setAttribute('cy', y(index));
+      core.setAttribute('r', commit.merge ? NODE_R + 0.8 : NODE_R);
+      core.setAttribute('fill', color);
+      core.setAttribute('stroke', 'var(--surface)');
+      core.setAttribute('stroke-width', '2');
+      group.appendChild(core);
+
+      if (isHead) {
+        var halo = document.createElementNS(NS, 'circle');
+        halo.setAttribute('class', 'halo');
+        halo.setAttribute('cx', x(row.col));
+        halo.setAttribute('cy', y(index));
+        halo.setAttribute('r', NODE_R + 3);
+        group.appendChild(halo);
+      }
+      svg.appendChild(group);
+    });
+
+    document.getElementById('laneLayer').appendChild(svg);
+
+    /* ---------- commit rows ---------- */
+    var rowsHost = document.getElementById('rows');
+    var CHIP_LIMIT = 5;
+
+    function chipHTML(ref) {
+      var label = ref.kind === 'head' ? 'HEAD · ' + ref.name : ref.name;
+      return '<span class="chip ' + ref.kind + '">' + esc(label) + '</span>';
+    }
+
+    function chipsHTML(refs) {
+      if (!refs.length) return '';
+      var shown = refs.slice(0, CHIP_LIMIT).map(chipHTML).join('');
+      if (refs.length > CHIP_LIMIT) {
+        var rest = refs.slice(CHIP_LIMIT).map(function (ref) { return ref.name; }).join(', ');
+        shown += '<span class="chip more" title="' + esc(rest) + '">+' + (refs.length - CHIP_LIMIT) + '</span>';
+      }
+      return shown;
+    }
+
+    var rowPadding = GUTTER + LANES_W;
+
+    ROWS.forEach(function (row, index) {
+      var commit = row.commit;
+      var article = document.createElement('article');
+      article.className = 'row';
+      article.dataset.hash = commit.h;
+      article.tabIndex = 0;
+
+      var dateLabel = index === 0 || ROWS[index - 1].commit.date !== commit.date
+        ? commit.date.slice(5)
+        : '';
+
+      var statHTML = commit.stats
+        ? '<span class="diffstat"><span class="ins">+' + commit.stats.ins + '</span> ' +
+          '<span class="del">−' + commit.stats.del + '</span> · ' + commit.stats.files + ' files</span>'
+        : '<span class="diffstat">merge · no direct diff</span>';
+
+      var parentsHTML = commit.parents.length
+        ? '<span class="parents">← ' + commit.parents.join(' ') + '</span>'
+        : '<span class="parents">root commit</span>';
+
+      article.innerHTML =
+        '<div class="cell-date">' + esc(dateLabel) + '</div>' +
+        '<div class="cell-lanes"></div>' +
+        '<div class="cell-info">' +
+          '<div class="row-line1">' +
+            '<span class="subject" title="' + esc(commit.subject) + '">' + esc(commit.subject) + '</span>' +
+            '<span class="chips">' + chipsHTML(commit.refs) + '</span>' +
+          '</div>' +
+          '<div class="row-line2">' +
+            '<span class="hash">' + esc(commit.h) + '</span>' +
+            '<span>' + esc(commit.time) + '</span>' +
+            (commit.merge ? '<span class="merge-flag">MERGE</span>' : '') +
+            parentsHTML +
+            statHTML +
+          '</div>' +
+        '</div>';
+
+      var focus = function (on) {
+        svg.classList.toggle('focus', on);
+        svg.querySelectorAll('.edge').forEach(function (edge) {
+          edge.classList.toggle('lit', on && (
+            edge.getAttribute('data-from') === commit.h ||
+            edge.getAttribute('data-to') === commit.h
+          ));
+        });
+        svg.querySelectorAll('.node').forEach(function (node) {
+          node.classList.toggle('hot', node.getAttribute('data-hash') === commit.h);
+        });
+      };
+      article.addEventListener('mouseenter', function () { focus(true); });
+      article.addEventListener('mouseleave', function () { focus(false); });
+      article.addEventListener('focus', function () { focus(true); });
+      article.addEventListener('blur', function () { focus(false); });
+
+      rowsHost.appendChild(article);
+    });
+
+    /* ---------- summary + activity + refs ---------- */
+    var dayCounts = {};
+    COMMITS.forEach(function (commit) { dayCounts[commit.date] = (dayCounts[commit.date] || 0) + 1; });
+    var days = Object.keys(dayCounts).sort();
+    var merges = COMMITS.filter(function (commit) { return commit.merge; }).length;
+    var insertions = 0;
+    var deletions = 0;
+    COMMITS.forEach(function (commit) {
+      if (commit.stats) { insertions += commit.stats.ins; deletions += commit.stats.del; }
+    });
+
+    var localBranches = [];
+    var remotes = [];
+    var tags = [];
+    COMMITS.forEach(function (commit) {
+      commit.refs.forEach(function (ref) {
+        var entry = { name: ref.name, h: commit.h, kind: ref.kind, date: commit.date };
+        if (ref.kind === 'tag') tags.push(entry);
+        else if (ref.kind === 'remote') remotes.push(entry);
+        else localBranches.push(entry);
+      });
+    });
+
+    var span = Math.round((new Date(days[days.length - 1]) - new Date(days[0])) / 86400000);
+    var fmt = function (value) { return Number(value).toLocaleString('en-US'); };
+
+    var statsHTML = [
+      [fmt(COMMITS.length), 'commits'],
+      [fmt(merges), 'merges'],
+      [fmt(localBranches.length), 'local branches'],
+      [fmt(tags.length), 'tags'],
+      [fmt(days.length), 'active days'],
+      ['+' + fmt(insertions), 'insertions'],
+      ['−' + fmt(deletions), 'deletions']
+    ].map(function (pair) {
+      return '<div class="stat-card"><div class="stat-value">' + pair[0] + '</div>' +
+        '<div class="stat-label">' + pair[1] + '</div></div>';
+    }).join('');
+    document.getElementById('stats').innerHTML = statsHTML;
+
+    document.getElementById('lede').innerHTML =
+      '仓库 <code>' + esc(DATA.path) + '</code> 的全部历史：' + COMMITS.length + ' 个提交、' +
+      merges + ' 次合并（PR / 分支）、' + localBranches.length + ' 条本地分支、' + tags.length + ' 个标签，' +
+      '跨 ' + days.length + ' 天、' + span + ' 天的区间。当前 HEAD 在 <code>' + esc(DATA.head) + '</code>。';
+
+    var maxDay = Math.max.apply(null, days.map(function (day) { return dayCounts[day]; }));
+    document.getElementById('activity').innerHTML = days.map(function (day) {
+      var count = dayCounts[day];
+      // square-root scale so a 1-commit day stays visible next to a 20-commit day
+      var height = Math.max(6, Math.round(Math.sqrt(count / maxDay) * 62));
+      return '<div class="bar-item">' +
+        '<div class="bar-count">' + count + '</div>' +
+        '<div class="bar-track"><div class="bar-fill" style="height:' + height + 'px"></div></div>' +
+        '<div class="bar-label">' + esc(day.slice(5)) + '</div>' +
+        '</div>';
+    }).join('');
+
+    function refGroup(label, list, color) {
+      if (!list.length) return '';
+      return '<div class="ref-group"><p class="ref-group-label">' + label + ' · ' + list.length + '</p>' +
+        '<div class="ref-list">' + list.map(function (entry) {
+          return '<div class="ref-row">' +
+            '<span class="ref-name"><span class="ref-dot" style="background:' + color + '"></span>' +
+            '<code>' + esc(entry.name) + '</code></span>' +
+            '<span class="ref-target">' + esc(entry.h) + ' · ' + esc(entry.date) + '</span>' +
+            '</div>';
+        }).join('') + '</div></div>';
+    }
+
+    document.getElementById('refGroups').innerHTML =
+      refGroup('Local branches', localBranches, '#ff603c') +
+      refGroup('Tags', tags, '#8f7bff') +
+      refGroup('Remotes', remotes, '#7fa9d8');
+
+    var footCommand = document.getElementById('footCommand');
+    footCommand.textContent = DATA.command;
+    document.getElementById('graphFoot').innerHTML =
+      '<span>' + esc(DATA.repo) + ' · ' + COMMITS.length + ' commits · ' + days.length + ' days · ' +
+      esc(days[0]) + ' → ' + esc(COMMITS[0].date) + '</span>' +
+      '<span>' + maxLane + ' lanes · generated ' + esc(DATA.generatedAt.slice(0, 19).replace('T', ' ')) + ' UTC</span>';
+
+    /* ---------- theme ---------- */
+    var themeToggle = document.getElementById('themeToggle');
+    var stored = null;
+    try { stored = localStorage.getItem('git-history-theme'); } catch (error) { stored = null; }
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var theme = stored || (prefersDark ? 'dark' : 'light');
+    var applyTheme = function (next) {
+      theme = next;
+      root.setAttribute('data-theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀' : '◐';
+      try { localStorage.setItem('git-history-theme', next); } catch (error) { /* ignore */ }
+    };
+    applyTheme(theme);
+    themeToggle.addEventListener('click', function () { applyTheme(theme === 'dark' ? 'light' : 'dark'); });
+    document.addEventListener('keydown', function (event) {
+      if ((event.key === 't' || event.key === 'T') && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        applyTheme(theme === 'dark' ? 'light' : 'dark');
+      }
+    });
+
+    /* ---------- export ---------- */
+    document.getElementById('exportSvg').addEventListener('click', function () {
+      var clone = svg.cloneNode(true);
+      clone.setAttribute('xmlns', NS);
+      clone.setAttribute('width', LANES_W);
+      clone.setAttribute('height', ROWS.length * ROW);
+
+      // The graph is painted with class-based CSS, so bake the resolved paint into
+      // every element or the exported file renders unstyled black shapes.
+      var live = svg.querySelectorAll('*');
+      var copy = clone.querySelectorAll('*');
+      var paint = ['fill', 'fill-opacity', 'stroke', 'stroke-width', 'stroke-opacity', 'stroke-dasharray'];
+      live.forEach(function (element, index) {
+        var computed = getComputedStyle(element);
+        paint.forEach(function (prop) {
+          var value = computed.getPropertyValue(prop);
+          if (value) copy[index].setAttribute(prop, value);
+        });
+      });
+
+      var style = document.createElementNS(NS, 'style');
+      style.textContent = '.edge{fill:none;stroke-linecap:round;stroke-linejoin:round}.through{stroke-opacity:.42}';
+      clone.insertBefore(style, clone.firstChild);
+
+      var background = document.createElementNS(NS, 'rect');
+      background.setAttribute('width', '100%');
+      background.setAttribute('height', '100%');
+      background.setAttribute('fill', getComputedStyle(document.body).backgroundColor);
+      clone.insertBefore(background, clone.firstChild);
+
+      var source = new XMLSerializer().serializeToString(clone);
+      var blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = 'git-graph-' + DATA.repo + '.svg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
+  })();
+  </script>
+</body>
+</html>
