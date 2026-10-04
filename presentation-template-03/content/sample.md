@@ -2,19 +2,19 @@
 {
   "title": "让判断可见",
   "display": "MAKE IT VISIBLE",
-  "theme": "paper-cut-pixel",
-  "kicker": "PAPER CUT / READING PATH",
+  "theme": "cubist-spatial",
+  "kicker": "PERSPECTIVES / IN COLOUR",
   "author": "演示模板 · 示例内容",
   "meta": "2026 / OFFLINE DECK",
-  "subtitle": "一套带有纸层、像素字与动态目录的演示模板"
+  "subtitle": "从不同的视角，构成一个清楚的判断。"
 }
 ~~~
 
 ## S01 | cover
-@kicker: PAPER CUT / READING PATH
+@kicker: PERSPECTIVES / IN COLOUR
 # 让判断
 # 可见。
-@subtitle: 一套带有纸层、像素字与动态目录的演示模板
+@subtitle: 从不同的视角，构成一个清楚的判断。
 @meta: 2026 / OFFLINE DECK
 
 ## S02 | contents

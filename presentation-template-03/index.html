@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
-    <title>剪纸叙事演示模板</title>
+    <title>立体主义叙事演示模板</title>
     <link rel="stylesheet" href="styles/tokens.css" />
     <link rel="stylesheet" href="styles/base.css" />
     <link rel="stylesheet" href="styles/slides.css" />
     <link rel="stylesheet" href="styles/opening.css" />
   </head>
   <body>
-    <main id="stage" aria-label="剪纸叙事演示模板">
+    <main id="stage" aria-label="立体主义叙事演示模板">
       <div id="spatial" aria-hidden="true"></div>
       <section id="slide" aria-live="polite" hidden></section>
       <div id="error" role="alert" hidden></div>
@@ -20,13 +20,14 @@
     <footer class="presentation-controls" aria-label="演示控制">
       <span class="title" id="control-title"></span>
       <span class="counter" id="counter">01 / 08</span>
-      <button id="prev" type="button" aria-label="上一页">←</button>
-      <button id="next" type="button" aria-label="下一页">→</button>
-      <button id="contents" type="button" aria-label="打开目录">目录</button>
-      <button id="fullscreen" type="button" aria-label="全屏">全屏 F</button>
+      <button id="prev" type="button" aria-label="上一页" title="上一页"><i data-lucide="arrow-left" aria-hidden="true"></i></button>
+      <button id="next" type="button" aria-label="下一页" title="下一页"><i data-lucide="arrow-right" aria-hidden="true"></i></button>
+      <button id="contents" type="button" aria-label="打开目录" title="打开目录"><i data-lucide="list" aria-hidden="true"></i></button>
+      <button id="fullscreen" type="button" aria-label="全屏" title="全屏"><i data-lucide="maximize" aria-hidden="true"></i></button>
     </footer>
 
     <script src="vendor/three.min.js"></script>
+    <script src="vendor/lucide.min.js"></script>
     <script src="data/presentation.config.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/slide-renderer.js"></script>

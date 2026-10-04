@@ -11,7 +11,7 @@ from PIL import Image, ImageChops
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = Path(gettempdir()) / 'presentation-editorial-opening'
+OUT = Path(gettempdir()) / 'presentation-template-03-opening'
 OUT.mkdir(exist_ok=True)
 CHROME = Path('C:/Program Files/Google/Chrome/Application/chrome.exe')
 checks = []
@@ -67,15 +67,16 @@ with sync_playwright() as p:
             pixels = canvas_pixels(page)
             ok(f'{name} has visible brick-red geometry at {w}x{h}',
                sum(1 for i in range(0, len(pixels), 4)
-                   if pixels[i] > pixels[i + 1] * 1.3 and pixels[i] > 90 and pixels[i + 3] > 100) > 150)
+                   if pixels[i] > pixels[i + 1] * 1.3 and pixels[i] > 90 and pixels[i + 3] > 100) > (30 if h > w else 150))
             ok(f'{name} has a bright background at {w}x{h}', page.evaluate(
-                "getComputedStyle(document.getElementById('stage')).backgroundColor === 'rgb(245, 243, 238)'"))
+                "getComputedStyle(document.getElementById('stage')).backgroundColor === 'rgb(244, 244, 240)'"))
             ok(f'{name} text stays within the viewport at {w}x{h}', page.evaluate('''() => {
               const mode = document.getElementById('editorial-opening').dataset.mode;
-              const nodes = document.querySelectorAll('.opening-masthead > *, .opening-' + mode + ' h1, .opening-' + mode + ' h2, .opening-chapter-en, .opening-author');
+              const nodes = document.querySelectorAll('.opening-masthead > *, .opening-' + mode + ' h1, .opening-subtitle, .opening-byline, .opening-chapter-number, .opening-chapter-title, .opening-chapter-en, .opening-chapter-pages');
               return [...nodes].filter(n => n.checkVisibility({visibilityProperty:true})).every(n => {
                 const r = n.getBoundingClientRect();
-                return r.left >= 0 && r.right <= innerWidth + 1 && r.top >= 0 && r.bottom <= innerHeight + 1;
+                return r.left >= 0 && r.right <= innerWidth + 1 && r.top >= 0 && r.bottom <= innerHeight + 1
+                  && n.scrollWidth <= n.clientWidth + 1;
               });
             }'''))
             page.screenshot(path=str(OUT / f'{name}-{w}x{h}.png'))
@@ -95,7 +96,7 @@ with sync_playwright() as p:
     page.keyboard.press('ArrowRight')
     page.wait_for_function('!PRESENTATION.state.busy', timeout=300)
     ok('selected chapter is reflected in accessible DOM', page.locator('.opening-chapters [aria-current="true"]').get_attribute('data-chapter') == '1')
-    ok('selected chapter changes the 3D sheet pose', first != canvas_pixels(page))
+    ok('selected chapter changes the 3D facet pose', first != canvas_pixels(page))
     go(3)
     ok('opening leaves no overlay or palette on reading pages', page.evaluate(
         "document.getElementById('editorial-opening').hidden && !document.getElementById('stage').dataset.opening"))

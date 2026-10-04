@@ -1,4 +1,4 @@
-/* Reading pages retain the original layouts, with the paper-cut palette as a light accent. */
+/* Reading pages retain their layouts, with cubist colors as a light accent. */
 #slide { padding: calc(72px + var(--extra-y, 0px)) var(--pad-x) 96px; }
 .slide-eyebrow {
   display: flex; justify-content: space-between; gap: 24px;
@@ -114,5 +114,5 @@
 
 .pending { color: var(--brick); font-style: italic; }
 
-/* A clipped paper tab accompanies the reading plane without changing its information structure. */
-#slide::after { content: ''; position: absolute; right: 0; top: 0; width: 80px; height: 210px; background: var(--sun); clip-path: polygon(18% 0,100% 0,100% 88%,62% 100%,0 76%); opacity: .92; }
+/* Two offset planes continue the opening without competing with research content. */
+#slide::after { content: ''; position:absolute; right:0; top:0; width:56px; height:160px; background:var(--sun); border-left:12px solid var(--brick); clip-path:polygon(0 0,100% 0,100% 100%,0 72%); }

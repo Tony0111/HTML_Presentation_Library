@@ -1,17 +1,19 @@
 # Presentation Template 03
 
-剪纸叙事演示模板。封面以分层纸雕、像素化标题和不规则裁边建立开场；进入目录时，纸层展开为可直接选择的章节卡片。正文沿用 1 号模板的阅读结构，仅替换色彩、编号、边线与纸片细节，适合需要鲜明开场但仍以内容阅读为主的汇报。
+立体主义叙事演示模板，主题 ID 为 `cubist-spatial`。借鉴毕加索式多视角构成，以有厚度的几何切面、黑色轮廓与红 / 黄 / 蓝 / 绿强对比构成抽象肖像；进入目录时，同一组切面拆开重组。正文保留稳定的阅读结构，通过色彩与少量棱面细节延续视觉语言，不复制具体画作。
 
 入口是 [index.html](index.html)，无需网络即可运行。封面按 `Enter`、空格或右方向键进入目录；目录中使用方向键、数字键或点击章节卡片进入内容。
 
-面向组会进展与学科学习汇报的离线 HTML 演示模板。首版视觉方向已确认：极简编辑式空间叙事、暖白正文、墨黑舞台、砖红强调；封面进入目录需要连续的空间纵深。目标通过有限页型和 Markdown 内容工作流降低制作门槛。
+面向组会进展与学科学习汇报的离线 HTML 演示模板。交付为完整文件夹，不生成 `.pptx`。内置 19 页、4 章示例；合成数据和待补来源均有明确标记，不代表真实研究结果。
 
 ## 当前状态
 
 正式入口 `index.html` 已实现一套 19 页、4 章的完整回归演示，覆盖首版正文与结构页型：
 
-- 封面和目录由亮色编辑式 Three.js 空间舞台渲染，旧黑色结束页已移除；
-- 要点、陈述、图文、图表、流程、表格、比较、时间线、视频、引用由暖白阅读页渲染；
+- 封面和目录由本地 Three.js 立体切面舞台与可访问 DOM 文字共同渲染；
+- 要点、陈述、图文、图表、流程、表格、比较、时间线、视频、引用由稳定的 DOM 阅读页渲染；
+- 目录支持 3–8 章：3–4 章为单排，5–8 章为双排，不改变章节跳转契约；
+- WebGL 不可用、Three.js 缺失或运行中丢失 WebGL 时，自动保留静态封面、可选章节目录和正文导航；
 - 内容由 Markdown 主稿编译为运行快照；
 - 字体以子集 WOFF2 随目录携带，离线可用。
 
@@ -23,15 +25,13 @@
 | 字体子集 | `python tools/subset_fonts.py` |
 | 运行快照 | [data/presentation.config.js](data/presentation.config.js) |
 | 审阅入口 | [review.html](review.html) |
-| 执行进度 | P0–P6 已完成 |
+| 开发工作区 | `E:/Design-agent-template-03`，分支 `agent/template-03` |
 
-执行依据与逐阶段状态见 [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)。
+本 README 描述当前实现。继承的需求、设计方向与 P0–P6 文档记录旧编辑式方案，其中主题、页数和导航描述可能过时，不应据此覆盖模板 3 的现有立体主义方向。
 
 ## 当前开场
 
-封面和目录已改为亮色编辑风：暖白底、砖红与暖白交替的折页、衬线主标题与印刷式章节编号。Three.js 折页会从封面的叠合构图连续展开为目录，支持轻微纸面起伏和指针视差；选章保持即时响应。减少动态模式下使用静止画面。
-
-参考 Library 中的 STLShaper Forms 参数化形体、Hover Card Row 立体抬升与字体层级思路，使用现有本地 Three.js 自行实现，不加载外部素材。封面折页按固定前后层次叠放，展开时先分开再收拢深度，避免穿模。旧路线图式章节扉页与黑色结束页已移除，正文内容保持原样，页码随总页数更新。
+封面使用原创几何肖像：脸部左右视角并置，眼睛朝向错位，鼻梁、颧面与肩部按不同深度挤出，侧面受光与黑色边线显示厚度。背景为中性浅灰，标题改用本地衬线字体，移除撕边、星形、植物与山丘装饰。进入目录时，肖像切面拆解为章节构成，选中章对应的切面前移；支持指针视差、点击选章和键盘选章。减少动态模式与静态回退关闭装饰运动，保留相同文字、章节状态和操作。
 
 每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。最后一章的参考资料页是演示末页，前进时保持停留。
 
@@ -59,7 +59,7 @@
 ## 目录结构（当前实现）
 
 ```text
-presentation-template/
+presentation-template-03/
   index.html                  正式演示入口
   review.html                 内容审阅入口
   content/sample.md           唯一人工内容主稿
@@ -68,7 +68,7 @@ presentation-template/
   styles/                     tokens / base / slides / opening
   js/navigation.js            导航意图（纯逻辑）
   js/slide-renderer.js        阅读页渲染
-  js/editorial-opening.js     亮色编辑式封面与目录
+  js/editorial-opening.js     立体主义肖像、目录与静态回退
   js/spatial-stage.js         Three.js 空间舞台
   js/app.js                   初始化与统一输入
   tools/build_content.py      Markdown → 运行快照
@@ -90,15 +90,14 @@ presentation-template/
 ## 验证
 
 ```text
-python test/tools/check_formal.py             # 正式入口：19 页、全部页型、视口、减少动态、媒体、引用、离线
-python test/tools/check_keyboard.py           # 键盘契约、快速输入、返回目录、全屏与媒体焦点
-python test/tools/check_editorial_opening.py  # 亮色封面/目录、立体运动、响应式、静态回退
-python test/tools/check_chapter_transitions.py # 章节回目录、双向动画、快速反向操作与缩放
-python test/opening/tools/verify.py           # 历史开场空间研究：纵深、选章、失败回退、投影一致
-python test/tools/check.py           # 旧实验基线，仍保留
+python test/tools/check_formal.py              # 84 项：全部页型、视口、媒体、引用、离线
+python test/tools/check_keyboard.py            # 46 项：键盘、快速输入、全屏与焦点
+python test/tools/check_editorial_opening.py   # 39 项：切面运动、视差、文字边界、减少动态
+python test/tools/check_chapter_transitions.py # 33 项：章节回目录、双向动画、缩放
+python test/tools/check_cubist.py              # 48 项：3–8 章容量、静态回退、WebGL 丢失
 ```
 
-测试需要 Playwright 与本地 Chrome，仅用于开发；观看演示不需要。`test/opening/shots/` 与 `test/baseline/` 保存设计确认证据。
+从 `presentation-template-03/` 目录执行。测试需要 Python、Playwright、Pillow 与本地 Chrome 或 Playwright Chromium，仅用于开发；观看演示不需要。新截图输出到系统临时目录 `presentation-template-03-opening/` 和 `presentation-template-03-cubist/`，不写入其他 Agent 的工作区。历史实验仍保留，但不作为当前模板 3 的验收依据。
 
 ## 离线与资源
 
@@ -106,7 +105,8 @@ python test/tools/check.py           # 旧实验基线，仍保留
 
 ## 已知限制
 
-- 目录为空间路径形式，首版固定；不提供多主题切换。
+- 目录为立体棱面章节构成，支持 3–8 章；不提供多主题切换。
+- 竖屏保留与桌面相同的等比演示画布，文字会较小；正式演讲仍建议横屏或全屏。
 - 内容主稿使用受限 Markdown 方言；新增页型需要改渲染代码，不能仅靠内容。
 - 视频与图表为预制本地材料；播放阶段不生成图表、不做统计计算。
 - `test/` 下的历史实验与截图仍保留，会增大交付体积；它们不参与运行时。

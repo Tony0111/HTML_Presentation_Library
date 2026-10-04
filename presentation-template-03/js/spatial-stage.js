@@ -101,7 +101,12 @@
       el.appendChild(renderer.domElement);
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(fovFor(), W / H, 1, 12000);
-    } catch (error) { failed = true; return false; }
+    } catch (error) {
+      failed = true;
+      opening = EditorialOpening.create(config, true, false);
+      ready = true;
+      return false;
+    }
 
     const meta = config.meta;
     addObject({ id: 'kicker', text: meta.kicker || '', size: 22, weight: 500, font: sansFont, world: { x: -300, y: -300, z: 1250 } });
@@ -129,6 +134,15 @@
     });
 
     opening = EditorialOpening.create(config, reduced);
+    renderer.domElement.addEventListener('webglcontextlost', event => {
+      event.preventDefault();
+      failed = true;
+      renderer.domElement.hidden = true;
+      opening.setStatic();
+      finish();
+      if (raf !== null) cancelAnimationFrame(raf);
+      raf = null;
+    });
     ready = true;
     render(performance.now());
     loop();
@@ -177,7 +191,10 @@
   }
 
   function show(name, options) {
-    if (failed) return Promise.resolve(false);
+    if (failed) {
+      return name === 'cover' || name === 'contents'
+        ? opening.show(name, options) : Promise.resolve(false);
+    }
     if (name === 'cover' || name === 'contents') {
       if (pendingResolve) { const done = pendingResolve; pendingResolve = null; done(false); }
       tween.active = false;
@@ -212,6 +229,7 @@
   }
 
   function render(now) {
+    if (failed) return;
     if (opening && opening.active) {
       opening.update(now);
       renderer.render(opening.scene, opening.camera);
@@ -241,7 +259,7 @@
 
   function loop() {
     raf = null;
-    if (document.hidden) return;
+    if (document.hidden || failed) return;
     render(performance.now());
     raf = requestAnimationFrame(loop);
   }
@@ -256,11 +274,12 @@
     get ready() { return ready; },
     get failed() { return failed; },
     resize(width = W, height = H, scale = 1) {
+      if (opening) opening.resize(width, height);
+      if (failed) return;
       if (!renderer || !camera) return;
       camera.aspect = width / height;
       camera.fov = fovFor(height);
       camera.updateProjectionMatrix();
-      if (opening) opening.resize(width, height);
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
       renderer.setSize(width * scale, height * scale, false);
       render(performance.now());
