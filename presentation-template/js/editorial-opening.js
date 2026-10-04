@@ -28,7 +28,7 @@
       <header class="opening-masthead"><span class="opening-brand">${esc(config.meta.display || config.meta.title)}</span></header>
       <div class="opening-cover"><div class="opening-kicker">${esc(config.meta.kicker || '')}</div>
         <h1>${title.map((line, i) => `<span${i === title.length - 1 ? ' class="opening-title-accent"' : ''}>${esc(line)}</span>`).join('')}</h1>
-        <p class="opening-author">${esc(config.meta.author || '')}</p><span class="opening-watermark" aria-hidden="true">01</span></div>
+        <p class="opening-author">${esc(config.meta.author || '')}</p></div>
       <div class="opening-contents"><div class="opening-contents-head"><h1>${esc((config.slides.find(s => s.type === 'contents') || {}).title?.join(' ') || '目录')}</h1>
         <span class="opening-contents-en">Contents</span><span class="opening-chapter-total">${String(chapters.length).padStart(2, '0')} CHAPTERS</span></div>
         <ol class="opening-chapters" style="--chapters:${chapters.length}">${chapters.map((c, i) => {
