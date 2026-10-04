@@ -1,39 +1,45 @@
 # Presentation Template 03
 
-剪纸叙事演示模板。封面以分层纸雕、像素化标题和不规则裁边建立开场；进入目录时，纸层展开为可直接选择的章节卡片。正文沿用 1 号模板的阅读结构，仅替换色彩、编号、边线与纸片细节，适合需要鲜明开场但仍以内容阅读为主的汇报。
+像素 / 代码字体与地球舞台的离线演示模板。英文使用 Departure Mono，中文展示标题使用 Fusion Pixel；封面使用 Library 中 `Three fragments, one system / Stars + Earth` 的原始 Stylized planet 模型，几何肖像已移除。目录保留高对比色块与侧面阴影，正文保留稳定阅读结构。主题 ID 暂沿用 `cubist-spatial`，不改变既有内容契约。
 
 入口是 [index.html](index.html)，无需网络即可运行。封面按 `Enter`、空格或右方向键进入目录；目录中使用方向键、数字键或点击章节卡片进入内容。
 
-面向组会进展与学科学习汇报的离线 HTML 演示模板。首版视觉方向已确认：极简编辑式空间叙事、暖白正文、墨黑舞台、砖红强调；封面进入目录需要连续的空间纵深。目标通过有限页型和 Markdown 内容工作流降低制作门槛。
+面向组会进展与学科学习汇报的离线 HTML 演示模板。交付为完整文件夹，不生成 `.pptx`。内置 20 页、4 章示例；合成数据和待补来源均有明确标记，不代表真实研究结果。
 
 ## 当前状态
 
-正式入口 `index.html` 已实现一套 19 页、4 章的完整回归演示，覆盖首版正文与结构页型：
+正式入口 `index.html` 已实现一套 20 页、4 章的完整回归演示，覆盖首版正文与结构页型：
 
-- 封面和目录由亮色编辑式 Three.js 空间舞台渲染，旧黑色结束页已移除；
-- 要点、陈述、图文、图表、流程、表格、比较、时间线、视频、引用由暖白阅读页渲染；
+- 封面和目录由本地 Three.js 地球舞台与可访问 DOM 文字共同渲染；
+- 要点、陈述、图文、图表、流程、表格、比较、时间线、视频、引用由稳定的 DOM 阅读页渲染；
+- 全部正文页左下角持续显示同一地球，页脚横线从地球右侧开始，保留真实引用但不重复演示标题；
+- 最后一页使用 Library 粒子球转文字效果聚合成 THANKS，文字保持停留；
+- 目录支持 3–8 章：3–4 章为单排，5–8 章为双排，不改变章节跳转契约；
+- WebGL 不可用、Three.js 缺失或运行中丢失 WebGL 时，自动保留静态封面、可选章节目录和正文导航；
 - 内容由 Markdown 主稿编译为运行快照；
 - 字体以子集 WOFF2 随目录携带，离线可用。
 
 | 项目 | 说明 |
 | --- | --- |
-| 渲染器 | 本地 Three.js（见 [design/DECISIONS.md](design/DECISIONS.md) D-06） |
+| 渲染器 | 本地 Three.js + GLTFLoader；地球和粒子共用一个 WebGL 舞台 |
 | 内容源 | [content/sample.md](content/sample.md) |
 | 编译 | `python tools/build_content.py` |
 | 字体子集 | `python tools/subset_fonts.py` |
 | 运行快照 | [data/presentation.config.js](data/presentation.config.js) |
 | 审阅入口 | [review.html](review.html) |
-| 执行进度 | P0–P6 已完成 |
+| 开发工作区 | `E:/Design-agent-template-03`，分支 `agent/template-03` |
 
-执行依据与逐阶段状态见 [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)。
+本 README 描述当前实现。旧的编辑式方案、P0–P6 执行计划与实验记录已从交付目录移除；主题、页数与导航以本 README、AI 内容指南和正式入口测试为准。
 
 ## 当前开场
 
-封面和目录已改为亮色编辑风：暖白底、砖红与暖白交替的折页、衬线主标题与印刷式章节编号。Three.js 折页会从封面的叠合构图连续展开为目录，支持轻微纸面起伏和指针视差；选章保持即时响应。减少动态模式下使用静止画面。
+封面右侧使用 cmzw 的 Stylized planet 原模型，保留地球和云层贴图，配轻量星点与缓慢旋转；封面比例放大 10%，模型、贴图均随目录携带。进入目录时，地球缩小并固定在左下角持续旋转，中心距左边 132 个设计像素。目录和正文使用相同大小与位置，不随选章或鼠标移动；转场只动画文字与阅读页，不淡出、缩放或遮挡地球。支持封面指针视差、点击选章和键盘选章。减少动态模式关闭旋转和视差；模型加载失败或 WebGL 不可用时显示同一模型生成的本地静态海报。
 
-参考 Library 中的 STLShaper Forms 参数化形体、Hover Card Row 立体抬升与字体层级思路，使用现有本地 Three.js 自行实现，不加载外部素材。封面折页按固定前后层次叠放，展开时先分开再收拢深度，避免穿模。旧路线图式章节扉页与黑色结束页已移除，正文内容保持原样，页码随总页数更新。
+英文标题、编号与标签使用 Departure Mono 的真实像素字形，中文标题使用 Fusion Pixel 12px；不通过滤镜模拟像素。中文说明与长段落保留 Noto Sans SC，兼顾阅读。所有字体本地打包。
 
-每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。最后一章的参考资料页是演示末页，前进时保持停留。
+每章末页继续前进时返回目录，预选下一章；按 `Enter` / `Space` 进入下一章。目录与正文往返使用约 560ms 的透视展开 / 收回动画；再次导航可提前完成，减少动态模式直接切换。参考资料后前进进入 THANKS 末页，继续前进保持停留。
+
+THANKS 复用 Library 的 `Let the particles speak. / sphere-particle` 采样与缓冲区插值思路：12,000 个粒子由球体在约 1.4 秒内聚合成像素文字，不自动恢复球体。结尾只显示 THANKS，不显示副标题、标点、页码或工具栏；键盘导航仍可用。仅在结尾运行，离场隐藏；减少动态模式直接显示粒子文字，WebGL 失败时保留普通可读文字。地球与粒子共享原 Three.js 渲染器，不新增 WebGL 上下文。
 
 ## 运行
 
@@ -59,7 +65,7 @@
 ## 目录结构（当前实现）
 
 ```text
-presentation-template/
+presentation-template-03/
   index.html                  正式演示入口
   review.html                 内容审阅入口
   content/sample.md           唯一人工内容主稿
@@ -68,45 +74,56 @@ presentation-template/
   styles/                     tokens / base / slides / opening
   js/navigation.js            导航意图（纯逻辑）
   js/slide-renderer.js        阅读页渲染
-  js/editorial-opening.js     亮色编辑式封面与目录
+  js/editorial-opening.js     Library 地球、目录与静态回退
+  js/particle-closing.js      Library 粒子球 → THANKS
   js/spatial-stage.js         Three.js 空间舞台
   js/app.js                   初始化与统一输入
   tools/build_content.py      Markdown → 运行快照
-  design/                     样稿、分镜与决策记录
-  test/                       实验、基线与证据
+  tools/extract_library_planet.cjs 原始 Library 地球 → 离线资源快照
+  tools/capture_planet_poster.py   本地模型 → 静态回退海报
+  test/tools/                当前正式入口回归测试
   vendor/three.min.js         本地 Three.js
+  vendor/GLTFLoader.js        同版本 glTF 加载器，适配经典脚本
+  assets/models/             地球资源快照与海报
   LICENSES/                   第三方许可
 ```
 
 ## 文档
 
-- [DESIGN-DIRECTION.md](DESIGN-DIRECTION.md)：首版视觉与页面方向。
-- [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)：分阶段执行计划与验收条件。
-- [REQUIREMENTS.md](REQUIREMENTS.md)：产品场景、交互和学术内容需求。
-- [CREATION-WORKFLOW.md](CREATION-WORKFLOW.md)：内容制作与离线打包流程。
-- [TECHNICAL-ARCHITECTURE.md](TECHNICAL-ARCHITECTURE.md)：旧原型方案，仅作历史参考。
-- [design/DECISIONS.md](design/DECISIONS.md)：已确认与待确认的设计决策。
+- [CREATION-WORKFLOW.md](CREATION-WORKFLOW.md)：从资料到交付的制作、检查、冻结与离线验收顺序。
+- [AI-CONTENT-GUIDE.md](AI-CONTENT-GUIDE.md)：给其他 AI 的内容制作、章节组织、页型和审阅操作指南，并记录场景与内容底线。
+
+历史设计分镜、旧空间原型和实验截图已从交付目录移除；当前实现以本 README、AI 内容指南和正式入口测试为准。
 
 ## 验证
 
 ```text
-python test/tools/check_formal.py             # 正式入口：19 页、全部页型、视口、减少动态、媒体、引用、离线
-python test/tools/check_keyboard.py           # 键盘契约、快速输入、返回目录、全屏与媒体焦点
-python test/tools/check_editorial_opening.py  # 亮色封面/目录、立体运动、响应式、静态回退
-python test/tools/check_chapter_transitions.py # 章节回目录、双向动画、快速反向操作与缩放
-python test/opening/tools/verify.py           # 历史开场空间研究：纵深、选章、失败回退、投影一致
-python test/tools/check.py           # 旧实验基线，仍保留
+python test/tools/check_formal.py              # 86 项：全部页型、视口、媒体、引用、离线
+python test/tools/check_keyboard.py            # 46 项：键盘、快速输入、全屏与焦点
+python test/tools/check_editorial_opening.py   # 40 项：地球旋转、视差、文字边界、减少动态
+python test/tools/check_chapter_transitions.py # 33 项：章节回目录、双向动画、缩放
+python test/tools/check_cubist.py              # 48 项：3–8 章容量、静态回退、WebGL 丢失
+python test/tools/check_planet.py              # 16 项：Library 一致性、像素字体、左下角位置、模型失败回退
+python test/tools/check_content_closing.py     # 正文地球、页脚、THANKS 动画、视口、回退
+python test/tools/check_planet_continuity.py   # 目录与正文转场逐帧：地球位置、可见性、静态海报
 ```
 
-测试需要 Playwright 与本地 Chrome，仅用于开发；观看演示不需要。`test/opening/shots/` 与 `test/baseline/` 保存设计确认证据。
+从 `presentation-template-03/` 目录执行。测试需要 Python、Playwright、Pillow 与本地 Chrome 或 Playwright Chromium，仅用于开发；观看演示不需要。新截图输出到系统临时目录，不写入交付目录或其他 Agent 的工作区。
 
 ## 离线与资源
 
-页面不使用 CDN、远程字体、远程素材或网络 API。字体子集、Three.js 与许可证随目录携带（`assets/fonts/`、`vendor/`、`LICENSES/`）。整个文件夹可复制到没有开发环境的电脑直接打开。
+页面不使用 CDN、远程字体、远程素材或网络 API。字体、Three.js、GLTFLoader、模型快照与许可证随目录携带。整个文件夹可复制到没有开发环境的电脑直接打开；运行时不依赖父目录 Library。
+
+- 地球基于 [Stylized planet](https://sketchfab.com/3d-models/stylized-planet-789725db86f547fc9163b00f302c3e70)，作者 [cmzw](https://sketchfab.com/cmzw)，CC BY 4.0；详见 `LICENSES/planet-license.txt`。
+- Departure Mono：Helena Zhang & Tobias Fried，MIT；详见 `LICENSES/departure-mono-LICENSE.txt`。
+- Fusion Pixel：SIL OFL；字体及来源字体许可见 `LICENSES/fusion-pixel/`。
+- 粒子效果改编自 [sphere_particle](https://github.com/develper21/sphere_particle)，develper21，MIT；详见 `LICENSES/sphere-particle-LICENSE.txt`。
+- 模型提取工具需要仓库的 Library 原文件，仅用于开发；观看演示不需要。
 
 ## 已知限制
 
-- 目录为空间路径形式，首版固定；不提供多主题切换。
+- 目录为立体棱面章节构成，支持 3–8 章；不提供多主题切换。
+- 竖屏保留与桌面相同的等比演示画布，文字会较小；正式演讲仍建议横屏或全屏。
 - 内容主稿使用受限 Markdown 方言；新增页型需要改渲染代码，不能仅靠内容。
 - 视频与图表为预制本地材料；播放阶段不生成图表、不做统计计算。
-- `test/` 下的历史实验与截图仍保留，会增大交付体积；它们不参与运行时。
+- `test/tools/` 只包含当前正式入口的回归脚本；测试截图输出到系统临时目录，不进入交付目录。

@@ -171,7 +171,7 @@ with sync_playwright() as p:
     settled()
     ok('rapid input completes the page animation and advances once', state()['index'] == starts[0] + 1)
     ok('transition effects are cleaned up', page.evaluate("!document.getElementById('stage').dataset.transition && document.getElementById('slide').getAnimations().length === 0"))
-    ok('legacy closing page is absent', page.evaluate("PRESENTATION.config.slides.every(s => s.type !== 'closing')"))
+    ok('particle Thanks is the final page', page.evaluate("PRESENTATION.config.slides.at(-1).type === 'closing' && PRESENTATION.config.slides.at(-1).title[0] === 'THANKS'"))
     ok('no JavaScript errors', not errors)
     browser.close()
 

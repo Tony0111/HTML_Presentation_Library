@@ -166,7 +166,7 @@
 
   function render(slide, config, index, total) {
     const chapter = (config.chapters || []).find(c => c.id === slide.meta.chapter);
-    const refLine = slide.refs.length ? slide.refs.map(r => `[${r.number}] ${escape(r.short)}`).join(' · ') : (config.meta.title || '');
+    const refLine = slide.refs.length ? slide.refs.map(r => `[${r.number}] ${escape(r.short)}`).join(' · ') : '';
     const isStatement = slide.type === 'statement';
     const h1 = isStatement ? '' : `<h1>${slide.title.map(inline).join('<br>')}</h1>`;
     return `<header class="slide-eyebrow"><span>${escape(slide.meta.eyebrow || '')}</span><span class="flag">${escape(chapter ? chapter.number + ' / ' + chapter.title : slide.type)}</span></header>

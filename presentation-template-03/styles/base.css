@@ -12,6 +12,8 @@ body { font-family: var(--font-sans); color: var(--paper); -webkit-font-smoothin
 }
 #spatial, #spatial canvas { position: absolute; inset: 0; display: block; }
 #spatial { z-index: 1; }
+#stage[data-opening="body"] #spatial,
+#stage[data-opening="contents"] #spatial { z-index:5; }
 #slide { position: absolute; inset: 0; z-index: 2; background: var(--paper); color: var(--ink); }
 #slide[hidden] { display: none; }
 
@@ -37,6 +39,8 @@ body.show-controls .presentation-controls,
   padding: 7px 10px; cursor: pointer;
 }
 .presentation-controls button:hover { background: #353130; color: #fff; }
+.presentation-controls button { width:36px; height:36px; padding:8px; display:grid; place-items:center; }
+.presentation-controls svg { width:20px; height:20px; }
 .presentation-controls :focus-visible { outline: 2px solid var(--brick-soft); }
 .presentation-controls .counter { padding: 0 8px; font-family: var(--font-mono); color: #b9b2a7; }
 .presentation-controls .title { padding: 0 8px; color: #8f887e; overflow: hidden; text-overflow: ellipsis; min-width: 0; }

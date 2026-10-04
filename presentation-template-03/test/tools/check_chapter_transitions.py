@@ -47,8 +47,8 @@ with sync_playwright() as p:
         page.keyboard.press(key_value)
         ok(name + ' starts', page.evaluate('!!document.getElementById("stage").dataset.transition'))
         page.evaluate('''() => {
-          for (const id of ['slide', 'spatial', 'editorial-opening']) {
-            for (const animation of document.getElementById(id).getAnimations()) {
+          for (const layer of document.querySelectorAll('#slide, .opening-masthead, .opening-contents, .opening-footer')) {
+            for (const animation of layer.getAnimations()) {
               animation.pause(); animation.currentTime = 230;
             }
           }
@@ -67,8 +67,8 @@ with sync_playwright() as p:
           return style.transform.startsWith('matrix3d') && Number(style.opacity) > 0 && Number(style.opacity) < 1;
         }'''))
         page.evaluate('''() => {
-          for (const id of ['slide', 'spatial', 'editorial-opening']) {
-            document.getElementById(id).getAnimations().forEach(a => a.finish());
+          for (const layer of document.querySelectorAll('#slide, .opening-masthead, .opening-contents, .opening-footer')) {
+            layer.getAnimations().forEach(a => a.finish());
           }
         }''')
         settled()
@@ -108,15 +108,17 @@ with sync_playwright() as p:
     page.evaluate("document.body.classList.remove('show-controls')")
     page.locator('.presentation-controls').evaluate("el => el.style.visibility = 'hidden'")
     page.wait_for_timeout(400)
+    page.locator('#spatial').evaluate("el => el.style.visibility = 'hidden'")
     animated = Image.open(BytesIO(page.locator('#slide').screenshot())).convert('RGB')
     load(True)
     key('Enter')
     key('Enter')
     ok('reduced-motion entry leaves no animation', page.evaluate("!document.getElementById('stage').dataset.transition && document.getElementById('slide').getAnimations().length === 0"))
-    ok('reduced-motion entry hides the directory overlay', page.evaluate("document.getElementById('editorial-opening').hidden && !document.getElementById('stage').dataset.opening"))
+    ok('reduced-motion entry retains only the body planet', page.evaluate("document.getElementById('stage').dataset.opening === 'body' && !document.querySelector('.opening-contents').checkVisibility()"))
     page.evaluate("document.body.classList.remove('show-controls')")
     page.locator('.presentation-controls').evaluate("el => el.style.visibility = 'hidden'")
     page.wait_for_timeout(400)
+    page.locator('#spatial').evaluate("el => el.style.visibility = 'hidden'")
     quiet = Image.open(BytesIO(page.locator('#slide').screenshot())).convert('RGB')
     animated.save(OUT / 'content-animated.png')
     quiet.save(OUT / 'content-reduced.png')

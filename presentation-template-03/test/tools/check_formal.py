@@ -38,7 +38,7 @@ with sync_playwright() as p:
     ok('starts on cover', page.evaluate("document.getElementById('stage').dataset.slide") == 'S01')
 
     slides = page.evaluate("PRESENTATION.config.slides.map(s => ({id:s.id, type:s.type}))")
-    ok('has 19 pages without legacy dark pages', len(slides) == 19 and not any(s['type'] in ('closing', 'section-divider') for s in slides))
+    ok('has 20 pages ending in particle Thanks', len(slides) == 20 and slides[-1]['type'] == 'closing' and not any(s['type'] == 'section-divider' for s in slides))
     ok('covers every page type', {'cover', 'contents', 'headline-points', 'statement',
         'split-media', 'chart-focus', 'process-flow', 'table-focus', 'comparison', 'timeline',
         'video-focus', 'references'} <= {s['type'] for s in slides})

@@ -1,4 +1,17 @@
-/* Template 03: tactile paper-cut layers with pixel-display type. */
+/* Template 03: pixel/code typography, Library planet and quiet reading surfaces. */
+@font-face {
+  font-family:'Departure Mono';
+  src:url('../assets/fonts/departure-mono.woff2') format('woff2');
+  font-weight:400;
+  font-display:swap;
+  unicode-range:U+0000-024F;
+}
+@font-face {
+  font-family:'Presentation Pixel SC';
+  src:url('../assets/fonts/fusion-pixel-12px-zh-hans.woff2') format('woff2');
+  font-weight:400;
+  font-display:swap;
+}
 @font-face {
   font-family: 'Presentation Serif SC';
   src: url('../assets/fonts/noto-serif-sc-subset.woff2') format('woff2');
@@ -19,22 +32,23 @@
 }
 
 :root {
-  --paper: #f9f0d8;
-  --paper-dim: #ecd9b7;
-  --ink: #213657;
-  --ink-stage: #223356;
-  --ink-soft: #4c5b72;
-  --muted: #6d6a68;
-  --hair: #cba977;
-  --brick: #c84936;
-  --brick-soft: #e97956;
-  --sun: #f5b544;
-  --leaf: #4f8a6b;
-  --sky: #79b8c7;
+  font-synthesis:none;
+  --paper: #f4f4f0;
+  --paper-dim: #e2e4df;
+  --ink: #20211f;
+  --ink-stage: #20211f;
+  --ink-soft: #494c46;
+  --muted: #62665e;
+  --hair: #b8bdb3;
+  --brick: #cc4331;
+  --brick-soft: #df7867;
+  --sun: #e8bf3f;
+  --leaf: #267d78;
+  --sky: #355ab1;
 
-  --font-display: 'Presentation Mono', 'Noto Sans SC', 'Microsoft YaHei', monospace;
-  --font-sans: 'Presentation Sans SC', 'Noto Sans SC', 'Source Han Sans SC', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'Presentation Mono', Consolas, 'SFMono-Regular', 'Menlo', monospace;
+  --font-display: 'Departure Mono', 'Presentation Pixel SC', 'Microsoft YaHei', monospace;
+  --font-sans: 'Departure Mono', 'Presentation Sans SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'Departure Mono', 'Presentation Pixel SC', Consolas, monospace;
 
   --canvas-w: 1920px;
   --canvas-h: 1080px;

@@ -2,13 +2,13 @@ window.PRESENTATION_CONFIG = {
   "meta": {
     "title": "让判断可见",
     "display": "MAKE IT VISIBLE",
-    "theme": "paper-cut-pixel",
-    "kicker": "PAPER CUT / READING PATH",
+    "theme": "cubist-spatial",
+    "kicker": "PERSPECTIVES / IN COLOUR",
     "author": "演示模板 · 示例内容",
     "meta": "2026 / OFFLINE DECK",
-    "subtitle": "一套带有纸层、像素字与动态目录的演示模板"
+    "subtitle": "从不同的视角，构成一个清楚的判断。"
   },
-  "theme": "paper-cut-pixel",
+  "theme": "cubist-spatial",
   "chapters": [
     {
       "id": "ch1",
@@ -44,8 +44,8 @@ window.PRESENTATION_CONFIG = {
       "id": "S01",
       "type": "cover",
       "meta": {
-        "kicker": "PAPER CUT / READING PATH",
-        "subtitle": "一套带有纸层、像素字与动态目录的演示模板",
+        "kicker": "PERSPECTIVES / IN COLOUR",
+        "subtitle": "从不同的视角，构成一个清楚的判断。",
         "meta": "2026 / OFFLINE DECK"
       },
       "title": [
@@ -652,6 +652,22 @@ window.PRESENTATION_CONFIG = {
       },
       "refs": [],
       "index": 18
+    },
+    {
+      "id": "S24",
+      "type": "closing",
+      "meta": {
+        "chapter": "ch4"
+      },
+      "title": [
+        "THANKS"
+      ],
+      "bullets": [],
+      "paragraphs": [],
+      "quote": "",
+      "blocks": {},
+      "refs": [],
+      "index": 19
     }
   ],
   "references": [
