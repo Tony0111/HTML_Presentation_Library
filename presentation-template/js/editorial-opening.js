@@ -79,7 +79,7 @@
         <div class="opening-footer-print" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <span class="opening-footer-index"></span></footer>`;
     const sheets = [];
-    const count = Math.max(chapters.length, 4);
+    const count = chapters.length;
     function printTexture(chapter, index) {
       const canvas = document.createElement('canvas');
       canvas.width = 720; canvas.height = 1080;
@@ -210,11 +210,12 @@
       camera.lookAt(0, 0, -p * 100);
       const spacing = Math.min(530, (logicalWidth - 200) / count);
       const contentsScale = Math.min(1, 4 / count);
+      const coverScale = Math.min(1, 4 / count) ** 0.4;
       for (const sheet of sheets) {
         const i = sheet.index;
         // Cover: a controlled offset stack. Every sheet stays in front of or
         // behind its neighbor instead of twisting through the next sheet.
-        const coverX = 338 + i * 46;
+        const coverX = 338 + i * 46 * coverScale;
         const contentsX = (i - (count - 1) / 2) * spacing;
         sheet.mesh.position.set(coverX * (1 - p) + contentsX * p,
           (-20 + i * 8) * (1 - p) + (-30 + 45 * p) + Math.sin(time + i * 0.65) * (reduced ? 0 : 6),
@@ -222,8 +223,8 @@
         sheet.mesh.rotation.set(-0.02 * (1 - p) + 0.04 * p,
           -0.08 * (1 - p) + (i === selected ? -0.1 : 0.12) * p + (reduced ? 0 : Math.sin(time + i) * 0.008),
           -0.1 * (1 - p) + (i % 2 ? -0.035 : 0.035) * p);
-        sheet.mesh.scale.set(1.16 * (1 - p) + contentsScale * 0.78 * p,
-          1.16 * (1 - p) + contentsScale * 0.6 * p, 1);
+        sheet.mesh.scale.set(1.16 * coverScale * (1 - p) + contentsScale * 0.78 * p,
+          1.16 * coverScale * (1 - p) + contentsScale * 0.6 * p, 1);
         sheet.mat.emissive.set(p > 0.8 && i === selected ? '#0b100d' : '#000000');
         shadows[i].position.set(sheet.mesh.position.x, -330 + p * 85, -240);
         shadows[i].scale.set(0.95 - p * 0.22, 1 - p * 0.3, 1);

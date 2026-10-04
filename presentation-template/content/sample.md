@@ -13,7 +13,7 @@
 ## S01 | cover
 @kicker: EDITORIAL-SPATIAL / STUDY 01
 # 让判断
-# 可见。
+# 可见
 @subtitle: 一个极简、具有空间纵深的演示模板
 @meta: TEMPLATE 01 · 2026
 

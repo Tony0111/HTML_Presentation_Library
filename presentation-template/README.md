@@ -86,6 +86,7 @@ presentation-template/
 
 ## 文档
 
+- [EDITING-GUIDE.md](EDITING-GUIDE.md)：给内容修改 AI 的执行说明，包含 3/5/6 章改法、字段示例、禁止事项、生成与验收命令。
 - [DESIGN-DIRECTION.md](DESIGN-DIRECTION.md)：首版视觉与页面方向。
 - [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)：分阶段执行计划与验收条件。
 - [REQUIREMENTS.md](REQUIREMENTS.md)：产品场景、交互和学术内容需求。
@@ -95,7 +96,11 @@ presentation-template/
 
 ## 验证
 
+修改实际文稿后优先运行 `python test/tools/check_deck.py`；它不限制四章或二十页。以下正式入口、键盘等脚本主要用于当前示例的渲染器回归，不要为通过其固定示例断言而改回原内容。
+
 ```text
+python test/tools/check_deck.py               # 当前主稿、快照一致性、章节、资源与导航
+python test/tools/check_chapter_counts.py     # 临时 3/4/5/6 章样稿、目录/折页数量、配色、视口与导航
 python test/tools/check_formal.py             # 正式入口：20 页、全部页型、视口、减少动态、媒体、引用、离线
 python test/tools/check_reading_thanks.py     # 正文装饰差异、边界、粒子像素、交互、末页导航与减少动态
 python test/tools/check_keyboard.py           # 键盘契约、快速输入、返回目录、全屏与媒体焦点

@@ -1,6 +1,6 @@
 # 演示模板创作流程
 
-> 当前状态：生产流程待 P3 实现；本文先记录目标工作流与 P0/P1 阶段的边界。
+> 当前状态：Markdown 编译与离线演示流程已实现。修改内容的 AI 应先完整阅读 [EDITING-GUIDE.md](EDITING-GUIDE.md)，尤其是章节数量和验收规则。
 
 输入是一份资料与图表齐全的 Markdown 文稿；AI 按已确认的模板页型生成演示配置；用户审阅并提出自然语言修改意见；内容冻结后再进行字体、媒体和离线打包验收。
 
@@ -45,7 +45,6 @@ flowchart TD
 ```text
 cover
 contents
-section-divider
 headline-points
 statement
 split-media
@@ -56,19 +55,20 @@ comparison
 table-focus
 video-focus
 references
-closing
+thanks
 ```
 
 示例：
 
 ```markdown
 ## S04 | chart-focus
-章节：03 / EVIDENCE
-标题：两条曲线说明什么？
-图表：assets/charts/trend.svg
-图注：合成示例数据，不代表研究结论。
-来源：[@source-01]
-强调：第三阶段之后出现明显变化。
+@chapter: ch3
+@chapterTitle: 证据
+@chapterEnglish: EVIDENCE
+# 两条曲线说明什么？
+@asset: assets/charts/trend.svg
+@caption: 合成示例数据，不代表研究结论。
+- **第三阶段之后**出现明显变化。[@source-01]
 ```
 
 主稿中的资源必须是模板目录内的相对路径，不依赖 `../assets/`、个人绝对路径、CDN 或运行时网络请求。
@@ -110,10 +110,9 @@ AI 修改 Markdown 主稿并重新检查整场，不把单页截图当作完成�
 ```text
 python tools/build_content.py
 python tools/subset_fonts.py
-python test/tools/check_formal.py
-python test/opening/tools/verify.py
+python test/tools/check_deck.py
 ```
 
-正式入口测试覆盖 24 页、全部页型、1920 × 1080 与常见 16:10 视口、空间转场、导航、减少动态、视频生命周期、引用与待补来源、无远程请求。字体子集随目录携带；不要把系统商业字体打包。
+`check_deck.py` 按当前主稿检查章节、资源、导航与快照一致性，不限定四章。当前示例为 20 页；`check_formal.py` 等脚本用于示例回归，`check_chapter_counts.py` 使用临时样稿验证 3/4/5/6 章，不改真实主稿。视觉、字体与媒体还需按 EDITING-GUIDE.md 的清单验收。字体子集随目录携带；不要把系统商业字体打包。
 
 最后将整个 `presentation-template/` 文件夹复制到没有开发环境的电脑，断网直接打开 `index.html`，确认相对路径、字体、图表、视频、全屏和错误提示正常。已验证方式：只复制 `index.html`、`review.html`、`content/`、`data/`、`js/`、`styles/`、`assets/`、`vendor/`、`LICENSES/` 到独立目录后仍可完整播放。

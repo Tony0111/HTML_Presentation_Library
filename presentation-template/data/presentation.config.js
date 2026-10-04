@@ -50,7 +50,7 @@ window.PRESENTATION_CONFIG = {
       },
       "title": [
         "让判断",
-        "可见。"
+        "可见"
       ],
       "bullets": [],
       "paragraphs": [],
