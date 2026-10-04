@@ -65,14 +65,27 @@ with sync_playwright() as p:
             go(index)
             page.wait_for_timeout(550)
             pixels = canvas_pixels(page)
+            visible = sum(1 for i in range(0, len(pixels), 4) if pixels[i + 3] > 100)
             ok(f'{name} has visible brick-red geometry at {w}x{h}',
                sum(1 for i in range(0, len(pixels), 4)
-                   if pixels[i] > pixels[i + 1] * 1.3 and pixels[i] > 90 and pixels[i + 3] > 100) > 150)
+                   if pixels[i] > pixels[i + 1] * 1.2 and pixels[i] > 90 and pixels[i + 3] > 100) > max(30, visible * 0.04))
+            ok(f'{name} has complementary teal geometry at {w}x{h}',
+               sum(1 for i in range(0, len(pixels), 4)
+                   if pixels[i + 1] > pixels[i] * 1.1 and pixels[i + 2] > pixels[i] * 1.05
+                   and pixels[i + 3] > 100) > max(30, visible * 0.04))
+            ok(f'{name} print frame stays inside the viewport at {w}x{h}', page.evaluate('''() => {
+              const frame = document.querySelector('.opening-print-frame').getBoundingClientRect();
+              return frame.left > 0 && frame.right < innerWidth && frame.top > 0 && frame.bottom < innerHeight;
+            }'''))
+            ok(f'{name} has local, noninteractive scan grain at {w}x{h}', page.evaluate('''() => {
+              const style = getComputedStyle(document.getElementById('editorial-opening'), '::after');
+              return style.backgroundImage.startsWith('url("data:image/png') && style.pointerEvents === 'none';
+            }'''))
             ok(f'{name} has a bright background at {w}x{h}', page.evaluate(
                 "getComputedStyle(document.getElementById('stage')).backgroundColor === 'rgb(245, 243, 238)'"))
             ok(f'{name} text stays within the viewport at {w}x{h}', page.evaluate('''() => {
               const mode = document.getElementById('editorial-opening').dataset.mode;
-              const nodes = document.querySelectorAll('.opening-masthead > *, .opening-' + mode + ' h1, .opening-' + mode + ' h2, .opening-chapter-en, .opening-author');
+              const nodes = document.querySelectorAll('.opening-masthead > *, .opening-' + mode + ' h1, .opening-' + mode + ' h2, .opening-chapter-en, .opening-author, .opening-footer > *');
               return [...nodes].filter(n => n.checkVisibility({visibilityProperty:true})).every(n => {
                 const r = n.getBoundingClientRect();
                 return r.left >= 0 && r.right <= innerWidth + 1 && r.top >= 0 && r.bottom <= innerHeight + 1;
@@ -99,6 +112,7 @@ with sync_playwright() as p:
     go(3)
     ok('opening leaves no overlay or palette on reading pages', page.evaluate(
         "document.getElementById('editorial-opening').hidden && !document.getElementById('stage').dataset.opening"))
+    ok('reading pages have no visible print frame', not page.locator('.opening-print-frame').is_visible())
     load(True)
     first = canvas_pixels(page)
     page.wait_for_timeout(300)
