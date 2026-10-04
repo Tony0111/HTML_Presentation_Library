@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   const W = 1920, H = 1080, F = 1600;
-  const INKS = ['#ae6150', '#72978f', '#c3aa78', '#d2dfda'];
+  const BRICK = '#ae6150', PAPER = '#f3efe6';
   const clamp = n => Math.max(0, Math.min(1, n));
   function scanTexture() {
     const canvas = document.createElement('canvas');
@@ -35,7 +35,7 @@
     const key = new THREE.DirectionalLight(0xfff5e8, 2.1);
     key.position.set(-700, 1000, 1400);
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0xcde4df, 0.5);
+    const fill = new THREE.DirectionalLight(0xf3e8dc, 0.5);
     fill.position.set(900, -100, 400);
     scene.add(fill);
     const el = document.createElement('section');
@@ -56,10 +56,13 @@
         <div class="opening-edge-blocks"><i></i><i></i><i></i></div>
         <div class="opening-edge-ticks"></div><div class="opening-registration"></div>
       </div>
+      <div class="opening-cover-print" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       <header class="opening-masthead"><span class="opening-brand">${esc(config.meta.display || config.meta.title)}</span>
         <div class="opening-ink-key" aria-hidden="true"><i></i><i></i><i></i><i></i></div></header>
       <div class="opening-cover"><div class="opening-kicker">${esc(config.meta.kicker || '')}</div>
-        <h1>${title.map((line, i) => `<span${i === title.length - 1 ? ' class="opening-title-accent"' : ''}>${esc(line)}</span>`).join('')}</h1>
+        <h1>${title.map((line, i) => i === title.length - 1
+          ? `<span class="opening-title-accent" aria-label="${esc(line)}">${Array.from(line).map((char, j) => `<span class="opening-keyword-char" aria-hidden="true" style="--char-index:${j}">${esc(char)}</span>`).join('')}</span>`
+          : `<span>${esc(line)}</span>`).join('')}</h1>
         <p class="opening-author">${esc(config.meta.author || '')}</p></div>
       <div class="opening-contents"><div class="opening-contents-head"><h1>${esc((config.slides.find(s => s.type === 'contents') || {}).title?.join(' ') || '目录')}</h1>
         <span class="opening-contents-en">Contents</span><span class="opening-chapter-total">${String(chapters.length).padStart(2, '0')} CHAPTERS</span></div>
@@ -79,15 +82,15 @@
       const canvas = document.createElement('canvas');
       canvas.width = 720; canvas.height = 1080;
       const g = canvas.getContext('2d');
-      const pale = index % 4 >= 2;
-      const text = pale ? '#485e59' : '#f5f0e5';
-      const rule = pale ? '#85968a' : '#e1d9bc';
-      g.fillStyle = INKS[index % INKS.length];
+      const pale = index % 2 === 1;
+      const text = pale ? '#57554e' : PAPER;
+      const rule = pale ? '#aaa59a' : '#dec4b5';
+      g.fillStyle = pale ? PAPER : BRICK;
       g.fillRect(0, 0, 720, 1080);
-      g.fillStyle = pale ? 'rgba(242,238,214,0.2)' : 'rgba(228,220,196,0.08)';
+      g.fillStyle = 'rgba(228,220,196,0.06)';
       g.fillRect(0, 0, 720, 1080);
-      g.fillStyle = INKS[(index + 1) % INKS.length];
-      g.globalAlpha = 0.55;
+      g.fillStyle = pale ? BRICK : PAPER;
+      g.globalAlpha = 0.24;
       g.fillRect(662, 0, 58, 260);
       g.fillRect(0, 1048, 210, 32);
       g.globalAlpha = 1;
