@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 620" role="img" aria-label="合成示例散点图，展示两个示意变量之间的共同变化">
+  <rect width="1160" height="620" fill="#f3fbf7"/>
+  <g font-family="Georgia, 'Noto Serif SC', serif">
+    <text x="60" y="60" font-size="26" font-style="italic" fill="#ee8b3e">ILLUSTRATIVE DATA / SCATTER</text>
+    <text x="60" y="98" font-size="17" font-family="'Source Han Sans SC','Microsoft YaHei',sans-serif" fill="#5d8580">共同变化不代表因果关系　坐标单位：a.u.</text>
+  </g>
+  <g stroke="#b8d8cf" stroke-width="1">
+    <line x1="120" y1="150" x2="1060" y2="150"/><line x1="120" y1="250" x2="1060" y2="250"/>
+    <line x1="120" y1="350" x2="1060" y2="350"/><line x1="120" y1="450" x2="1060" y2="450"/>
+    <line x1="300" y1="130" x2="300" y2="500"/><line x1="500" y1="130" x2="500" y2="500"/>
+    <line x1="700" y1="130" x2="700" y2="500"/><line x1="900" y1="130" x2="900" y2="500"/>
+  </g>
+  <line x1="120" y1="500" x2="1060" y2="500" stroke="#123f40" stroke-width="2"/>
+  <line x1="120" y1="130" x2="120" y2="500" stroke="#123f40" stroke-width="2"/>
+  <line x1="170" y1="470" x2="1010" y2="180" stroke="#ee8b3e" stroke-width="2" stroke-dasharray="7 7"/>
+  <g fill="#565049">
+    <circle cx="200" cy="452" r="9"/><circle cx="270" cy="438" r="9"/><circle cx="330" cy="430" r="9"/>
+    <circle cx="410" cy="392" r="9"/><circle cx="470" cy="386" r="9"/><circle cx="540" cy="352" r="9"/>
+    <circle cx="620" cy="340" r="9"/><circle cx="690" cy="300" r="9"/><circle cx="760" cy="288" r="9"/>
+    <circle cx="840" cy="248" r="9"/><circle cx="910" cy="222" r="9"/><circle cx="980" cy="196" r="9"/>
+  </g>
+  <circle cx="620" cy="340" r="14" fill="none" stroke="#ee8b3e" stroke-width="2"/>
+  <text x="640" y="330" font-family="Georgia, serif" font-size="22" fill="#ee8b3e">0.71</text>
+  <g font-family="'Source Han Sans SC','Microsoft YaHei',sans-serif" font-size="17" fill="#5d8580">
+    <text x="120" y="586">合成示例数据 · 趋势线为示意 · 不代替统计检验</text>
+  </g>
+</svg>

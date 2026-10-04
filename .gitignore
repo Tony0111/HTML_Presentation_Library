@@ -25,3 +25,7 @@ Desktop.ini
 .local/
 
 github_res
+
+# Python bytecode
+__pycache__/
+*.pyc

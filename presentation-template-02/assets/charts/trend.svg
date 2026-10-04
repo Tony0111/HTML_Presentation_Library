@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 620" role="img" aria-label="合成示例趋势图，纵轴为任意单位 a.u.，横轴为阶段 01 至 07">
+  <rect width="1160" height="620" fill="#f3fbf7"/>
+  <g font-family="Georgia, 'Noto Serif SC', serif" fill="#123f40">
+    <text x="60" y="60" font-size="26" font-style="italic" fill="#ee8b3e">ILLUSTRATIVE DATA</text>
+    <text x="60" y="98" font-size="17" font-family="'Source Han Sans SC','Microsoft YaHei',sans-serif" fill="#5d8580">纵轴：任意单位 a.u.　横轴：阶段 01–07</text>
+  </g>
+  <!-- grid -->
+  <g stroke="#b8d8cf" stroke-width="1">
+    <line x1="96" y1="150" x2="1100" y2="150"/>
+    <line x1="96" y1="260" x2="1100" y2="260"/>
+    <line x1="96" y1="370" x2="1100" y2="370"/>
+    <line x1="96" y1="480" x2="1100" y2="480"/>
+  </g>
+  <g stroke="#ee8b3e" stroke-width="1.5">
+    <line x1="96" y1="480" x2="1100" y2="480"/>
+  </g>
+  <!-- y labels -->
+  <g font-family="Consolas, monospace" font-size="15" fill="#5d8580" text-anchor="end">
+    <text x="80" y="156">100</text>
+    <text x="80" y="266">85</text>
+    <text x="80" y="376">70</text>
+    <text x="80" y="486">55</text>
+  </g>
+  <!-- x labels -->
+  <g font-family="Consolas, monospace" font-size="15" fill="#5d8580" text-anchor="middle">
+    <text x="168" y="512">01</text>
+    <text x="322" y="512">02</text>
+    <text x="476" y="512">03</text>
+    <text x="630" y="512">04</text>
+    <text x="784" y="512">05</text>
+    <text x="938" y="512">06</text>
+    <text x="1092" y="512">07</text>
+  </g>
+  <!-- series A -->
+  <polyline points="168,410 322,376 476,352 630,300 784,238 938,196 1092,168"
+            fill="none" stroke="#123f40" stroke-width="3"/>
+  <g fill="#123f40">
+    <circle cx="168" cy="410" r="5"/><circle cx="322" cy="376" r="5"/><circle cx="476" cy="352" r="5"/>
+    <circle cx="630" cy="300" r="5"/><circle cx="784" cy="238" r="5"/><circle cx="938" cy="196" r="5"/>
+    <circle cx="1092" cy="168" r="5"/>
+  </g>
+  <!-- emphasised readout at stage 04 -->
+  <line x1="630" y1="300" x2="630" y2="480" stroke="#ee8b3e" stroke-width="2" stroke-dasharray="6 6"/>
+  <circle cx="630" cy="300" r="7" fill="#ee8b3e"/>
+  <text x="646" y="292" font-family="Georgia, serif" font-size="22" fill="#ee8b3e">0.88</text>
+  <g font-family="'Source Han Sans SC','Microsoft YaHei',sans-serif" font-size="17" fill="#5d8580">
+    <text x="96" y="566">合成示例数据 · 不代表实验结果 · 单位 a.u.</text>
+  </g>
+</svg>
